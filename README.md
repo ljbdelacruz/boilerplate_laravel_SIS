@@ -1,5 +1,14 @@
-## Capstone 2 Laravel
+## Boilerplate Laravel
 > 
+
+## Install Composer and PHP on Mac
+
+```
+brew install php
+curl -sS https://getcomposer.org/installer | php
+sudo mv composer.phar /usr/local/bin/composer
+composer --version
+```
 
 ## Setup DB Docker Locally
 > run this everytime you update your swagger docs
