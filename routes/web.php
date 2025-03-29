@@ -9,9 +9,6 @@ use Illuminate\Support\Facades\Route;
 // Set login as default route
 Route::get('/', [AuthController::class, 'showLogin'])->name('login');
 
-Route::get('/about-us', function () {
-    return view('about_us');
-});
 
 Route::get('/school-years-view', [SchoolYearController::class, 'index_view']);
 
