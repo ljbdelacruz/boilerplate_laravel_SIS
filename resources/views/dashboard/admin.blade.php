@@ -73,6 +73,17 @@
                     <a href="{{ route('students.create') }}" class="block bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded text-center">
                         Add New Student
                     </a>
+            </div>
+            <div class="bg-white overflow-hidden shadow-sm rounded-lg p-6">
+                <h3 class="text-lg font-semibold mb-4">Teacher Course Assignment</h3>
+                <p class="text-gray-600">Manage teacher schedules and course assignments</p>
+                <div class="mt-4 space-y-2">
+                    <a href="{{ route('teacher-courses.index') }}" class="block bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded text-center">
+                        View Assignments
+                    </a>
+                    <a href="{{ route('teacher-courses.create') }}" class="block bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded text-center">
+                        New Assignment
+                    </a>
                 </div>
             </div>
         </div>

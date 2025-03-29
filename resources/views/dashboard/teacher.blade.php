@@ -31,14 +31,19 @@
             <div class="bg-white overflow-hidden shadow-sm rounded-lg p-6">
                 <h3 class="text-lg font-semibold mb-4">My Classes</h3>
                 <p class="text-gray-600">View and manage your classes</p>
+                <div class="mt-4">
+                    <a href="{{ route('teacher.classes') }}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                        View Classes
+                    </a>
+                </div>
             </div>
             
             <div class="bg-white overflow-hidden shadow-sm rounded-lg p-6">
-                <h3 class="text-lg font-semibold mb-4">Student Management</h3>
-                <p class="text-gray-600">Manage student information</p>
+                <h3 class="text-lg font-semibold mb-4">Schedule Preferences</h3>
+                <p class="text-gray-600">Set your teaching schedule preferences</p>
                 <div class="mt-4">
-                    <a href="{{ route('students.create') }}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                        Add New Student
+                    <a href="{{ route('teacher.schedules.preferences') }}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                        Set Preferences
                     </a>
                 </div>
             </div>

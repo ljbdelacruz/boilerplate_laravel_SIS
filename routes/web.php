@@ -8,6 +8,7 @@ use App\Http\Controllers\CourseController;
 use App\Http\Controllers\StudentCourseController;
 use App\Http\Controllers\StudentPaymentController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\TeacherCourseController;
 use Illuminate\Support\Facades\Route;
 
 // Set login as default route
@@ -38,4 +39,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/student/payments', [StudentPaymentController::class, 'index'])->name('student.payments');
     // Add this inside your admin middleware group
     Route::resource('users', UserController::class)->except(['show', 'destroy']);
+});
+
+Route::middleware(['auth'])->group(function () {
+    Route::resource('teacher-courses', TeacherCourseController::class);
 });
