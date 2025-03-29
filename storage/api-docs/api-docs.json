@@ -2,14 +2,24 @@
     "openapi": "3.0.0",
     "info": {
         "title": "School Year API",
+        "description": "API endpoints for managing school years",
         "version": "1.0.0"
     },
+    "servers": [
+        {
+            "url": "http://127.0.0.1:8000",
+            "description": "Local Development Server"
+        }
+    ],
     "paths": {
-        "/api": {},
         "/api/add-school-year": {
             "post": {
+                "tags": [
+                    "School Years"
+                ],
                 "summary": "Add a new school year",
-                "operationId": "4db2870272ee7771c48ba4e4fef2159f",
+                "description": "Creates a new school year with grade level and section",
+                "operationId": "storeSchoolYear",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -41,7 +51,7 @@
                 },
                 "responses": {
                     "201": {
-                        "description": "School year, grade level, and section added successfully",
+                        "description": "School year created successfully",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -51,6 +61,32 @@
                                             "example": "School year, grade level, and section added successfully."
                                         },
                                         "data": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "school_year": {
+                                                    "type": "string",
+                                                    "example": "2025-2026"
+                                                },
+                                                "grade_level": {
+                                                    "type": "string",
+                                                    "example": "Grade 1"
+                                                },
+                                                "section_name": {
+                                                    "type": "string",
+                                                    "example": "Section A"
+                                                },
+                                                "created_at": {
+                                                    "type": "string",
+                                                    "format": "datetime"
+                                                },
+                                                "updated_at": {
+                                                    "type": "string",
+                                                    "format": "datetime"
+                                                }
+                                            },
                                             "type": "object"
                                         }
                                     },
@@ -60,53 +96,25 @@
                         }
                     },
                     "422": {
-                        "description": "Validation failed",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Validation failed"
-                                        },
-                                        "errors": {
-                                            "type": "object"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
+                        "description": "Validation failed"
                     },
                     "500": {
-                        "description": "Failed to create school year",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Failed to create school year"
-                                        },
-                                        "error": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
+                        "description": "Server error"
                     }
                 }
             }
         },
         "/api/school-years": {
             "get": {
+                "tags": [
+                    "School Years"
+                ],
                 "summary": "Get all school years",
-                "operationId": "3835f323c0ec06cebb7ec6c81549706f",
+                "description": "Returns a list of all school years",
+                "operationId": "getSchoolYears",
                 "responses": {
                     "200": {
-                        "description": "School years retrieved successfully",
+                        "description": "Successful operation",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -118,6 +126,32 @@
                                         "data": {
                                             "type": "array",
                                             "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "school_year": {
+                                                        "type": "string",
+                                                        "example": "2025-2026"
+                                                    },
+                                                    "grade_level": {
+                                                        "type": "string",
+                                                        "example": "Grade 1"
+                                                    },
+                                                    "section_name": {
+                                                        "type": "string",
+                                                        "example": "Section A"
+                                                    },
+                                                    "created_at": {
+                                                        "type": "string",
+                                                        "format": "datetime"
+                                                    },
+                                                    "updated_at": {
+                                                        "type": "string",
+                                                        "format": "datetime"
+                                                    }
+                                                },
                                                 "type": "object"
                                             }
                                         }
@@ -128,26 +162,16 @@
                         }
                     },
                     "500": {
-                        "description": "Failed to retrieve school years",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Failed to retrieve school years"
-                                        },
-                                        "error": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
+                        "description": "Server error"
                     }
                 }
             }
         }
-    }
+    },
+    "tags": [
+        {
+            "name": "School Years",
+            "description": "API Endpoints for School Year operations"
+        }
+    ]
 }
