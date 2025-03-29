@@ -8,6 +8,16 @@
 </head>
 <body class="bg-gray-100">
     <div class="container mx-auto px-4 py-8">
+        <div class="mb-4">
+            <a href="{{ route('dashboard') }}" class="text-gray-600 hover:text-gray-900">
+                <span class="inline-flex items-center">
+                    <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                    </svg>
+                    Back to Dashboard
+                </span>
+            </a>
+        </div>
         <div class="flex justify-between items-center mb-6">
             <h1 class="text-2xl font-bold">Student Information</h1>
             @if(Auth::user()->role === 'admin' || Auth::user()->role === 'teacher')

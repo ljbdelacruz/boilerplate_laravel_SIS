@@ -29,13 +29,52 @@
     <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
         <div class="grid grid-cols-3 gap-6">
             <div class="bg-white overflow-hidden shadow-sm rounded-lg p-6">
-                <h3 class="text-lg font-semibold mb-4">School Years</h3>
+                <h3 class="text-lg font-semibold mb-4">School Year Management</h3>
                 <p class="text-gray-600">Manage school years and sections</p>
-                <a href="/school-years-view" class="mt-4 inline-block bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                    View School Years
-                </a>
+                <div class="mt-4">
+                    <a href="{{ route('school-years.create') }}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                        Add New School Year
+                    </a>
+                </div>
             </div>
-            <!-- Add more dashboard widgets as needed -->
+
+            <div class="bg-white overflow-hidden shadow-sm rounded-lg p-6">
+                <h3 class="text-lg font-semibold mb-4">Course Management</h3>
+                <p class="text-gray-600">Manage courses and pricing</p>
+                <div class="mt-4 space-y-2">
+                    <a href="{{ route('courses.index') }}" class="block bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded text-center">
+                        View All Courses
+                    </a>
+                    <a href="{{ route('courses.create') }}" class="block bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded text-center">
+                        Add New Course
+                    </a>
+                </div>
+            </div>
+            <div class="bg-white overflow-hidden shadow-sm rounded-lg p-6">
+                <h3 class="text-lg font-semibold mb-4">User Management</h3>
+                <p class="text-gray-600">Manage system users and roles</p>
+                <div class="mt-4 space-y-2">
+                    <a href="{{ route('users.index') }}" class="block bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded text-center">
+                        View All Users
+                    </a>
+                    <a href="{{ route('users.create') }}" class="block bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded text-center">
+                        Add New User
+                    </a>
+                </div>
+            </div>
+
+            <div class="bg-white overflow-hidden shadow-sm rounded-lg p-6">
+                <h3 class="text-lg font-semibold mb-4">Student Management</h3>
+                <p class="text-gray-600">Manage student records</p>
+                <div class="mt-4 space-y-2">
+                    <a href="{{ route('students.index') }}" class="block bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded text-center">
+                        View All Students
+                    </a>
+                    <a href="{{ route('students.create') }}" class="block bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded text-center">
+                        Add New Student
+                    </a>
+                </div>
+            </div>
         </div>
     </div>
 </body>

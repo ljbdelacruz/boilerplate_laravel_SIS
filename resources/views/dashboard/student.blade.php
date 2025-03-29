@@ -45,11 +45,26 @@
             </div>
 
             <div class="bg-white overflow-hidden shadow-sm rounded-lg p-6">
-                <h3 class="text-lg font-semibold mb-4">My Grades</h3>
-                <p class="text-gray-600">View your academic performance</p>
-                <a href="#" class="mt-4 inline-block text-blue-600 hover:text-blue-800">
-                    View Grades →
-                </a>
+                <h3 class="text-lg font-semibold mb-4">Course Enrollment</h3>
+                <p class="text-gray-600">Manage your course enrollments</p>
+                <div class="mt-4 space-y-2">
+                    <a href="{{ route('student.courses.available') }}" class="block bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded text-center">
+                        Enroll in Courses
+                    </a>
+                    <a href="{{ route('student.courses.enrolled') }}" class="block bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded text-center">
+                        My Enrolled Courses
+                    </a>
+                </div>
+            </div>
+
+            <div class="bg-white overflow-hidden shadow-sm rounded-lg p-6">
+                <h3 class="text-lg font-semibold mb-4">Payment Information</h3>
+                <p class="text-gray-600">View your payment status and history</p>
+                <div class="mt-4">
+                    <a href="{{ route('student.payments') }}" class="block bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded text-center">
+                        View Payments
+                    </a>
+                </div>
             </div>
         </div>
     </div>

@@ -10,19 +10,29 @@ class Student extends Model
         'student_id',
         'first_name',
         'last_name',
-        'middle_name',
         'birth_date',
         'gender',
         'address',
-        'contact_number',
-        'email',
         'guardian_name',
         'guardian_contact',
-        'school_year_id'
+        'school_year_id',
+        'user_id'
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 
     public function schoolYear()
     {
         return $this->belongsTo(SchoolYear::class);
+    }
+
+    public function courses()
+    {
+        return $this->belongsToMany(Course::class, 'student_courses')
+                    ->withPivot('school_year_id', 'amount_paid', 'status')
+                    ->withTimestamps();
     }
 }

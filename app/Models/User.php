@@ -3,8 +3,9 @@
 namespace App\Models;
 
 use Laravel\Sanctum\HasApiTokens;
-use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class User extends Authenticatable
 {
@@ -14,11 +15,18 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'role'
+        'role'  // Make sure this is included
     ];
 
-    protected $hidden = [
-        'password',
-        'remember_token',
-    ];
+    public function student()
+    {
+        return $this->hasOne(Student::class);
+    }
+
+    public function courses()
+    {
+        return $this->belongsToMany(Course::class, 'student_courses', 'student_id', 'course_id')
+                    ->withPivot('amount_paid', 'status', 'school_year_id')
+                    ->withTimestamps();
+    }
 }

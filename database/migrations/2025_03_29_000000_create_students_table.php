@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    public function up(): void
+    public function up()
     {
         Schema::create('students', function (Blueprint $table) {
             $table->id();
@@ -16,17 +16,17 @@ return new class extends Migration
             $table->string('middle_name')->nullable();
             $table->date('birth_date');
             $table->enum('gender', ['male', 'female', 'other']);
-            $table->string('address');
+            $table->text('address');
             $table->string('contact_number')->nullable();
-            $table->string('email')->unique()->nullable();
             $table->string('guardian_name');
             $table->string('guardian_contact');
-            $table->foreignId('school_year_id')->constrained('school_years');
+            $table->foreignId('school_year_id')->nullable()->constrained()->onDelete('set null');
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->timestamps();
         });
     }
 
-    public function down(): void
+    public function down()
     {
         Schema::dropIfExists('students');
     }

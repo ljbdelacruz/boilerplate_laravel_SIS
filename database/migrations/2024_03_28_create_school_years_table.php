@@ -6,22 +6,18 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
-    public function up(): void
+    public function up()
     {
         Schema::create('school_years', function (Blueprint $table) {
             $table->id();
-            $table->string('school_year')->unique();  // Add this line to create the column
+            $table->string('school_year');
+            $table->string('grade_level');
+            $table->string('section_name');
             $table->timestamps();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
-    public function down(): void
+    public function down()
     {
         Schema::dropIfExists('school_years');
     }
