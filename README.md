@@ -44,4 +44,9 @@ php artisan serve
 
 # how to access your swagger docs endpoint
 http://127.0.0.1:8000/api/documentation
+
+# how to access web
+http://127.0.0.1:8000/
 ```
+
+
