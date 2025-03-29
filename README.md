@@ -1,4 +1,4 @@
-## Boilerplate Laravel
+## Boilerplate Laravel for Student Information System
 > 
 
 ## Install Composer and PHP on Mac

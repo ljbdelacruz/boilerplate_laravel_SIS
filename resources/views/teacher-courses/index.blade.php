@@ -40,13 +40,19 @@
                 <tbody class="bg-white divide-y divide-gray-200">
                     @foreach($assignments as $assignment)
                         <tr>
-                            <td class="px-6 py-4 whitespace-nowrap">{{ $assignment->teacher->name }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap">{{ $assignment->course->name }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap">{{ $assignment->schoolYear->school_year }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                {{ $assignment->teacher->name ?? 'N/A' }}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                {{ $assignment->course->name ?? 'N/A' }}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                {{ optional($assignment->schoolYear)->school_year ?? 'N/A' }}
+                            </td>
                             <td class="px-6 py-4 whitespace-nowrap">
                                 {{ $assignment->day_of_week }} <br>
-                                {{ date('h:i A', strtotime($assignment->start_time)) }} - 
-                                {{ date('h:i A', strtotime($assignment->end_time)) }}
+                                {{ $assignment->start_time ? date('h:i A', strtotime($assignment->start_time)) : 'N/A' }} - 
+                                {{ $assignment->end_time ? date('h:i A', strtotime($assignment->end_time)) : 'N/A' }}
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm">
                                 <a href="{{ route('teacher-courses.edit', $assignment->id) }}" class="text-indigo-600 hover:text-indigo-900">Edit</a>

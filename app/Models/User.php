@@ -34,6 +34,11 @@ class User extends Authenticatable
         return $this->hasMany(Schedule::class, 'teacher_id');
     }
 
+    public function teacher()
+    {
+        return $this->hasOne(Teacher::class);
+    }
+
     // Add this method to the User model
     public function teachingCourses()
     {

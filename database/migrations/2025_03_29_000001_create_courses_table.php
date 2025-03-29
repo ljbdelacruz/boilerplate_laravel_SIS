@@ -8,19 +8,19 @@ return new class extends Migration
 {
     public function up()
     {
-        Schema::create('courses', function (Blueprint $table) {
-            $table->id();
-            $table->string('code')->unique();
-            $table->string('name');
-            $table->text('description')->nullable();
-            $table->decimal('price', 10, 2);
-            $table->boolean('is_active')->default(true);
-            $table->timestamps();
-        });
+        if (!Schema::hasColumn('courses', 'price')) {
+            Schema::table('courses', function (Blueprint $table) {
+                $table->decimal('price', 10, 2)->after('description');
+            });
+        }
     }
 
     public function down()
     {
-        Schema::dropIfExists('courses');
+        if (Schema::hasColumn('courses', 'price')) {
+            Schema::table('courses', function (Blueprint $table) {
+                $table->dropColumn('price');
+            });
+        }
     }
 };

@@ -9,6 +9,7 @@ use App\Http\Controllers\StudentCourseController;
 use App\Http\Controllers\StudentPaymentController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\TeacherCourseController;
+use App\Http\Controllers\TeacherController;
 use Illuminate\Support\Facades\Route;
 
 // Set login as default route
@@ -41,6 +42,9 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('users', UserController::class)->except(['show', 'destroy']);
 });
 
+Route::middleware(['auth'])->group(function () {
+    Route::resource('teachers', TeacherController::class);
+});
 Route::middleware(['auth'])->group(function () {
     Route::resource('teacher-courses', TeacherCourseController::class);
 });
