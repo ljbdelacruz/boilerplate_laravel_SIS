@@ -10,6 +10,8 @@ use App\Http\Controllers\StudentPaymentController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\TeacherCourseController;
 use App\Http\Controllers\TeacherController;
+use App\Http\Controllers\TeacherClassController;
+use App\Http\Controllers\TeacherScheduleController;
 use Illuminate\Support\Facades\Route;
 
 // Set login as default route
@@ -47,4 +49,9 @@ Route::middleware(['auth'])->group(function () {
 });
 Route::middleware(['auth'])->group(function () {
     Route::resource('teacher-courses', TeacherCourseController::class);
+});
+
+Route::middleware(['auth', 'role:teacher'])->group(function () {
+    Route::get('/teacher/classes', [TeacherClassController::class, 'index'])->name('teacher.classes');
+    Route::get('/teacher/schedules/preferences', [TeacherScheduleController::class, 'preferences'])->name('teacher.schedules.preferences');
 });
