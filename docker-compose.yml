@@ -1,5 +1,33 @@
 version: '3'
 services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: capstone2_app
+    restart: unless-stopped
+    working_dir: /var/www
+    volumes:
+      - ./:/var/www
+    networks:
+      - capstone2_network
+    depends_on:
+      - db
+
+  nginx:
+    image: nginx:alpine
+    container_name: capstone2_nginx
+    restart: unless-stopped
+    ports:
+      - "8000:80"
+    volumes:
+      - ./:/var/www
+      - ./docker/nginx/conf.d:/etc/nginx/conf.d
+    networks:
+      - capstone2_network
+    depends_on:
+      - app
+
   db:
     image: mysql:8.0
     container_name: capstone2_db
@@ -13,6 +41,12 @@ services:
       - "3306:3306"
     volumes:
       - dbdata:/var/lib/mysql
+    networks:
+      - capstone2_network
+
+networks:
+  capstone2_network:
+    driver: bridge
 
 volumes:
   dbdata:
