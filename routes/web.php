@@ -12,6 +12,7 @@ use App\Http\Controllers\TeacherCourseController;
 use App\Http\Controllers\TeacherController;
 use App\Http\Controllers\TeacherClassController;
 use App\Http\Controllers\TeacherScheduleController;
+use App\Http\Controllers\SectionController;
 use App\Http\Controllers\ScheduleController;
 use App\Http\Controllers\ActivityLogController;
 use Illuminate\Support\Facades\Route;
@@ -25,6 +26,9 @@ Route::get('/school-years-view', [SchoolYearController::class, 'index_view']);
 // Auth Routes
 Route::post('/login', [AuthController::class, 'login'])->name('login.submit');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
+// Section routes
+Route::resource('sections', SectionController::class);
 
 // Dashboard Routes
 Route::middleware(['auth'])->group(function () {

@@ -102,6 +102,20 @@
                     </a>
                 </div>
             </div>
+            <div class="bg-white overflow-hidden shadow-sm rounded-lg p-6">
+                <h3 class="text-lg font-semibold mb-4">Section Management</h3>
+                <p class="text-gray-600">Manage sections for each school year</p>
+                <div class="mt-4 space-y-2">
+                    <a href="{{ route('sections.index') }}"
+                        class="block bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded text-center">
+                        View All Sections
+                    </a>
+                    <a href="{{ route('sections.create') }}"
+                        class="block bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded text-center">
+                        Add New Section
+                    </a>
+                </div>
+            </div>
             <!-- Activity Logs Card -->
                 <div class="bg-white overflow-hidden shadow-sm rounded-lg p-6">
                     <h3 class="text-lg font-semibold mb-4">Activity Logs</h3>
