@@ -43,8 +43,6 @@ class SchoolYearController extends Controller
     {
         $validated = $request->validate([
             'school_year' => 'required|string|max:255',
-            'grade_level' => 'required|string|max:255',
-            'section_name' => 'required|string|max:255',
         ]);
 
         $schoolYear->update($validated);

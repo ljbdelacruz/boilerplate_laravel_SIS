@@ -46,30 +46,6 @@
                            required>
                 </div>
 
-                <div class="mb-4">
-                    <label class="block text-gray-700 text-sm font-bold mb-2" for="grade_level">
-                        Grade Level
-                    </label>
-                    <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                           id="grade_level"
-                           type="text"
-                           name="grade_level"
-                           value="{{ old('grade_level', $schoolYear->grade_level) }}"
-                           required>
-                </div>
-
-                <div class="mb-4">
-                    <label class="block text-gray-700 text-sm font-bold mb-2" for="section_name">
-                        Section Name
-                    </label>
-                    <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                           id="section_name"
-                           type="text"
-                           name="section_name"
-                           value="{{ old('section_name', $schoolYear->section_name) }}"
-                           required>
-                </div>
-
                 <div class="flex items-center justify-end">
                     <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
                             type="submit">
