@@ -84,8 +84,12 @@
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap">
                                                 <a href="{{ route('teacher.submit.grades', $student->id) }}" 
-                                                   class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                                                   class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-2">
                                                     Submit Grades
+                                                </a>
+                                                <a href="{{ route('teacher.student.sf10', $student->id) }}" 
+                                                   class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
+                                                    SF10
                                                 </a>
                                             </td>
                                         </tr>

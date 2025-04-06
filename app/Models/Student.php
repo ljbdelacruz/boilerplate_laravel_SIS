@@ -48,6 +48,6 @@ class Student extends Model
 
     public function grades()
     {
-        return $this->hasOne(Grade::class);
+        return $this->hasMany(Grade::class);
     }
 }

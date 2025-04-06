@@ -32,4 +32,9 @@ class Course extends Model
     {
         return $this->hasMany(Schedule::class);
     }
+
+    public function grades()
+    {
+        return $this->hasMany(Grade::class, 'subject_id');
+    }
 }

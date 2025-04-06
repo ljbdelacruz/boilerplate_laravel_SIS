@@ -55,6 +55,10 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/teacher/classes', [TeacherClassController::class, 'index'])->name('teacher.classes');
     Route::get('/teacher/schedules/preferences', [TeacherScheduleController::class, 'preferences'])->name('teacher.schedules.preferences');
     Route::get('/teacher/submit-grades/{student}', [TeacherController::class, 'submitGrades'])->name('teacher.submit.grades');
+    Route::get('/teacher/student/{student}/sf10', [TeacherController::class, 'showSF10'])->name('teacher.student.sf10');
+    Route::get('/teacher/export-sf10/{student}', [TeacherController::class, 'exportSF10'])->name('teacher.export.sf10');
+    Route::post('/teacher/handle-excel-upload/{student}', [TeacherController::class, 'handleExcelUpload'])
+        ->name('teacher.handle-excel-upload');
 });
 
 

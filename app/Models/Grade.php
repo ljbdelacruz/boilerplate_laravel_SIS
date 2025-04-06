@@ -8,6 +8,8 @@ class Grade extends Model
 {
     protected $fillable = [
         'student_id',
+        'subject_id',
+        'school_year_id',
         'prelim',
         'midterm',
         'prefinal',
@@ -24,5 +26,15 @@ class Grade extends Model
     public function student()
     {
         return $this->belongsTo(Student::class);
+    }
+
+    public function subject()
+    {
+        return $this->belongsTo(Course::class, 'subject_id');
+    }
+
+    public function schoolYear()
+    {
+        return $this->belongsTo(SchoolYear::class);
     }
 }
