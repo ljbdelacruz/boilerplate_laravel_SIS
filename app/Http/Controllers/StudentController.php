@@ -20,6 +20,12 @@ class StudentController extends Controller
         return view('admin.students.index', compact('students'));
     }
 
+    public function show(Student $student)
+    {
+        $student->load(['user', 'section', 'schoolYear']);
+        return view('admin.students.show', compact('student'));
+    }
+
     public function create()
     {
         $sections = Section::where('is_active', true)->get();

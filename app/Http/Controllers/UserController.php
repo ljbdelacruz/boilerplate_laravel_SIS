@@ -9,6 +9,9 @@ use App\Models\SchoolYear;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Imports\StudentsImport;
+use App\Imports\TeachersImport;
 
 class UserController extends Controller
 {
@@ -74,5 +77,43 @@ class UserController extends Controller
 
         $user->update($validated);
         return redirect()->route('users.index')->with('success', 'User updated successfully');
+    }
+
+    public function uploadStudentsForm()
+    {
+        return view('users.upload-students');
+    }
+
+    public function uploadTeachersForm()
+    {
+        return view('users.upload-teachers');
+    }
+
+    public function uploadStudents(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|mimes:xlsx,xls',
+        ]);
+
+        try {
+            Excel::import(new StudentsImport, $request->file('file'));
+            return redirect()->route('users.index')->with('success', 'Students imported successfully');
+        } catch (\Exception $e) {
+            return back()->with('error', 'Error importing students: ' . $e->getMessage());
+        }
+    }
+
+    public function uploadTeachers(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|mimes:xlsx,xls',
+        ]);
+
+        try {
+            Excel::import(new TeachersImport, $request->file('file'));
+            return redirect()->route('users.index')->with('success', 'Teachers imported successfully');
+        } catch (\Exception $e) {
+            return back()->with('error', 'Error importing teachers: ' . $e->getMessage());
+        }
     }
 }
