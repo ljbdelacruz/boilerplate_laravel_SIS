@@ -54,6 +54,7 @@ Route::middleware(['auth'])->group(function () {
 Route::middleware(['auth'])->group(function () {
     Route::get('/teacher/classes', [TeacherClassController::class, 'index'])->name('teacher.classes');
     Route::get('/teacher/schedules/preferences', [TeacherScheduleController::class, 'preferences'])->name('teacher.schedules.preferences');
+    Route::get('/teacher/submit-grades/{student}', [TeacherController::class, 'submitGrades'])->name('teacher.submit.grades');
 });
 
 
@@ -72,4 +73,8 @@ Route::middleware(['auth'])->group(function () {
 Route::middleware(['auth'])->group(function () {
     Route::get('/teacher/dashboard', [TeacherController::class, 'index'])->name('teacher.dashboard');
     Route::get('/teacher/view-students', [TeacherController::class, 'viewStudents'])->name('teacher.view.students');
+    Route::get('/teachers', [TeacherController::class, 'list'])->name('teachers.index');
+    Route::get('/teachers/{teacher}/edit', [TeacherController::class, 'edit'])->name('teachers.edit');
+    Route::put('/teachers/{teacher}', [TeacherController::class, 'update'])->name('teachers.update');
+    Route::delete('/teachers/{teacher}', [TeacherController::class, 'destroy'])->name('teachers.destroy');
 });

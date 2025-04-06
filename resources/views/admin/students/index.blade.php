@@ -47,13 +47,6 @@
                             <td class="px-6 py-4 whitespace-nowrap">{{ $student->schoolYear->school_year ?? 'N/A' }}</td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm">
                                 <a href="{{ route('admin.students.edit', $student) }}" class="text-indigo-600 hover:text-indigo-900 mr-3">Edit</a>
-                                <form action="{{ route('admin.students.destroy', $student) }}" method="POST" class="inline">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="text-red-600 hover:text-red-900" onclick="return confirm('Are you sure you want to delete this student?')">
-                                        Delete
-                                    </button>
-                                </form>
                                 <form action="{{ route('admin.students.reset-password', $student) }}" method="POST" class="inline ml-3">
                                     @csrf
                                     <button type="submit" class="text-green-600 hover:text-green-900" onclick="return confirm('Reset password to LRN?')">

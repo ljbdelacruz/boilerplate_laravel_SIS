@@ -37,7 +37,7 @@
                         <select name="school_year_id" id="school_year" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
                             @foreach($schoolYears as $year)
                                 <option value="{{ $year->id }}" {{ request('school_year_id') == $year->id ? 'selected' : '' }}>
-                                    {{ $year->school_year }}
+                                    {{ $year->school_year }} - {{ $year->school_year }}
                                 </option>
                             @endforeach
                         </select>
@@ -70,6 +70,7 @@
                                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
                                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contact</th>
                                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Guardian</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody class="bg-white divide-y divide-gray-200">
@@ -80,6 +81,12 @@
                                             <td class="px-6 py-4 whitespace-nowrap">{{ $student->contact_number }}</td>
                                             <td class="px-6 py-4 whitespace-nowrap">
                                                 {{ $student->guardian_name }} ({{ $student->guardian_contact }})
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <a href="{{ route('teacher.submit.grades', $student->id) }}" 
+                                                   class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                                                    Submit Grades
+                                                </a>
                                             </td>
                                         </tr>
                                     @endforeach

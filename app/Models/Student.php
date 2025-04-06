@@ -45,4 +45,9 @@ class Student extends Model
     {
         return $this->belongsTo(SchoolYear::class);
     }
+
+    public function grades()
+    {
+        return $this->hasOne(Grade::class);
+    }
 }
