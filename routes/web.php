@@ -68,3 +68,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/admin/batch-upload/teachers', [UserController::class, 'uploadTeachersForm'])->name('teachers.upload');
     Route::post('/admin/batch-upload/teachers', [UserController::class, 'uploadTeachers'])->name('teachers.upload.process');
 });
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/teacher/dashboard', [TeacherController::class, 'index'])->name('teacher.dashboard');
+    Route::get('/teacher/view-students', [TeacherController::class, 'viewStudents'])->name('teacher.view.students');
+});

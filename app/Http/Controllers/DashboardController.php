@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\SchoolYear;
+use App\Models\Section;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
@@ -25,7 +27,11 @@ class DashboardController extends Controller
             case 'admin':
                 return view('dashboard.admin');
             case 'teacher':
-                return view('dashboard.teacher');
+                $schoolYears = SchoolYear::where('is_archived', false)
+                                       ->orderBy('school_year', 'desc')
+                                       ->get();
+                $sections = Section::orderBy('grade_level')->orderBy('name')->get();
+                return view('dashboard.teacher', compact('schoolYears', 'sections'));
             case 'student':
                 return view('dashboard.student');
             default:
