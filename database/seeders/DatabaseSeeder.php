@@ -10,6 +10,7 @@ class DatabaseSeeder extends Seeder
             UserSeeder::class,
             SchoolYearSeeder::class,
             CourseSeeder::class,
+            SectionSeeder::class,
         ]);
     }
 }

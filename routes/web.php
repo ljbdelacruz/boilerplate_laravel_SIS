@@ -51,7 +51,7 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('teacher-courses', TeacherCourseController::class);
 });
 
-Route::middleware(['auth', 'role:teacher'])->group(function () {
+Route::middleware(['auth'])->group(function () {
     Route::get('/teacher/classes', [TeacherClassController::class, 'index'])->name('teacher.classes');
     Route::get('/teacher/schedules/preferences', [TeacherScheduleController::class, 'preferences'])->name('teacher.schedules.preferences');
 });
@@ -61,10 +61,10 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('admin/students', StudentController::class)->names('admin.students');
     Route::post('admin/students/{student}/reset-password', [StudentController::class, 'resetPassword'])
         ->name('admin.students.reset-password');
-    
+
     // Add batch upload routes
-    Route::get('admin/students/upload', [UserController::class, 'uploadStudentsForm'])->name('students.upload');
-    Route::post('admin/students/upload', [UserController::class, 'uploadStudents'])->name('students.upload.process');
-    Route::get('admin/teachers/upload', [UserController::class, 'uploadTeachersForm'])->name('teachers.upload');
-    Route::post('admin/teachers/upload', [UserController::class, 'uploadTeachers'])->name('teachers.upload.process');
+    Route::get('/admin/batch-upload/students', [UserController::class, 'uploadStudentsForm'])->name('students.upload');
+    Route::post('/admin/batch-upload/students', [UserController::class, 'uploadStudents'])->name('students.upload.process');
+    Route::get('/admin/batch-upload/teachers', [UserController::class, 'uploadTeachersForm'])->name('teachers.upload');
+    Route::post('/admin/batch-upload/teachers', [UserController::class, 'uploadTeachers'])->name('teachers.upload.process');
 });

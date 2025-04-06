@@ -3,32 +3,45 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Student extends Model
 {
-    use SoftDeletes;
-
     protected $fillable = [
         'user_id',
-        'lrn',
-        'section_id',
-        'school_year_id',
+        'student_id',
+        'first_name',
+        'last_name',
+        'middle_name',
+        'birth_date',
+        'gender',
+        'address',
+        'contact_number',
+        'guardian_name',
+        'guardian_contact',
         'grade_level',
-        'is_active'
+        'section_id',
+        'school_year_id'
     ];
 
-    public function user()
+    protected $casts = [
+        'birth_date' => 'date',
+        'grade_level' => 'integer',
+        'section_id' => 'integer',
+        'school_year_id' => 'integer'
+    ];
+
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
-    public function section()
+    public function section(): BelongsTo
     {
         return $this->belongsTo(Section::class);
     }
 
-    public function schoolYear()
+    public function schoolYear(): BelongsTo
     {
         return $this->belongsTo(SchoolYear::class);
     }

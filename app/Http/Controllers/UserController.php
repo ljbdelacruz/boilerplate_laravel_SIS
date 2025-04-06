@@ -96,9 +96,20 @@ class UserController extends Controller
         ]);
 
         try {
+            DB::beginTransaction();
             Excel::import(new StudentsImport, $request->file('file'));
+            DB::commit();
             return redirect()->route('users.index')->with('success', 'Students imported successfully');
+        } catch (\Maatwebsite\Excel\Validators\ValidationException $e) {
+            DB::rollBack();
+            $failures = $e->failures();
+            $errors = [];
+            foreach ($failures as $failure) {
+                $errors[] = "Row {$failure->row()}: {$failure->errors()[0]}";
+            }
+            return back()->with('error', 'Validation errors in Excel file: ' . implode(', ', $errors));
         } catch (\Exception $e) {
+            DB::rollBack();
             return back()->with('error', 'Error importing students: ' . $e->getMessage());
         }
     }
@@ -110,9 +121,20 @@ class UserController extends Controller
         ]);
 
         try {
+            DB::beginTransaction();
             Excel::import(new TeachersImport, $request->file('file'));
+            DB::commit();
             return redirect()->route('users.index')->with('success', 'Teachers imported successfully');
+        } catch (\Maatwebsite\Excel\Validators\ValidationException $e) {
+            DB::rollBack();
+            $failures = $e->failures();
+            $errors = [];
+            foreach ($failures as $failure) {
+                $errors[] = "Row {$failure->row()}: {$failure->errors()[0]}";
+            }
+            return back()->with('error', 'Validation errors in Excel file: ' . implode(', ', $errors));
         } catch (\Exception $e) {
+            DB::rollBack();
             return back()->with('error', 'Error importing teachers: ' . $e->getMessage());
         }
     }
