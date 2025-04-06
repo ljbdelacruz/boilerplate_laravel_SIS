@@ -60,7 +60,7 @@ class SectionController extends Controller
     public function archive(Section $section)
     {
         $section->update(['is_active' => false]);
-        return redirect()->route('admin.sections.index')
+        return redirect()->route('sections.index')
             ->with('success', 'Section archived successfully');
     }
 

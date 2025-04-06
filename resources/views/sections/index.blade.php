@@ -50,15 +50,19 @@
                 <tbody class="bg-white divide-y divide-gray-200">
                     @foreach($sections as $section)
                     <tr>
-                        <td class="px-6 py-4 whitespace-nowrap">{{ $section->section_name }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">{{ $section->name }}</td>
                         <td class="px-6 py-4 whitespace-nowrap">{{ $section->grade_level }}</td>
                         <td class="px-6 py-4 whitespace-nowrap">{{ $section->schoolYear->school_year }}</td>
                         <td class="px-6 py-4 whitespace-nowrap">
+                            <!-- Edit Button -->
                             <a href="{{ route('sections.edit', $section) }}" class="text-green-600 hover:text-green-900 mr-3">Edit</a>
-                            <form action="{{ route('sections.destroy', $section) }}" method="POST" class="inline-block">
+                            <!-- Archive Button -->
+                            <form action="{{ route('sections.archive', $section) }}" method="POST" class="inline-block">
                                 @csrf
-                                @method('DELETE')
-                                <button type="submit" class="text-red-600 hover:text-red-900">Delete</button>
+                                @method('PUT')
+                                <button type="submit" class="text-yellow-600 hover:text-yellow-900 mr-3">
+                                    Archive
+                                </button>
                             </form>
                         </td>
                     </tr>

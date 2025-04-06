@@ -29,6 +29,7 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 // Section routes
 Route::resource('sections', SectionController::class);
+Route::put('sections/{section}/archive', [SectionController::class, 'archive'])->name('sections.archive');
 
 // Dashboard Routes
 Route::middleware(['auth'])->group(function () {
