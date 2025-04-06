@@ -21,9 +21,6 @@
         <div class="flex justify-between items-center mb-6">
             <h1 class="text-2xl font-bold">Student Information</h1>
             @if(Auth::user()->role === 'admin' || Auth::user()->role === 'teacher')
-            <a href="{{ route('students.create') }}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                Add New Student
-            </a>
             @endif
         </div>
 

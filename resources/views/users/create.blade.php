@@ -96,6 +96,123 @@
                         </select>
                     </div>
 
+                    <!-- Teacher Fields -->
+                    <div id="teacherFields" class="hidden">
+                        <div class="mb-4">
+                            <label class="block text-gray-700 text-sm font-bold mb-2" for="specialization">
+                                Specialization
+                            </label>
+                            <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
+                                id="specialization" 
+                                type="text" 
+                                name="specialization" 
+                                value="{{ old('specialization') }}">
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="block text-gray-700 text-sm font-bold mb-2" for="bio">
+                                Bio
+                            </label>
+                            <textarea class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
+                                id="bio" 
+                                name="bio" 
+                                rows="3">{{ old('bio') }}</textarea>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="block text-gray-700 text-sm font-bold mb-2" for="contact_number">
+                                Contact Number
+                            </label>
+                            <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
+                                id="contact_number" 
+                                type="text" 
+                                name="contact_number" 
+                                value="{{ old('contact_number') }}">
+                        </div>
+                    </div>
+
+                    <!-- Student Fields -->
+                    <div id="studentFields" class="hidden">
+                        <div class="mb-4">
+                            <label class="block text-gray-700 text-sm font-bold mb-2" for="lrn">
+                                LRN (12 digits)
+                            </label>
+                            <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
+                                id="lrn" 
+                                type="text" 
+                                name="lrn" 
+                                pattern="\d{12}"
+                                title="LRN must be exactly 12 digits"
+                                value="{{ old('lrn') }}">
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="block text-gray-700 text-sm font-bold mb-2" for="grade_level">
+                                Grade Level
+                            </label>
+                            <select name="grade_level" id="grade_level" 
+                                class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                                <option value="">Select Grade Level</option>
+                                @for ($i = 7; $i <= 12; $i++)
+                                    <option value="{{ $i }}" {{ old('grade_level') == $i ? 'selected' : '' }}>Grade {{ $i }}</option>
+                                @endfor
+                            </select>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="block text-gray-700 text-sm font-bold mb-2" for="section_id">
+                                Section
+                            </label>
+                            <select name="section_id" id="section_id" 
+                                class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                                <option value="">Select Section</option>
+                                @foreach($sections ?? [] as $section)
+                                    <option value="{{ $section->id }}" {{ old('section_id') == $section->id ? 'selected' : '' }}>
+                                        {{ $section->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="block text-gray-700 text-sm font-bold mb-2" for="school_year_id">
+                                School Year
+                            </label>
+                            <select name="school_year_id" id="school_year_id" 
+                                class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                                <option value="">Select School Year</option>
+                                @foreach($schoolYears ?? [] as $schoolYear)
+                                    <option value="{{ $schoolYear->id }}" {{ old('school_year_id') == $schoolYear->id ? 'selected' : '' }}>
+                                        {{ $schoolYear->school_year }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+
+                    <script>
+                        document.getElementById('role').addEventListener('change', function() {
+                            const teacherFields = document.getElementById('teacherFields');
+                            const studentFields = document.getElementById('studentFields');
+                            
+                            teacherFields.classList.add('hidden');
+                            studentFields.classList.add('hidden');
+                            
+                            if (this.value === 'teacher') {
+                                teacherFields.classList.remove('hidden');
+                            } else if (this.value === 'student') {
+                                studentFields.classList.remove('hidden');
+                            }
+                        });
+
+                        // Show fields if role was previously selected
+                        const currentRole = document.getElementById('role').value;
+                        if (currentRole === 'teacher') {
+                            document.getElementById('teacherFields').classList.remove('hidden');
+                        } else if (currentRole === 'student') {
+                            document.getElementById('studentFields').classList.remove('hidden');
+                        }
+                    </script>
                     <div class="flex items-center justify-between">
                         <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" 
                             type="submit">

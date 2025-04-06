@@ -3,88 +3,114 @@
 namespace App\Http\Controllers;
 
 use App\Models\Student;
+use App\Models\User;
+use App\Models\Section;
 use App\Models\SchoolYear;
 use Illuminate\Http\Request;
-use App\Models\User;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
 class StudentController extends Controller
 {
     public function index()
     {
-        $students = Student::with('schoolYear')->paginate(10);
-        return view('students.index', compact('students'));
+        $students = Student::with(['user', 'section', 'schoolYear'])
+            ->orderBy('grade_level')
+            ->get();
+        return view('admin.students.index', compact('students'));
     }
 
     public function create()
     {
-        $schoolYears = SchoolYear::all();
-        return view('students.create', compact('schoolYears'));
+        $sections = Section::where('is_active', true)->get();
+        $schoolYears = SchoolYear::where('is_active', true)->get();
+        return view('admin.students.create', compact('sections', 'schoolYears'));
     }
 
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'student_id' => 'required|unique:students',
-            'first_name' => 'required',
-            'last_name' => 'required',
-            'birth_date' => 'required|date',
-            'gender' => 'required|in:male,female,other',
-            'address' => 'required',
-            'guardian_name' => 'required',
-            'guardian_contact' => 'required',
-            'school_year_id' => 'required|exists:school_years,id',
-            'email' => 'required|email|unique:users'
-        ]); // Removed password validation
-
-        // Generate default password (student ID + first 3 letters of last name)
-        $defaultPassword = $validated['student_id'] . strtolower(substr($validated['last_name'], 0, 3));
-
-        // Create user account
-        $user = User::create([
-            'name' => $validated['first_name'] . ' ' . $validated['last_name'],
-            'email' => $validated['email'],
-            'password' => Hash::make($defaultPassword),
-            'role' => 'student'
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email',
+            'lrn' => 'required|string|size:12|unique:students,lrn',
+            'section_id' => 'required|exists:sections,id',
+            'grade_level' => 'required|integer|between:7,12',
+            'school_year_id' => 'required|exists:school_years,id'
         ]);
 
-        // Create student record
-        $studentData = collect($validated)->except(['email'])->toArray();
-        $studentData['user_id'] = $user->id;
-        
-        Student::create($studentData);
+        DB::transaction(function () use ($validated) {
+            $user = User::create([
+                'name' => $validated['name'],
+                'email' => $validated['email'],
+                'password' => Hash::make($validated['lrn']),
+                'role' => 'student'
+            ]);
 
-        return redirect()->route('students.index')
-            ->with('success', "Student added successfully. Default password: {$defaultPassword}");
-    }
+            Student::create([
+                'user_id' => $user->id,
+                'lrn' => $validated['lrn'],
+                'section_id' => $validated['section_id'],
+                'grade_level' => $validated['grade_level'],
+                'school_year_id' => $validated['school_year_id']
+            ]);
+        });
 
-    public function show(Student $student)
-    {
-        $student->load('schoolYear');
-        return view('students.show', compact('student'));
+        return redirect()->route('admin.students.index')
+            ->with('success', 'Student registered successfully');
     }
 
     public function edit(Student $student)
     {
-        $schoolYears = SchoolYear::all();
-        return view('students.edit', compact('student', 'schoolYears'));
+        $sections = Section::where('is_active', true)->get();
+        $schoolYears = SchoolYear::where('is_active', true)->get();
+        return view('admin.students.edit', compact('student', 'sections', 'schoolYears'));
     }
 
     public function update(Request $request, Student $student)
     {
         $validated = $request->validate([
-            'student_id' => 'required|unique:students,student_id,' . $student->id,
-            'first_name' => 'required',
-            'last_name' => 'required',
-            'birth_date' => 'required|date',
-            'gender' => 'required|in:male,female,other',
-            'address' => 'required',
-            'guardian_name' => 'required',
-            'guardian_contact' => 'required',
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email,' . $student->user_id,
+            'section_id' => 'required|exists:sections,id',
+            'grade_level' => 'required|integer|between:7,12',
             'school_year_id' => 'required|exists:school_years,id'
         ]);
 
-        $student->update($validated);
-        return redirect()->route('students.index')->with('success', 'Student updated successfully');
+        DB::transaction(function () use ($validated, $student) {
+            $student->user->update([
+                'name' => $validated['name'],
+                'email' => $validated['email']
+            ]);
+
+            $student->update([
+                'section_id' => $validated['section_id'],
+                'grade_level' => $validated['grade_level'],
+                'school_year_id' => $validated['school_year_id']
+            ]);
+        });
+
+        return redirect()->route('admin.students.index')
+            ->with('success', 'Student updated successfully');
+    }
+
+    public function destroy(Student $student)
+    {
+        DB::transaction(function () use ($student) {
+            $student->user->delete();
+            $student->delete();
+        });
+
+        return redirect()->route('admin.students.index')
+            ->with('success', 'Student deleted successfully');
+    }
+
+    public function resetPassword(Student $student)
+    {
+        $student->user->update([
+            'password' => Hash::make($student->lrn)
+        ]);
+
+        return redirect()->route('admin.students.index')
+            ->with('success', 'Student password reset to LRN successfully');
     }
 }

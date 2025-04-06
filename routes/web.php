@@ -55,3 +55,10 @@ Route::middleware(['auth', 'role:teacher'])->group(function () {
     Route::get('/teacher/classes', [TeacherClassController::class, 'index'])->name('teacher.classes');
     Route::get('/teacher/schedules/preferences', [TeacherScheduleController::class, 'preferences'])->name('teacher.schedules.preferences');
 });
+
+
+Route::middleware(['auth', 'role:admin'])->group(function () {
+    Route::resource('admin/students', StudentController::class)->names('admin.students');
+    Route::post('admin/students/{student}/reset-password', [StudentController::class, 'resetPassword'])
+        ->name('admin.students.reset-password');
+});

@@ -3,14 +3,26 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Section extends Model
 {
-    protected $table = 'sections'; // Changed from 'section' to 'sections'
-    protected $fillable = ['grade_level_id', 'section_name'];
+    use SoftDeletes;
 
-    public function gradeLevel()
+    protected $fillable = [
+        'name',
+        'grade_level',
+        'school_year_id',
+        'is_active'
+    ];
+
+    public function students()
     {
-        return $this->belongsTo(GradeLevel::class);
+        return $this->hasMany(Student::class);
+    }
+
+    public function schoolYear()
+    {
+        return $this->belongsTo(SchoolYear::class);
     }
 }
