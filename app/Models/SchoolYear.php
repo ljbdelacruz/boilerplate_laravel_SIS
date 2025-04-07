@@ -6,16 +6,25 @@ use Illuminate\Database\Eloquent\Model;
 
 class SchoolYear extends Model
 {
-    protected $table = 'school_years';  // Changed to match migration table name
     protected $fillable = [
-        'school_year',
-        'grade_level',
-        'section_name',
-        'is_archived'
+        'start_year',
+        'end_year',
+        'is_active'
     ];
 
-    public function gradeLevels()
+    protected $casts = [
+        'start_year' => 'integer',
+        'end_year' => 'integer',
+        'is_active' => 'boolean'
+    ];
+
+    public function getSchoolYearDisplayAttribute()
     {
-        return $this->hasMany(GradeLevel::class);
+        return "{$this->start_year}-{$this->end_year}";
+    }
+
+    public function sections()
+    {
+        return $this->hasMany(Section::class);
     }
 }

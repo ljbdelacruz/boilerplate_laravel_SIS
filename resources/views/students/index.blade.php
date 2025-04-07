@@ -21,8 +21,23 @@
         <div class="flex justify-between items-center mb-6">
             <h1 class="text-2xl font-bold">Student Information</h1>
             @if(Auth::user()->role === 'admin' || Auth::user()->role === 'teacher')
+                <a href="{{ route('students.create') }}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                    Add New Student
+                </a>
             @endif
         </div>
+
+        @if(session('success'))
+            <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
+                {{ session('success') }}
+            </div>
+        @endif
+
+        @if(session('error'))
+            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+                {{ session('error') }}
+            </div>
+        @endif
 
         <div class="bg-white shadow-md rounded-lg overflow-hidden">
             <table class="min-w-full">
@@ -39,7 +54,7 @@
                     <tr>
                         <td class="px-6 py-4 whitespace-nowrap">{{ $student->student_id }}</td>
                         <td class="px-6 py-4 whitespace-nowrap">{{ $student->last_name }}, {{ $student->first_name }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap">{{ $student->schoolYear->school_year }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">{{ $student->schoolYear->start_year }} - {{ $student->schoolYear->end_year }}</td>
                         <td class="px-6 py-4 whitespace-nowrap">
                             <a href="{{ route('students.show', $student) }}" class="text-blue-600 hover:text-blue-900 mr-3">View</a>
                             @if(Auth::user()->role === 'admin' || Auth::user()->role === 'teacher')

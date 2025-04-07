@@ -9,11 +9,11 @@ class Schedule extends Model
     protected $fillable = [
         'teacher_id',
         'course_id',
+        'section_id',
         'school_year_id',
         'day_of_week',
         'start_time',
-        'end_time',
-        'notes'
+        'end_time'
     ];
 
     public function teacher()
@@ -24,6 +24,11 @@ class Schedule extends Model
     public function course()
     {
         return $this->belongsTo(Course::class);
+    }
+
+    public function section()
+    {
+        return $this->belongsTo(Section::class);
     }
 
     public function schoolYear()
