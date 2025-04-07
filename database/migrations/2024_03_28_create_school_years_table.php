@@ -10,9 +10,9 @@ return new class extends Migration
     {
         Schema::create('school_years', function (Blueprint $table) {
             $table->id();
-            $table->string('school_year');
-            $table->string('grade_level');
-            $table->string('section_name');
+            $table->year('start_year');
+            $table->year('end_year');
+            $table->boolean('is_active')->default(false);
             $table->timestamps();
         });
     }

@@ -22,8 +22,8 @@ class TeacherController extends Controller
     }
     public function index()
     {
-        $schoolYears = SchoolYear::where('is_archived', false)
-                                ->orderBy('school_year', 'desc')
+        $schoolYears = SchoolYear::where('is_active', true)
+                                ->orderBy('start_year', 'desc')
                                 ->get();
         $sections = Section::orderBy('grade_level')->orderBy('name')->get();
         
@@ -32,8 +32,8 @@ class TeacherController extends Controller
 
     public function viewStudents(Request $request)
     {
-        $schoolYears = SchoolYear::where('is_archived', false)
-                                ->orderBy('school_year', 'desc')
+        $schoolYears = SchoolYear::where('is_active', true)
+                                ->orderBy('start_year', 'desc')
                                 ->get();
         $sections = Section::orderBy('grade_level')->orderBy('name')->get();
         
@@ -117,8 +117,8 @@ class TeacherController extends Controller
 
     public function showSF10(Student $student)
     {
-        $student->load(['grades', 'section']); // Eager load the relationships
-        $schoolYears = SchoolYear::orderBy('school_year', 'desc')->get();
+        $student->load(['grades', 'section']);
+        $schoolYears = SchoolYear::orderBy('start_year', 'desc')->get();
         $subjects = Course::where('grade_level', $student->grade_level)->get();
         
         return view('dashboard.sf10', [

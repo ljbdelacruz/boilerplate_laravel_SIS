@@ -96,3 +96,6 @@ Route::prefix('schedules')->group(function () {
     Route::put('/update/{schedule}', [ScheduleController::class, 'update'])->name('schedules.update');
     Route::delete('/delete/{schedule}', [ScheduleController::class, 'destroy'])->name('schedules.destroy');
 });
+
+Route::patch('/school-years/{schoolYear}/toggle-active', [SchoolYearController::class, 'toggleActive'])
+    ->name('school-years.toggle-active');

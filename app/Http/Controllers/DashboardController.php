@@ -27,8 +27,8 @@ class DashboardController extends Controller
             case 'admin':
                 return view('dashboard.admin');
             case 'teacher':
-                $schoolYears = SchoolYear::where('is_archived', false)
-                                       ->orderBy('school_year', 'desc')
+                $schoolYears = SchoolYear::where('is_active', true)
+                                       ->orderBy('start_year', 'desc')
                                        ->get();
                 $sections = Section::orderBy('grade_level')->orderBy('name')->get();
                 return view('dashboard.teacher', compact('schoolYears', 'sections'));

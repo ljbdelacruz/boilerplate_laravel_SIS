@@ -37,7 +37,8 @@
                         <select name="school_year_id" id="school_year" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
                             @foreach($schoolYears as $year)
                                 <option value="{{ $year->id }}" {{ request('school_year_id') == $year->id ? 'selected' : '' }}>
-                                    {{ $year->school_year }} - {{ $year->school_year }}
+                                    {{ $year->start_year }} - {{ $year->end_year }}
+                                    @if($year->is_active) (Active) @endif
                                 </option>
                             @endforeach
                         </select>

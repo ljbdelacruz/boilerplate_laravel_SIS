@@ -11,33 +11,27 @@ class SchoolYearSeeder extends Seeder
     {
         $schoolYears = [
             [
-                'school_year' => '2023-2024-G7',
-                'grade_level' => 'Grade 7',
-                'section_name' => 'Section A'
+                'start_year' => 2023,
+                'end_year' => 2024,
+                'is_active' => true
             ],
             [
-                'school_year' => '2023-2024-G8',
-                'grade_level' => 'Grade 8',
-                'section_name' => 'Section B'
+                'start_year' => 2024,
+                'end_year' => 2025,
+                'is_active' => false
             ],
             [
-                'school_year' => '2023-2024-G9',
-                'grade_level' => 'Grade 9',
-                'section_name' => 'Section C'
-            ],
-            [
-                'school_year' => '2023-2024-G10',
-                'grade_level' => 'Grade 10',
-                'section_name' => 'Section D'
+                'start_year' => 2025,
+                'end_year' => 2026,
+                'is_active' => false
             ]
         ];
 
         foreach ($schoolYears as $schoolYear) {
             SchoolYear::updateOrCreate(
                 [
-                    'school_year' => $schoolYear['school_year'],
-                    'grade_level' => $schoolYear['grade_level'],
-                    'section_name' => $schoolYear['section_name']
+                    'start_year' => $schoolYear['start_year'],
+                    'end_year' => $schoolYear['end_year']
                 ],
                 $schoolYear
             );

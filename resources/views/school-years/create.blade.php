@@ -28,43 +28,38 @@
 
             <form action="{{ route('school-years.store') }}" method="POST" class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
                 @csrf
-                <div class="mb-4">
-                    <label class="block text-gray-700 text-sm font-bold mb-2" for="school_year">
-                        School Year
-                    </label>
-                    <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                           id="school_year"
-                           type="text"
-                           name="school_year"
-                           placeholder="e.g., 2024-2025"
-                           value="{{ old('school_year') }}"
+                <div class="mb-6">
+                    <label for="start_year" class="block text-gray-700 text-sm font-bold mb-2">Start Year</label>
+                    <input type="number" 
+                           name="start_year" 
+                           id="start_year" 
+                           class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                           min="2000" 
+                           max="2099" 
+                           value="{{ old('start_year', date('Y')) }}" 
                            required>
                 </div>
 
-                <div class="mb-4">
-                    <label class="block text-gray-700 text-sm font-bold mb-2" for="grade_level">
-                        Grade Level
-                    </label>
-                    <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                           id="grade_level"
-                           type="text"
-                           name="grade_level"
-                           placeholder="e.g., Grade 7"
-                           value="{{ old('grade_level') }}"
+                <div class="mb-6">
+                    <label for="end_year" class="block text-gray-700 text-sm font-bold mb-2">End Year</label>
+                    <input type="number" 
+                           name="end_year" 
+                           id="end_year" 
+                           class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                           min="2000" 
+                           max="2099" 
+                           value="{{ old('end_year', date('Y') + 1) }}" 
                            required>
                 </div>
 
-                <div class="mb-4">
-                    <label class="block text-gray-700 text-sm font-bold mb-2" for="section_name">
-                        Section Name
+                <div class="mb-6">
+                    <label class="flex items-center">
+                        <input type="checkbox" 
+                               name="is_active" 
+                               class="form-checkbox h-4 w-4 text-blue-600"
+                               {{ old('is_active') ? 'checked' : '' }}>
+                        <span class="ml-2 text-gray-700">Set as Active School Year</span>
                     </label>
-                    <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                           id="section_name"
-                           type="text"
-                           name="section_name"
-                           placeholder="e.g., Section A"
-                           value="{{ old('section_name') }}"
-                           required>
                 </div>
 
                 <div class="flex items-center justify-end">

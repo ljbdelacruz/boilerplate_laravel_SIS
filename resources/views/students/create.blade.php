@@ -173,7 +173,42 @@
                             <option value="">Select School Year</option>
                             @foreach($schoolYears as $schoolYear)
                                 <option value="{{ $schoolYear->id }}" {{ old('school_year_id') == $schoolYear->id ? 'selected' : '' }}>
-                                    {{ $schoolYear->school_year }} - {{ $schoolYear->grade_level }} {{ $schoolYear->section_name }}
+                                    {{ $schoolYear->start_year }} - {{ $schoolYear->end_year }}
+                                    @if($schoolYear->is_active) (Active) @endif
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="block text-gray-700 text-sm font-bold mb-2" for="grade_level">
+                            Grade Level
+                        </label>
+                        <select class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                                id="grade_level"
+                                name="grade_level"
+                                required>
+                            <option value="">Select Grade Level</option>
+                            @for($i = 7; $i <= 12; $i++)
+                                <option value="{{ $i }}" {{ old('grade_level') == $i ? 'selected' : '' }}>
+                                    Grade {{ $i }}
+                                </option>
+                            @endfor
+                        </select>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="block text-gray-700 text-sm font-bold mb-2" for="section_id">
+                            Section
+                        </label>
+                        <select class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                                id="section_id"
+                                name="section_id"
+                                required>
+                            <option value="">Select Section</option>
+                            @foreach($sections as $section)
+                                <option value="{{ $section->id }}" {{ old('section_id') == $section->id ? 'selected' : '' }}>
+                                    {{ $section->name }} (Grade {{ $section->grade_level }})
                                 </option>
                             @endforeach
                         </select>

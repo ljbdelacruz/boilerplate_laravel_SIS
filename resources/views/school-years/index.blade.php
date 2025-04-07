@@ -27,28 +27,32 @@
         @endif
 
         <div class="bg-white shadow-md rounded-lg overflow-hidden">
-            <table class="min-w-full">
-                <thead class="bg-gray-50">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead>
                     <tr>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">School Year</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Grade Level</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Section</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                     </tr>
                 </thead>
-                <tbody class="bg-white divide-y divide-gray-200">
+                <tbody>
                     @foreach($schoolYears as $schoolYear)
                     <tr>
-                        <td class="px-6 py-4 whitespace-nowrap">{{ $schoolYear->school_year }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap">{{ $schoolYear->grade_level }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap">{{ $schoolYear->section_name }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">{{ $schoolYear->school_year_display }}</td>
                         <td class="px-6 py-4 whitespace-nowrap">
-                            <a href="{{ route('school-years.edit', $schoolYear->id) }}" class="text-indigo-600 hover:text-indigo-900 mr-3">Edit</a>
-                            <form action="{{ route('school-years.destroy', $schoolYear->id) }}" method="POST" class="inline">
+                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {{ $schoolYear->is_active ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800' }}">
+                                {{ $schoolYear->is_active ? 'Active' : 'Inactive' }}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                            <form action="{{ route('school-years.toggle-active', $schoolYear) }}" method="POST" class="inline">
                                 @csrf
-                                @method('DELETE')
-                                <button type="submit" class="text-red-600 hover:text-red-900" onclick="return confirm('Are you sure you want to delete this school year?')">Delete</button>
+                                @method('PATCH')
+                                <button type="submit" class="text-sm {{ $schoolYear->is_active ? 'bg-red-500 hover:bg-red-700' : 'bg-green-500 hover:bg-green-700' }} text-white font-bold py-2 px-4 rounded">
+                                    {{ $schoolYear->is_active ? 'Deactivate' : 'Activate' }}
+                                </button>
                             </form>
+                            <a href="{{ route('school-years.edit', $schoolYear) }}" class="text-indigo-600 hover:text-indigo-900 ml-2">Edit</a>
                         </td>
                     </tr>
                     @endforeach

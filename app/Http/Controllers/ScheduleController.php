@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Schedule;
 use App\Models\Teacher;
 use App\Models\Course;
+use App\Models\User;  // Add this at the top with other use statements
 use Illuminate\Http\Request;
 
 class ScheduleController extends Controller
@@ -30,36 +31,46 @@ class ScheduleController extends Controller
 
     public function create()
     {
-        $teachers = Teacher::all();
+        $teachers = User::where('role', 'teacher')->get();
         $courses = Course::all();
         return view('schedules.create', compact('teachers', 'courses'));
+    }
+
+    public function edit(Schedule $schedule)
+    {
+        $teachers = User::where('role', 'teacher')->get();
+        $courses = Course::all();
+        return view('schedules.edit', compact('schedule', 'teachers', 'courses'));
     }
 
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'teacher_id' => 'required|exists:teachers,id',
+            'teacher_id' => 'required|exists:users,id',
             'course_id' => 'required|exists:courses,id',
-            'day' => 'required|string',
+            'days' => 'required|array',
+            'days.*' => 'in:Monday,Tuesday,Wednesday,Thursday,Friday',
             'start_time' => 'required|date_format:H:i',
             'end_time' => 'required|date_format:H:i|after:start_time',
         ]);
 
-        Schedule::create($validated);
-        return redirect()->route('schedules.index')->with('success', 'Schedule created successfully');
+        foreach ($validated['days'] as $day) {
+            Schedule::create([
+                'teacher_id' => $validated['teacher_id'],
+                'course_id' => $validated['course_id'],
+                'day_of_week' => $day,
+                'start_time' => $validated['start_time'],
+                'end_time' => $validated['end_time'],
+            ]);
+        }
+
+        return redirect()->route('schedules.index')->with('success', 'Schedules created successfully');
     }
 
     public function manage()
     {
         $schedules = Schedule::with(['teacher', 'course'])->get();
         return view('schedules.manage', compact('schedules'));
-    }
-
-    public function edit(Schedule $schedule)
-    {
-        $teachers = Teacher::all();
-        $courses = Course::all();
-        return view('schedules.edit', compact('schedule', 'teachers', 'courses'));
     }
 
     public function update(Request $request, Schedule $schedule)

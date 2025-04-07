@@ -24,7 +24,9 @@ class UserController extends Controller
     public function create()
     {
         $sections = Section::where('is_active', true)->get();
-        $schoolYears = SchoolYear::where('is_active', true)->get();
+        $schoolYears = SchoolYear::where('is_active', true)
+                                ->orderBy('start_year', 'desc')
+                                ->get();
         return view('users.create', compact('sections', 'schoolYears'));
     }
 

@@ -4,7 +4,12 @@
 <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
     <div class="px-4 py-6 sm:px-0">
         <div class="flex justify-between items-center mb-6">
-            <h2 class="text-2xl font-bold">Schedule Management</h2>
+            <div class="flex items-center space-x-4">
+                <a href="{{ route('dashboard') }}" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
+                    Back to Dashboard
+                </a>
+                <h2 class="text-2xl font-bold">Schedule Management</h2>
+            </div>
             <div class="space-x-4">
                 <a href="{{ route('schedules.generate') }}" class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded">
                     Generate Schedule

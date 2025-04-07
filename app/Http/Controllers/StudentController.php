@@ -15,55 +15,103 @@ class StudentController extends Controller
     public function index()
     {
         $students = Student::with(['user', 'section', 'schoolYear'])
-            ->orderBy('grade_level')
-            ->get();
-        return view('admin.students.index', compact('students'));
-    }
-
-    public function show(Student $student)
-    {
-        $student->load(['user', 'section', 'schoolYear']);
-        return view('admin.students.show', compact('student'));
-    }
-
-    public function create()
-    {
-        $sections = Section::where('is_active', true)->get();
-        $schoolYears = SchoolYear::where('is_active', true)->get();
-        return view('admin.students.create', compact('sections', 'schoolYears'));
+            ->orderBy('last_name')
+            ->orderBy('first_name')
+            ->paginate(10);
+        return view('students.index', compact('students'));
     }
 
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
+            'first_name' => 'required|string|max:255',
+            'last_name' => 'required|string|max:255',
+            'middle_name' => 'nullable|string|max:255',
             'email' => 'required|email|unique:users,email',
-            'lrn' => 'required|string|size:12|unique:students,lrn',
+            'student_id' => 'required|string|unique:students,student_id',
             'section_id' => 'required|exists:sections,id',
             'grade_level' => 'required|integer|between:7,12',
-            'school_year_id' => 'required|exists:school_years,id'
+            'school_year_id' => 'required|exists:school_years,id',
+            'birth_date' => 'required|date',
+            'gender' => 'required|in:Male,Female,Other',
+            'contact_number' => 'required|string',
+            'guardian_name' => 'required|string',
+            'guardian_contact' => 'required|string'
         ]);
 
         DB::transaction(function () use ($validated) {
             $user = User::create([
-                'name' => $validated['name'],
+                'name' => $validated['first_name'] . ' ' . $validated['last_name'],
                 'email' => $validated['email'],
-                'password' => Hash::make($validated['lrn']),
+                'password' => Hash::make($validated['student_id']),
                 'role' => 'student'
             ]);
 
             Student::create([
                 'user_id' => $user->id,
-                'lrn' => $validated['lrn'],
+                'student_id' => $validated['student_id'],
+                'first_name' => $validated['first_name'],
+                'last_name' => $validated['last_name'],
+                'middle_name' => $validated['middle_name'],
+                'birth_date' => $validated['birth_date'],
+                'gender' => $validated['gender'],
+                'contact_number' => $validated['contact_number'],
+                'guardian_name' => $validated['guardian_name'],
+                'guardian_contact' => $validated['guardian_contact'],
                 'section_id' => $validated['section_id'],
                 'grade_level' => $validated['grade_level'],
                 'school_year_id' => $validated['school_year_id']
             ]);
         });
 
-        return redirect()->route('admin.students.index')
+        return redirect()->route('students.index')
             ->with('success', 'Student registered successfully');
     }
+
+    public function show(Student $student)
+    {
+        $student->load(['user', 'section', 'schoolYear']);
+        return view('students.show', compact('student')); // Changed from admin.students.show
+    }
+
+    public function create()
+    {
+        $sections = Section::where('is_active', true)->get();
+        $schoolYears = SchoolYear::where('is_active', true)->get();
+        return view('students.create', compact('sections', 'schoolYears')); // Changed from admin.students.create
+    }
+
+    // public function store(Request $request)
+    // {
+    //     $validated = $request->validate([
+    //         'name' => 'required|string|max:255',
+    //         'email' => 'required|email|unique:users,email',
+    //         'lrn' => 'required|string|size:12|unique:students,lrn',
+    //         'section_id' => 'required|exists:sections,id',
+    //         'grade_level' => 'required|integer|between:7,12',
+    //         'school_year_id' => 'required|exists:school_years,id'
+    //     ]);
+
+    //     DB::transaction(function () use ($validated) {
+    //         $user = User::create([
+    //             'name' => $validated['name'],
+    //             'email' => $validated['email'],
+    //             'password' => Hash::make($validated['lrn']),
+    //             'role' => 'student'
+    //         ]);
+
+    //         Student::create([
+    //             'user_id' => $user->id,
+    //             'lrn' => $validated['lrn'],
+    //             'section_id' => $validated['section_id'],
+    //             'grade_level' => $validated['grade_level'],
+    //             'school_year_id' => $validated['school_year_id']
+    //         ]);
+    //     });
+
+    //     return redirect()->route('admin.students.index')
+    //         ->with('success', 'Student registered successfully');
+    // }
 
     public function edit(Student $student)
     {

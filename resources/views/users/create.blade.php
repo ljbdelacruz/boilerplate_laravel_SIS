@@ -183,7 +183,8 @@
                                 <option value="">Select School Year</option>
                                 @foreach($schoolYears ?? [] as $schoolYear)
                                     <option value="{{ $schoolYear->id }}" {{ old('school_year_id') == $schoolYear->id ? 'selected' : '' }}>
-                                        {{ $schoolYear->school_year }}
+                                        {{ $schoolYear->start_year }} - {{ $schoolYear->end_year }}
+                                        @if($schoolYear->is_active) (Active) @endif
                                     </option>
                                 @endforeach
                             </select>
