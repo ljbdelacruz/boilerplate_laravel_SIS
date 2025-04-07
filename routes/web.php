@@ -12,6 +12,7 @@ use App\Http\Controllers\TeacherCourseController;
 use App\Http\Controllers\TeacherController;
 use App\Http\Controllers\TeacherClassController;
 use App\Http\Controllers\TeacherScheduleController;
+use App\Http\Controllers\ScheduleController;
 use Illuminate\Support\Facades\Route;
 
 // Set login as default route
@@ -81,4 +82,17 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/teachers/{teacher}/edit', [TeacherController::class, 'edit'])->name('teachers.edit');
     Route::put('/teachers/{teacher}', [TeacherController::class, 'update'])->name('teachers.update');
     Route::delete('/teachers/{teacher}', [TeacherController::class, 'destroy'])->name('teachers.destroy');
+});
+
+
+Route::prefix('schedules')->group(function () {
+    Route::get('/', [ScheduleController::class, 'index'])->name('schedules.index');
+    Route::get('/generate', [ScheduleController::class, 'showGenerateForm'])->name('schedules.generate');
+    Route::post('/generate', [ScheduleController::class, 'generateSchedule']);
+    Route::get('/create', [ScheduleController::class, 'create'])->name('schedules.create');
+    Route::post('/store', [ScheduleController::class, 'store'])->name('schedules.store');
+    Route::get('/manage', [ScheduleController::class, 'manage'])->name('schedules.manage');
+    Route::get('/edit/{schedule}', [ScheduleController::class, 'edit'])->name('schedules.edit');
+    Route::put('/update/{schedule}', [ScheduleController::class, 'update'])->name('schedules.update');
+    Route::delete('/delete/{schedule}', [ScheduleController::class, 'destroy'])->name('schedules.destroy');
 });

@@ -101,6 +101,26 @@
                     </a>
                 </div>
             </div>
+
+            <!-- New Scheduling Management Card -->
+            <div class="bg-white overflow-hidden shadow-sm rounded-lg p-6">
+                <h3 class="text-lg font-semibold mb-4">Schedule Management</h3>
+                <p class="text-gray-600">Manage teacher schedules and assignments</p>
+                <div class="mt-4 space-y-2">
+                    <a href="{{ route('schedules.index') }}" class="block bg-indigo-500 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded text-center">
+                        View All Schedules
+                    </a>
+                    <a href="{{ route('schedules.generate') }}" class="block bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded text-center">
+                        Generate Schedule
+                    </a>
+                    <a href="{{ route('schedules.create') }}" class="block bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded text-center">
+                        Add Schedule
+                    </a>
+                    <a href="{{ route('schedules.manage') }}" class="block bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded text-center">
+                        Edit Schedules
+                    </a>
+                </div>
+            </div>
         </div>
     </div>
 </body>
