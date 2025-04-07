@@ -110,14 +110,8 @@
                     <a href="{{ route('schedules.index') }}" class="block bg-indigo-500 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded text-center">
                         View All Schedules
                     </a>
-                    <a href="{{ route('schedules.generate') }}" class="block bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded text-center">
-                        Generate Schedule
-                    </a>
                     <a href="{{ route('schedules.create') }}" class="block bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded text-center">
                         Add Schedule
-                    </a>
-                    <a href="{{ route('schedules.manage') }}" class="block bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded text-center">
-                        Edit Schedules
                     </a>
                 </div>
             </div>
