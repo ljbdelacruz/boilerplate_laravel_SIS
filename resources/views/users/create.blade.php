@@ -43,7 +43,7 @@
                             id="name" 
                             type="text" 
                             name="name" 
-                            value="{{ old('name', 'Test User') }}" 
+                            value="{{ old('name') }}" 
                             required>
                     </div>
 
@@ -55,7 +55,7 @@
                             id="email" 
                             type="email" 
                             name="email" 
-                            value="{{ old('email', 'test@example.com') }}" 
+                            value="{{ old('email') }}" 
                             required>
                     </div>
 
@@ -67,7 +67,6 @@
                             id="password" 
                             type="password" 
                             name="password" 
-                            value="Password@123"
                             required>
                     </div>
 
@@ -107,7 +106,7 @@
                                 id="specialization" 
                                 type="text" 
                                 name="specialization" 
-                                value="{{ old('specialization', 'Mathematics') }}"
+                                value="{{ old('specialization') }}"
                                 required>
                         </div>
 
@@ -118,7 +117,7 @@
                             <textarea class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
                                 id="bio" 
                                 name="bio" 
-                                rows="3">{{ old('bio', 'Test teacher biography') }}</textarea>
+                                rows="3">{{ old('bio') }}</textarea>
                         </div>
 
                         <!-- In the teacher fields section -->
@@ -130,7 +129,7 @@
                                 id="contact_number" 
                                 type="text" 
                                 name="contact_number" 
-                                value="{{ old('contact_number', '09123456789') }}"
+                                value="{{ old('contact_number') }}"
                                 pattern="[0-9]{11}"
                                 title="Please enter a valid 11-digit phone number"
                                 required>
@@ -147,7 +146,7 @@
                                 id="address" 
                                 type="text" 
                                 name="address" 
-                                value="{{ old('address', '123 Test Street') }}"
+                                value="{{ old('address') }}"
                                 required>
                         </div>
 
@@ -159,7 +158,7 @@
                                 id="first_name" 
                                 type="text" 
                                 name="first_name" 
-                                value="{{ old('first_name', 'John') }}"
+                                value="{{ old('first_name') }}"
                                 required>
                         </div>
 
@@ -171,7 +170,7 @@
                                 id="last_name" 
                                 type="text" 
                                 name="last_name" 
-                                value="{{ old('last_name', 'Doe') }}"
+                                value="{{ old('last_name') }}"
                                 required>
                         </div>
 
@@ -183,7 +182,7 @@
                                 id="middle_name" 
                                 type="text" 
                                 name="middle_name" 
-                                value="{{ old('middle_name', 'Smith') }}">
+                                value="{{ old('middle_name') }}">
                         </div>
 
                         <div class="mb-4">
@@ -194,7 +193,7 @@
                                 id="student_id" 
                                 type="text" 
                                 name="student_id" 
-                                value="{{ old('student_id', '2024001') }}"
+                                value="{{ old('student_id') }}"
                                 required>
                         </div>
 
@@ -206,7 +205,7 @@
                                 id="birth_date" 
                                 type="date" 
                                 name="birth_date" 
-                                value="{{ old('birth_date', '2010-01-01') }}"
+                                value="{{ old('birth_date') }}"
                                 required>
                         </div>
 
@@ -233,7 +232,7 @@
                                 id="guardian_name" 
                                 type="text" 
                                 name="guardian_name" 
-                                value="{{ old('guardian_name', 'Parent Test') }}"
+                                value="{{ old('guardian_name') }}"
                                 required>
                         </div>
 
@@ -259,7 +258,7 @@
                                 name="lrn" 
                                 pattern="\d{12}"
                                 title="LRN must be exactly 12 digits"
-                                value="{{ old('lrn', '123456789012') }}">
+                                value="{{ old('lrn') }}">
                         </div>
 
                         <div class="mb-4">
