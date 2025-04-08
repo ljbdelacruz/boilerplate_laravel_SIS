@@ -74,48 +74,13 @@ class StudentController extends Controller
     public function show(Student $student)
     {
         $student->load(['user', 'section', 'schoolYear']);
-        return view('students.show', compact('student')); // Changed from admin.students.show
+        return view('students.show', compact('student'));
     }
 
     public function create()
     {
-        $sections = Section::where('is_active', true)->get();
-        $schoolYears = SchoolYear::where('is_active', true)->get();
-        $gradeLevels = \App\Models\GradeLevel::orderBy('grade_level')->get();
-        return view('students.create', compact('sections', 'schoolYears', 'gradeLevels'));
+        return redirect()->route('users.create', ['preset_role' => 'student']);
     }
-
-    // public function store(Request $request)
-    // {
-    //     $validated = $request->validate([
-    //         'name' => 'required|string|max:255',
-    //         'email' => 'required|email|unique:users,email',
-    //         'lrn' => 'required|string|size:12|unique:students,lrn',
-    //         'section_id' => 'required|exists:sections,id',
-    //         'grade_level' => 'required|integer|between:7,12',
-    //         'school_year_id' => 'required|exists:school_years,id'
-    //     ]);
-
-    //     DB::transaction(function () use ($validated) {
-    //         $user = User::create([
-    //             'name' => $validated['name'],
-    //             'email' => $validated['email'],
-    //             'password' => Hash::make($validated['lrn']),
-    //             'role' => 'student'
-    //         ]);
-
-    //         Student::create([
-    //             'user_id' => $user->id,
-    //             'lrn' => $validated['lrn'],
-    //             'section_id' => $validated['section_id'],
-    //             'grade_level' => $validated['grade_level'],
-    //             'school_year_id' => $validated['school_year_id']
-    //         ]);
-    //     });
-
-    //     return redirect()->route('admin.students.index')
-    //         ->with('success', 'Student registered successfully');
-    // }
 
     public function edit(Student $student)
     {

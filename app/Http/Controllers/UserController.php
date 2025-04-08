@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Models\Teacher;
 use App\Models\Section;
 use App\Models\SchoolYear;
+use App\Models\Student;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
@@ -38,15 +39,31 @@ class UserController extends Controller
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8|confirmed',
             'role' => 'required|in:admin,teacher,student',
-            // Add teacher-specific validation
-            'specialization' => 'required_if:role,teacher|string|max:255',
+            // Teacher-specific validation
+            'specialization' => 'nullable|string|max:255|required_if:role,teacher',
             'bio' => 'nullable|string',
-            'contact_number' => 'required_if:role,teacher|string|max:20'
+            'contact_number' => 'nullable|string|max:20',
+            // Student-specific validation
+            'first_name' => 'required_if:role,student|string|max:255',
+            'last_name' => 'required_if:role,student|string|max:255',
+            'middle_name' => 'nullable|string|max:255',
+            'student_id' => 'required_if:role,student|string|unique:students,student_id',
+            'section_id' => 'required_if:role,student|exists:sections,id',
+            'grade_level' => 'required_if:role,student|string|exists:grade_levels,grade_level',
+            'school_year_id' => 'required_if:role,student|exists:school_years,id',
+            'birth_date' => 'required_if:role,student|date',
+            'gender' => 'required_if:role,student|in:male,female,other',
+            'guardian_name' => 'required_if:role,student|string',
+            'guardian_contact' => 'required_if:role,student|string',
+            // Add address validation for students
+            'address' => 'required_if:role,student|string|max:255',
         ]);
 
         DB::transaction(function () use ($validated) {
             $user = User::create([
-                'name' => $validated['name'],
+                'name' => $validated['role'] === 'student' 
+                    ? $validated['first_name'] . ' ' . $validated['last_name']
+                    : $validated['name'],
                 'email' => $validated['email'],
                 'password' => Hash::make($validated['password']),
                 'role' => $validated['role']
@@ -58,6 +75,25 @@ class UserController extends Controller
                     'specialization' => $validated['specialization'],
                     'bio' => $validated['bio'] ?? null,
                     'contact_number' => $validated['contact_number']
+                ]);
+            } elseif ($validated['role'] === 'student') {
+                $gradeLevel = (int) filter_var($validated['grade_level'], FILTER_SANITIZE_NUMBER_INT);
+                
+                Student::create([
+                    'user_id' => $user->id,
+                    'student_id' => $validated['student_id'],
+                    'first_name' => $validated['first_name'],
+                    'last_name' => $validated['last_name'],
+                    'middle_name' => $validated['middle_name'],
+                    'birth_date' => $validated['birth_date'],
+                    'gender' => strtolower($validated['gender']),
+                    'contact_number' => $validated['contact_number'] ?? null,
+                    'guardian_name' => $validated['guardian_name'],
+                    'guardian_contact' => $validated['guardian_contact'],
+                    'address' => $validated['address'],
+                    'section_id' => $validated['section_id'],
+                    'grade_level' => $gradeLevel,
+                    'school_year_id' => $validated['school_year_id']
                 ]);
             }
         });
