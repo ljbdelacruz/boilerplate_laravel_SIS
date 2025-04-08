@@ -43,7 +43,7 @@
                             id="name" 
                             type="text" 
                             name="name" 
-                            value="{{ old('name') }}" 
+                            value="{{ old('name', 'Test User') }}" 
                             required>
                     </div>
 
@@ -55,7 +55,7 @@
                             id="email" 
                             type="email" 
                             name="email" 
-                            value="{{ old('email') }}" 
+                            value="{{ old('email', 'test@example.com') }}" 
                             required>
                     </div>
 
@@ -67,6 +67,7 @@
                             id="password" 
                             type="password" 
                             name="password" 
+                            value="Password@123"
                             required>
                     </div>
 
@@ -106,7 +107,7 @@
                                 id="specialization" 
                                 type="text" 
                                 name="specialization" 
-                                value="{{ old('specialization') }}"
+                                value="{{ old('specialization', 'Mathematics') }}"
                                 required>
                         </div>
 
@@ -117,9 +118,10 @@
                             <textarea class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
                                 id="bio" 
                                 name="bio" 
-                                rows="3">{{ old('bio') }}</textarea>
+                                rows="3">{{ old('bio', 'Test teacher biography') }}</textarea>
                         </div>
 
+                        <!-- In the teacher fields section -->
                         <div class="mb-4">
                             <label class="block text-gray-700 text-sm font-bold mb-2" for="contact_number">
                                 Contact Number
@@ -128,7 +130,9 @@
                                 id="contact_number" 
                                 type="text" 
                                 name="contact_number" 
-                                value="{{ old('contact_number') }}"
+                                value="{{ old('contact_number', '09123456789') }}"
+                                pattern="[0-9]{11}"
+                                title="Please enter a valid 11-digit phone number"
                                 required>
                         </div>
                     </div>
@@ -143,7 +147,7 @@
                                 id="address" 
                                 type="text" 
                                 name="address" 
-                                value="{{ old('address') }}"
+                                value="{{ old('address', '123 Test Street') }}"
                                 required>
                         </div>
 
@@ -155,7 +159,7 @@
                                 id="first_name" 
                                 type="text" 
                                 name="first_name" 
-                                value="{{ old('first_name') }}"
+                                value="{{ old('first_name', 'John') }}"
                                 required>
                         </div>
 
@@ -167,7 +171,7 @@
                                 id="last_name" 
                                 type="text" 
                                 name="last_name" 
-                                value="{{ old('last_name') }}"
+                                value="{{ old('last_name', 'Doe') }}"
                                 required>
                         </div>
 
@@ -179,7 +183,7 @@
                                 id="middle_name" 
                                 type="text" 
                                 name="middle_name" 
-                                value="{{ old('middle_name') }}">
+                                value="{{ old('middle_name', 'Smith') }}">
                         </div>
 
                         <div class="mb-4">
@@ -190,7 +194,7 @@
                                 id="student_id" 
                                 type="text" 
                                 name="student_id" 
-                                value="{{ old('student_id') }}"
+                                value="{{ old('student_id', '2024001') }}"
                                 required>
                         </div>
 
@@ -202,7 +206,7 @@
                                 id="birth_date" 
                                 type="date" 
                                 name="birth_date" 
-                                value="{{ old('birth_date') }}"
+                                value="{{ old('birth_date', '2010-01-01') }}"
                                 required>
                         </div>
 
@@ -222,17 +226,6 @@
                         </div>
 
                         <div class="mb-4">
-                            <label class="block text-gray-700 text-sm font-bold mb-2" for="contact_number">
-                                Contact Number
-                            </label>
-                            <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
-                                id="contact_number" 
-                                type="text" 
-                                name="contact_number" 
-                                value="{{ old('contact_number') }}">
-                        </div>
-
-                        <div class="mb-4">
                             <label class="block text-gray-700 text-sm font-bold mb-2" for="guardian_name">
                                 Guardian Name
                             </label>
@@ -240,7 +233,7 @@
                                 id="guardian_name" 
                                 type="text" 
                                 name="guardian_name" 
-                                value="{{ old('guardian_name') }}"
+                                value="{{ old('guardian_name', 'Parent Test') }}"
                                 required>
                         </div>
 
@@ -266,7 +259,7 @@
                                 name="lrn" 
                                 pattern="\d{12}"
                                 title="LRN must be exactly 12 digits"
-                                value="{{ old('lrn') }}">
+                                value="{{ old('lrn', '123456789012') }}">
                         </div>
 
                         <div class="mb-4">
@@ -316,29 +309,84 @@
                         </div>
                     </div>
 
+                    <!-- Replace the existing script section with this updated version -->
                     <script>
                         document.getElementById('role').addEventListener('change', function() {
                             const teacherFields = document.getElementById('teacherFields');
                             const studentFields = document.getElementById('studentFields');
                             
+                            // Hide both sections first
                             teacherFields.classList.add('hidden');
                             studentFields.classList.add('hidden');
                             
+                            // Remove required attribute from all fields
+                            const teacherInputs = teacherFields.querySelectorAll('input, select, textarea');
+                            const studentInputs = studentFields.querySelectorAll('input, select, textarea');
+                            
+                            teacherInputs.forEach(input => {
+                                input.required = false;
+                                input.disabled = true;
+                            });
+                            
+                            studentInputs.forEach(input => {
+                                input.required = false;
+                                input.disabled = true;
+                            });
+                            
+                            // Show and enable relevant fields based on role
                             if (this.value === 'teacher') {
                                 teacherFields.classList.remove('hidden');
+                                teacherInputs.forEach(input => {
+                                    if (input.hasAttribute('data-required')) {
+                                        input.required = true;
+                                    }
+                                    input.disabled = false;
+                                });
                             } else if (this.value === 'student') {
                                 studentFields.classList.remove('hidden');
+                                studentInputs.forEach(input => {
+                                    if (input.hasAttribute('data-required')) {
+                                        input.required = true;
+                                    }
+                                    input.disabled = false;
+                                });
                             }
                         });
-
-                        // Show fields if role was previously selected
-                        const currentRole = document.getElementById('role').value;
-                        if (currentRole === 'teacher') {
-                            document.getElementById('teacherFields').classList.remove('hidden');
-                        } else if (currentRole === 'student') {
-                            document.getElementById('studentFields').classList.remove('hidden');
-                        }
+    
+                        // Initial setup on page load
+                        window.addEventListener('load', function() {
+                            const currentRole = document.getElementById('role').value;
+                            if (currentRole) {
+                                document.getElementById('role').dispatchEvent(new Event('change'));
+                            }
+                        });
                     </script>
+
+                    <!-- Update the required fields in teacher section to use data-required -->
+                    <div id="teacherFields" class="hidden">
+                        <!-- Example for specialization field -->
+                        <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
+                            id="specialization" 
+                            type="text" 
+                            name="specialization" 
+                            value="{{ old('specialization', 'Mathematics') }}"
+                            data-required
+                            disabled>
+                        <!-- ... other teacher fields ... -->
+                    </div>
+
+                    <!-- Update the required fields in student section to use data-required -->
+                    <div id="studentFields" class="hidden">
+                        <!-- Example for student fields -->
+                        <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
+                            id="first_name" 
+                            type="text" 
+                            name="first_name" 
+                            value="{{ old('first_name', 'John') }}"
+                            data-required
+                            disabled>
+                        <!-- ... other student fields ... -->
+                    </div>
                     <div class="flex items-center justify-between">
                         <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" 
                             type="submit">

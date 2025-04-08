@@ -34,6 +34,7 @@ class UserController extends Controller
 
     public function store(Request $request)
     {
+        // In the store method, add 'lrn' to the validation rules
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
@@ -48,6 +49,7 @@ class UserController extends Controller
             'last_name' => 'required_if:role,student|string|max:255',
             'middle_name' => 'nullable|string|max:255',
             'student_id' => 'required_if:role,student|string|unique:students,student_id',
+            'lrn' => 'required_if:role,student|string|size:12|unique:students,student_id', // Add this line
             'section_id' => 'required_if:role,student|exists:sections,id',
             'grade_level' => 'required_if:role,student|string|exists:grade_levels,grade_level',
             'school_year_id' => 'required_if:role,student|exists:school_years,id',
@@ -81,7 +83,7 @@ class UserController extends Controller
                 
                 Student::create([
                     'user_id' => $user->id,
-                    'student_id' => $validated['student_id'],
+                    'student_id' => $validated['lrn'], // Change this line to use LRN
                     'first_name' => $validated['first_name'],
                     'last_name' => $validated['last_name'],
                     'middle_name' => $validated['middle_name'],
