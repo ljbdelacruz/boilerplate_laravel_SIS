@@ -105,3 +105,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/activity-logs', [ActivityLogController::class, 'index'])->name('activity-logs.index');
     Route::get('/activity-logs/user/{id}', [ActivityLogController::class, 'userLogs'])->name('activity-logs.user');
 });
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/teacher/schedule', [TeacherController::class, 'schedule'])->name('teacher.schedule');
+});

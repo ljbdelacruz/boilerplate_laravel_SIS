@@ -7,6 +7,7 @@ use App\Models\Section;
 use App\Models\Student;
 use App\Models\User;
 use App\Models\Course;
+use App\Models\Schedule;
 use Illuminate\Http\Request;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
@@ -336,4 +337,45 @@ class TeacherController extends Controller
                 return response()->json(['error' => 'Error processing Excel file'], 500);
             }
         }
+    public function schedule(Request $request)
+    {
+        $sections = Section::where('is_active', true)
+            ->orderBy('grade_level')
+            ->orderBy('name')
+            ->get();
+    
+        $schedules = Schedule::where('teacher_id', $request->user()->id)
+            ->with(['course', 'section', 'schoolYear'])
+            ->get();
+    
+        $days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+        $selectedDay = $request->get('day', 'Monday');
+    
+        $timeSlots = [
+            '07:00 - 08:00',
+            '08:00 - 09:00',
+            '09:00 - 10:00',
+            '10:00 - 11:00',
+            '11:00 - 12:00',
+            '13:00 - 14:00',
+            '14:00 - 15:00',
+            '15:00 - 16:00',
+            '16:00 - 17:00',
+            '17:00 - 18:00'
+        ];
+    
+        // Filter schedules by day and group by section
+        $scheduledSections = $schedules
+            ->filter(function ($schedule) use ($selectedDay) {
+                return $schedule->day_of_week === $selectedDay;
+            })
+            ->map(function ($schedule) {
+                $schedule->start_time = date('H:i', strtotime($schedule->start_time));
+                $schedule->end_time = date('H:i', strtotime($schedule->end_time));
+                return $schedule;
+            })
+            ->groupBy('section_id');
+    
+        return view('teacher.schedule', compact('schedules', 'sections', 'timeSlots', 'scheduledSections', 'days', 'selectedDay'));
+    }
 }

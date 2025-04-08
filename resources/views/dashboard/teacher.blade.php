@@ -27,6 +27,16 @@
     </nav>
 
     <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+        <!-- Add this new button at the top of the content area -->
+        <div class="mb-6">
+            <a href="{{ route('teacher.schedule') }}" class="bg-indigo-500 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded inline-flex items-center">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+                View My Schedule
+            </a>
+        </div>
+
         <div class="grid grid-cols-1 gap-6">
             <div class="bg-white overflow-hidden shadow-sm rounded-lg p-6">
                 <h3 class="text-lg font-semibold mb-4">View Students by Section</h3>
