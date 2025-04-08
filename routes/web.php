@@ -13,6 +13,7 @@ use App\Http\Controllers\TeacherController;
 use App\Http\Controllers\TeacherClassController;
 use App\Http\Controllers\TeacherScheduleController;
 use App\Http\Controllers\ScheduleController;
+use App\Http\Controllers\ActivityLogController;
 use Illuminate\Support\Facades\Route;
 
 // Set login as default route
@@ -99,3 +100,8 @@ Route::prefix('schedules')->group(function () {
 
 Route::patch('/school-years/{schoolYear}/toggle-active', [SchoolYearController::class, 'toggleActive'])
     ->name('school-years.toggle-active');
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/activity-logs', [ActivityLogController::class, 'index'])->name('activity-logs.index');
+    Route::get('/activity-logs/user/{id}', [ActivityLogController::class, 'userLogs'])->name('activity-logs.user');
+});

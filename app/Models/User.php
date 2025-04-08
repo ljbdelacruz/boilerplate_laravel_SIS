@@ -56,4 +56,12 @@ class User extends Authenticatable
     {
         return $this->role === 'teacher';
     }
+
+    /**
+     * Get the activity logs for the user.
+     */
+    public function activityLogs()
+    {
+        return $this->hasMany(ActivityLog::class);
+    }
 }

@@ -102,6 +102,17 @@
                     </a>
                 </div>
             </div>
+            <!-- Activity Logs Card -->
+                <div class="bg-white overflow-hidden shadow-sm rounded-lg p-6">
+                    <h3 class="text-lg font-semibold mb-4">Activity Logs</h3>
+                    <p class="text-gray-600">Monitor user activities</p>
+                    <div class="mt-4">
+                        <a href="{{ route('activity-logs.index') }}" class="block bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded text-center">
+                            View Activity Logs
+                        </a>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </body>
