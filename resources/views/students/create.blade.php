@@ -189,11 +189,11 @@
                                 name="grade_level"
                                 required>
                             <option value="">Select Grade Level</option>
-                            @for($i = 7; $i <= 12; $i++)
-                                <option value="{{ $i }}" {{ old('grade_level') == $i ? 'selected' : '' }}>
-                                    Grade {{ $i }}
+                            @foreach($gradeLevels as $gradeLevel)
+                                <option value="{{ $gradeLevel->grade_level }}" {{ old('grade_level') == $gradeLevel->grade_level ? 'selected' : '' }}>
+                                    {{ $gradeLevel->grade_level }}
                                 </option>
-                            @endfor
+                            @endforeach
                         </select>
                     </div>
 

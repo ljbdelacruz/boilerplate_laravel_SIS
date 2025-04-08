@@ -27,7 +27,8 @@ class UserController extends Controller
         $schoolYears = SchoolYear::where('is_active', true)
                                 ->orderBy('start_year', 'desc')
                                 ->get();
-        return view('users.create', compact('sections', 'schoolYears'));
+        $gradeLevels = \App\Models\GradeLevel::orderBy('grade_level')->get();
+        return view('users.create', compact('sections', 'schoolYears', 'gradeLevels'));
     }
 
     public function store(Request $request)

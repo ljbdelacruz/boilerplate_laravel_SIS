@@ -30,16 +30,19 @@ class StudentController extends Controller
             'email' => 'required|email|unique:users,email',
             'student_id' => 'required|string|unique:students,student_id',
             'section_id' => 'required|exists:sections,id',
-            'grade_level' => 'required|integer|between:7,12',
+            'grade_level' => 'required|string|exists:grade_levels,grade_level',
             'school_year_id' => 'required|exists:school_years,id',
             'birth_date' => 'required|date',
-            'gender' => 'required|in:Male,Female,Other',
+            'gender' => 'required|in:male,female,other',
             'contact_number' => 'required|string',
             'guardian_name' => 'required|string',
             'guardian_contact' => 'required|string'
         ]);
 
         DB::transaction(function () use ($validated) {
+            // Extract numeric value from grade level string
+            $gradeLevel = (int) filter_var($validated['grade_level'], FILTER_SANITIZE_NUMBER_INT);
+            
             $user = User::create([
                 'name' => $validated['first_name'] . ' ' . $validated['last_name'],
                 'email' => $validated['email'],
@@ -54,12 +57,12 @@ class StudentController extends Controller
                 'last_name' => $validated['last_name'],
                 'middle_name' => $validated['middle_name'],
                 'birth_date' => $validated['birth_date'],
-                'gender' => $validated['gender'],
+                'gender' => strtolower($validated['gender']),
                 'contact_number' => $validated['contact_number'],
                 'guardian_name' => $validated['guardian_name'],
                 'guardian_contact' => $validated['guardian_contact'],
                 'section_id' => $validated['section_id'],
-                'grade_level' => $validated['grade_level'],
+                'grade_level' => $gradeLevel,
                 'school_year_id' => $validated['school_year_id']
             ]);
         });
@@ -78,7 +81,8 @@ class StudentController extends Controller
     {
         $sections = Section::where('is_active', true)->get();
         $schoolYears = SchoolYear::where('is_active', true)->get();
-        return view('students.create', compact('sections', 'schoolYears')); // Changed from admin.students.create
+        $gradeLevels = \App\Models\GradeLevel::orderBy('grade_level')->get();
+        return view('students.create', compact('sections', 'schoolYears', 'gradeLevels'));
     }
 
     // public function store(Request $request)

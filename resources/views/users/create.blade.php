@@ -153,9 +153,11 @@
                             <select name="grade_level" id="grade_level" 
                                 class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
                                 <option value="">Select Grade Level</option>
-                                @for ($i = 7; $i <= 12; $i++)
-                                    <option value="{{ $i }}" {{ old('grade_level') == $i ? 'selected' : '' }}>Grade {{ $i }}</option>
-                                @endfor
+                                @foreach($gradeLevels as $gradeLevel)
+                                    <option value="{{ $gradeLevel->grade_level }}" {{ old('grade_level') == $gradeLevel->grade_level ? 'selected' : '' }}>
+                                        {{ $gradeLevel->grade_level }}
+                                    </option>
+                                @endforeach
                             </select>
                         </div>
 
