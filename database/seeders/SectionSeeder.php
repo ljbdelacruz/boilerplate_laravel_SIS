@@ -20,25 +20,25 @@ class SectionSeeder extends Seeder
         $sections = [
             [
                 'name' => 'Section A',
-                'grade_level' => 7,
+                'grade_level' => 1,
                 'is_active' => true,
                 'school_year_id' => $schoolYear->id,
             ],
             [
                 'name' => 'Section B',
-                'grade_level' => 7,
+                'grade_level' => 2,
                 'is_active' => true,
                 'school_year_id' => $schoolYear->id,
             ],
             [
                 'name' => 'Section C',
-                'grade_level' => 8,
+                'grade_level' => 3,
                 'is_active' => true,
                 'school_year_id' => $schoolYear->id,
             ],
             [
                 'name' => 'Section D',
-                'grade_level' => 8,
+                'grade_level' => 4,
                 'is_active' => true,
                 'school_year_id' => $schoolYear->id,
             ]

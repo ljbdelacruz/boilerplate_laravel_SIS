@@ -39,7 +39,7 @@ class UserSeeder extends Seeder
                 'role' => 'student',
                 'student_data' => [
                     'lrn' => '202400001',
-                    'grade_level' => 'Grade 7',
+                    'grade_level' => 'Grade 1',
                     'section' => 'Section A',
                     'first_name' => 'John',
                     'last_name' => 'Smith',
@@ -55,7 +55,7 @@ class UserSeeder extends Seeder
                 'role' => 'student',
                 'student_data' => [
                     'lrn' => '202400002',
-                    'grade_level' => 'Grade 7',
+                    'grade_level' => 'Grade 2',
                     'section' => 'Section B',
                     'first_name' => 'Maria',
                     'last_name' => 'Garcia',
@@ -71,7 +71,7 @@ class UserSeeder extends Seeder
                 'role' => 'student',
                 'student_data' => [
                     'lrn' => '202400003',
-                    'grade_level' => 'Grade 8',
+                    'grade_level' => 'Grade 3',
                     'section' => 'Section C',
                     'first_name' => 'James',
                     'last_name' => 'Wilson',
