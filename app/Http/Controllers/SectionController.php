@@ -21,14 +21,15 @@ class SectionController extends Controller
     public function create()
     {
         $schoolYears = SchoolYear::where('is_active', true)->get();
-        return view('sections.create', compact('schoolYears'));
+        $gradeLevels = \App\Models\GradeLevel::orderBy('grade_level')->get();
+        return view('sections.create', compact('schoolYears', 'gradeLevels'));
     }
 
     public function store(Request $request)
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'grade_level' => 'required|integer|between:7,12',
+            'grade_level' => 'required_if:role,student|string|exists:grade_levels,grade_level',
             'school_year_id' => 'required|exists:school_years,id'
         ]);
 

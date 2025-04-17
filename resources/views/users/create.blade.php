@@ -92,7 +92,7 @@
                             <option value="">Select Role</option>
                             <option value="admin" {{ old('role') == 'admin' ? 'selected' : '' }}>Admin</option>
                             <option value="teacher" {{ old('role') == 'teacher' ? 'selected' : '' }}>Teacher</option>
-                            <option value="student" {{ old('role') == 'student' ? 'selected' : '' }}>Student</option>
+                            <!--<option value="student" {{ old('role') == 'student' ? 'selected' : '' }}>Student</option>-->
                         </select>
                     </div>
 
@@ -136,7 +136,7 @@
                         </div>
                     </div>
 
-                    <!-- Student Fields -->
+                    <!-- Student Fields 
                     <div id="studentFields" class="hidden">
                         <div class="mb-4">
                             <label class="block text-gray-700 text-sm font-bold mb-2" for="address">
@@ -297,7 +297,6 @@
                             </label>
                             <select name="school_year_id" id="school_year_id" 
                                 class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-                                <option value="">Select School Year</option>
                                 @foreach($schoolYears ?? [] as $schoolYear)
                                     <option value="{{ $schoolYear->id }}" {{ old('school_year_id') == $schoolYear->id ? 'selected' : '' }}>
                                         {{ $schoolYear->start_year }} - {{ $schoolYear->end_year }}
@@ -305,8 +304,8 @@
                                     </option>
                                 @endforeach
                             </select>
-                        </div>
-                    </div>
+                        </div> 
+                    </div> -->
 
                     <!-- Replace the existing script section with this updated version -->
                     <script>

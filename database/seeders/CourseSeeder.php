@@ -11,52 +11,52 @@ class CourseSeeder extends Seeder
     {
         $courses = [
             [
-                'code' => 'MATH7',
-                'name' => 'Mathematics 7',
-                'description' => 'Grade 7 Mathematics curriculum',
+                'code' => 'MATH1',
+                'name' => 'Mathematics 1',
+                'description' => 'Grade 1 Mathematics curriculum',
                 'price' => 5000.00,
                 'is_active' => true,
-                'grade_level' => 7
+                'grade_level' => 1
             ],
             [
-                'code' => 'SCI7',
-                'name' => 'Science 7',
-                'description' => 'Grade 7 Science curriculum',
+                'code' => 'SCI1',
+                'name' => 'Science 1',
+                'description' => 'Grade 1 Science curriculum',
                 'price' => 5000.00,
                 'is_active' => true,
-                'grade_level' => 7
+                'grade_level' => 1
             ],
             [
-                'code' => 'ENG7',
-                'name' => 'English 7',
-                'description' => 'Grade 7 English curriculum',
+                'code' => 'ENG1',
+                'name' => 'English 1',
+                'description' => 'Grade 1 English curriculum',
                 'price' => 4500.00,
                 'is_active' => true,
-                'grade_level' => 7
+                'grade_level' => 1
             ],
             [
-                'code' => 'MATH8',
-                'name' => 'Mathematics 8',
-                'description' => 'Grade 8 Mathematics curriculum',
+                'code' => 'MATH2',
+                'name' => 'Mathematics 2',
+                'description' => 'Grade 2 Mathematics curriculum',
                 'price' => 5000.00,
                 'is_active' => true,
-                'grade_level' => 8
+                'grade_level' => 2
             ],
             [
-                'code' => 'SCI8',
-                'name' => 'Science 8',
-                'description' => 'Grade 8 Science curriculum',
+                'code' => 'SCI2',
+                'name' => 'Science 2',
+                'description' => 'Grade 2 Science curriculum',
                 'price' => 5000.00,
                 'is_active' => true,
-                'grade_level' => 8
+                'grade_level' => 2
             ],
             [
-                'code' => 'ENG8',
-                'name' => 'English 8',
-                'description' => 'Grade 8 English curriculum',
+                'code' => 'ENG2',
+                'name' => 'English 2',
+                'description' => 'Grade 2 English curriculum',
                 'price' => 4500.00,
                 'is_active' => true,
-                'grade_level' => 8
+                'grade_level' => 2
             ]
         ];
 

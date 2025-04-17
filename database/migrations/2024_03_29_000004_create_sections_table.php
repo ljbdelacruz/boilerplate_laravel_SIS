@@ -11,7 +11,7 @@ return new class extends Migration
         Schema::create('sections', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->integer('grade_level');
+            $table->string('grade_level');
             $table->foreignId('school_year_id')->constrained()->onDelete('cascade');
             $table->boolean('is_active')->default(true);
             $table->timestamps();

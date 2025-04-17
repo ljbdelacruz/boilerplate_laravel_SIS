@@ -23,21 +23,30 @@ Route::get('/', [AuthController::class, 'showLogin'])->name('login');
 
 Route::get('/school-years-view', [SchoolYearController::class, 'index_view']);
 
+ 
+ 
 // Auth Routes
 Route::post('/login', [AuthController::class, 'login'])->name('login.submit');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 // Section routes
 Route::resource('sections', SectionController::class);
+Route::get('/sections/create', [SectionController::class, 'create'])->name('sections.create');
 Route::put('sections/{section}/archive', [SectionController::class, 'archive'])->name('sections.archive');
 
 // Dashboard Routes
 Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-    Route::resource('students', StudentController::class);
+    
+
     Route::resource('school-years', SchoolYearController::class);
     Route::resource('courses', CourseController::class);
     Route::put('courses/{course}/archive', [CourseController::class, 'archive'])->name('courses.archive');
+
+    // Student Routes
+    Route::get('/students/create', [StudentController::class, 'create'])->name('students.create');
+    Route::post('/students', [StudentController::class, 'store'])->name('students.store');
+    Route::resource('students', StudentController::class);
 
     // Student Course Routes
     Route::get('/student/courses/available', [StudentCourseController::class, 'available'])

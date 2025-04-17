@@ -28,6 +28,7 @@ class StudentController extends Controller
             'last_name' => 'required|string|max:255',
             'middle_name' => 'nullable|string|max:255',
             'email' => 'required|email|unique:users,email',
+            'lrn' => 'required|string|unique:students,lrn',
             'student_id' => 'required|string|unique:students,student_id',
             'section_id' => 'required|exists:sections,id',
             'grade_level' => 'required|string|exists:grade_levels,grade_level',
@@ -51,6 +52,7 @@ class StudentController extends Controller
             ]);
 
             Student::create([
+                'lrn' => $validated['lrn'],
                 'user_id' => $user->id,
                 'student_id' => $validated['student_id'],
                 'first_name' => $validated['first_name'],
@@ -79,7 +81,12 @@ class StudentController extends Controller
 
     public function create()
     {
-        return redirect()->route('users.create', ['preset_role' => 'student']);
+        $sections = Section::where('is_active', true)->get();
+        $schoolYears = SchoolYear::where('is_active', true)
+                                ->orderBy('start_year', 'desc')
+                                ->get();
+        $gradeLevels = \App\Models\GradeLevel::orderBy('grade_level')->get();
+        return view('students.create', compact('sections', 'schoolYears', 'gradeLevels'));
     }
 
     public function edit(Student $student)

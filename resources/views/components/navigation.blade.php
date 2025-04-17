@@ -1,4 +1,4 @@
-<!-- filepath: /Users/laineljohn/Desktop/projects/php/cs2/capstone2_laravel/resources/views/components/navigation.blade.php -->
+
 <nav>
     <ul>
         <li>

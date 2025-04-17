@@ -36,6 +36,14 @@
                 @method('PUT')
                 <div class="grid grid-cols-2 gap-6">
                     <div class="mb-4">
+                        <label class="block text-gray-700 text-sm font-bold mb-2" for="lrn">
+                            LRN
+                        </label>
+                        <input
+                            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                            id="lrn" type="text" name="lrn" value="{{ old('lrn', $student->lrn) }}" required>
+                    </div>
+                    <div class="mb-4">
                         <label class="block text-gray-700 text-sm font-bold mb-2" for="student_id">
                             Student ID
                         </label>

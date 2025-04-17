@@ -35,6 +35,15 @@
                 @csrf
                 <div class="grid grid-cols-2 gap-6">
                     <div class="mb-4">
+                        <label class="block text-gray-700 text-sm font-bold mb-2" for="lrn">
+                            LRN
+                        </label>
+                        <input
+                            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                            id="lrn" type="text" name="lrn" value="{{ old('lrn') }}" required>
+                    </div>
+                    
+                    <div class="mb-4">
                         <label class="block text-gray-700 text-sm font-bold mb-2" for="student_id">
                             Student ID
                         </label>
@@ -170,7 +179,6 @@
                                 id="school_year_id"
                                 name="school_year_id"
                                 required>
-                            <option value="">Select School Year</option>
                             @foreach($schoolYears as $schoolYear)
                                 <option value="{{ $schoolYear->id }}" {{ old('school_year_id') == $schoolYear->id ? 'selected' : '' }}>
                                     {{ $schoolYear->start_year }} - {{ $schoolYear->end_year }}

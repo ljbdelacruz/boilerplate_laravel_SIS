@@ -44,25 +44,28 @@
                     <label class="block text-gray-700 text-sm font-bold mb-2" for="grade_level">
                         Grade Level
                     </label>
-                    <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                           id="grade_level"
-                           type="number"
-                           name="grade_level"
-                           value="{{ old('grade_level') }}"
-                           required>
+                    <select name="grade_level" id="grade_level"
+                        class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                        <option value="">Select Grade Level</option>
+                        @foreach($gradeLevels as $gradeLevel)
+                            <option value="{{ $gradeLevel->grade_level }}" {{ old('grade_level') == $gradeLevel->grade_level ? 'selected' : '' }}>
+                                {{ $gradeLevel->grade_level }}
+                            </option>
+                        @endforeach
+                    </select>
                 </div>
 
                 <div class="mb-4">
                     <label class="block text-gray-700 text-sm font-bold mb-2" for="school_year_id">
                         School Year
                     </label>
-                    <select class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                            id="school_year_id"
-                            name="school_year_id"
-                            required>
-                        <option value="">Select School Year</option>
-                        @foreach($schoolYears as $schoolYear)
-                            <option value="{{ $schoolYear->id }}">{{ $schoolYear->school_year }}</option>
+                    <select name="school_year_id" id="school_year_id"
+                        class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                        @foreach($schoolYears ?? [] as $schoolYear)
+                            <option value="{{ $schoolYear->id }}" {{ old('school_year_id') == $schoolYear->id ? 'selected' : '' }}>
+                                {{ $schoolYear->start_year }} - {{ $schoolYear->end_year }}
+                                @if($schoolYear->is_active) (Active) @endif
+                            </option>
                         @endforeach
                     </select>
                 </div>

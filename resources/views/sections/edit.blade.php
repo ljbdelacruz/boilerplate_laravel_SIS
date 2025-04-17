@@ -57,14 +57,12 @@
                     <label class="block text-gray-700 text-sm font-bold mb-2" for="school_year_id">
                         School Year
                     </label>
-                    <select class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                            id="school_year_id"
-                            name="school_year_id"
-                            required>
-                        <option value="">Select School Year</option>
-                        @foreach($schoolYears as $schoolYear)
-                            <option value="{{ $schoolYear->id }}" {{ old('school_year_id', $section->school_year_id) == $schoolYear->id ? 'selected' : '' }}>
-                                {{ $schoolYear->school_year }}
+                    <select name="school_year_id" id="school_year_id"
+                        class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                        @foreach($schoolYears ?? [] as $schoolYear)
+                            <option value="{{ $schoolYear->id }}" {{ old('school_year_id') == $schoolYear->id ? 'selected' : '' }}>
+                                {{ $schoolYear->start_year }} - {{ $schoolYear->end_year }}
+                                @if($schoolYear->is_active) (Active) @endif
                             </option>
                         @endforeach
                     </select>

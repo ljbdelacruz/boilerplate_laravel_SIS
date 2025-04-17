@@ -24,6 +24,11 @@
             <div class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
                 <div class="grid grid-cols-2 gap-6">
                     <div class="mb-4">
+                        <label class="block text-gray-700 text-sm font-bold mb-2">LRN</label>
+                        <p class="text-gray-900">{{ $student->lrn }}</p>
+                    </div>
+                    
+                    <div class="mb-4">
                         <label class="block text-gray-700 text-sm font-bold mb-2">Student ID</label>
                         <p class="text-gray-900">{{ $student->student_id }}</p>
                     </div>

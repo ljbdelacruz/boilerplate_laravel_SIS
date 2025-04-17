@@ -69,13 +69,23 @@
 
             <div class="bg-white overflow-hidden shadow-sm rounded-lg p-6">
                 <h3 class="text-lg font-semibold mb-4">Student Management</h3>
-                <p class="text-gray-600">Manage student records</p>
+                <p class="text-gray-600">Manage students</p>
                 <div class="mt-4 space-y-2">
                     <a href="{{ route('students.index') }}" class="block bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded text-center">
                         View All Students
                     </a>
                     <a href="{{ route('students.upload') }}" class="block bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded text-center">
                         Batch Upload Students
+                    </a>
+                </div>
+            </div>
+
+            <div class="bg-white overflow-hidden shadow-sm rounded-lg p-6">
+                <h3 class="text-lg font-semibold mb-4">Student Records</h3>
+                <p class="text-gray-600">Manage student records</p>
+                <div class="mt-4 space-y-2">
+                    <a href="{{ route('students.index') }}" class="block bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded text-center">
+                        View Student Records
                     </a>
                 </div>
             </div>
