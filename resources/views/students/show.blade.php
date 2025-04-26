@@ -1,23 +1,19 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Student Details</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-</head>
-<body class="bg-gray-100">
-    <div class="container mx-auto px-4 py-8">
+@extends('dashboard.admin')
+
+@section('content')
+    <div class="container mx-auto px-4">
         <div class="max-w-3xl mx-auto">
             <div class="flex justify-between items-center mb-6">
                 <h1 class="text-2xl font-bold">Student Details</h1>
                 <div class="flex space-x-4">
-                    <a href="{{ route('dashboard') }}" class="bg-indigo-500 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded">
-                        Back to Dashboard
-                    </a>
-                    <a href="{{ route('students.index') }}" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
-                        Back to List
-                    </a>
+                <a href="{{ route('students.index') }}"
+                onclick="event.preventDefault(); 
+                    const schoolYearLink = [...document.querySelectorAll('.nav-link')]
+                        .find(link => link.textContent.replace(/\s+/g, ' ').trim() === 'Students'); 
+                    loadContent('{{ route('students.index') }}', schoolYearLink || 'Students');"
+                class="bg-yellow-500 hover:bg-yellow-600 text-white font-semibold py-2 px-4 rounded-lg shadow transition">
+                ← Back to List
+            </a>
                 </div>
             </div>
 
@@ -75,17 +71,18 @@
 
                     <div class="mb-4">
                         <label class="block text-gray-700 text-sm font-bold mb-2">School Year</label>
-                        <p class="text-gray-900">{{ $student->schoolYear->school_year }} - {{ $student->schoolYear->grade_level }} {{ $student->schoolYear->section_name }}</p>
+                        <p class="text-gray-900">{{ $student->schoolYear->start_year }} - {{ $student->schoolYear->end_year }}</p>
                     </div>
                 </div>
 
                 <div class="flex justify-end mt-6 space-x-4">
-                    <a href="{{ route('students.edit', $student->id) }}" class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded">
-                        Edit
-                    </a>
+                <a href="{{ route('students.edit', $student) }}"
+                               onclick="event.preventDefault(); loadContent('{{ route('students.edit', $student) }}', 'Edit Student');"
+                               class="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded-lg shadow transition">
+                               Edit
+                            </a>
                 </div>
             </div>
         </div>
     </div>
-</body>
-</html>
+@endsection

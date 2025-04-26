@@ -1,22 +1,42 @@
-@extends('layouts.app')
+@extends('dashboard.admin')
+
+@section('title', 'Add Schedule')
 
 @section('content')
-<div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-    <div class="px-4 py-6 sm:px-0">
-        <div class="flex justify-between items-center mb-6">
-            <h2 class="text-2xl font-bold">Add New Schedule</h2>
-            <a href="{{ route('schedules.index') }}" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
-                Back to List
+<div class="container mx-auto px-4">
+    <div class="max-w-3xl mx-auto">
+
+        {{-- Back Button --}}
+        <div class="flex justify-start mt-6 mb-4">
+            <a href="{{ route('schedules.index') }}" 
+               onclick="event.preventDefault(); 
+                        const scheduleLink = [...document.querySelectorAll('.nav-link')]
+                            .find(link => link.textContent.replace(/\s+/g, ' ').trim() === 'Schedules'); 
+                        loadContent('{{ route('schedules.index') }}', scheduleLink || 'Schedules');"
+               class="bg-yellow-500 hover:bg-yellow-600 text-white font-semibold py-2 px-4 rounded-lg shadow transition">
+                ← Back to List
             </a>
         </div>
 
-        <div class="bg-white shadow-sm rounded-lg p-6">
-            <form action="{{ route('schedules.store') }}" method="POST">
+        {{-- Validation Errors --}}
+        @if ($errors->any())
+            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+                <ul class="list-disc list-inside">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
+        {{-- Form Card --}}
+        <div class="bg-yellow-100 shadow-lg rounded-lg p-8">
+            <form action="{{ route('schedules.store') }}" method="POST" class="space-y-6">
                 @csrf
-                
-                <div class="mb-4">
-                    <label for="teacher_id" class="block text-gray-700 text-sm font-bold mb-2">Teacher</label>
-                    <select name="teacher_id" id="teacher_id" class="form-select rounded-md shadow-sm mt-1 block w-full" required>
+
+                <div>
+                    <label for="teacher_id" class="block text-left text-gray-800 font-medium mb-2 !text-[22px]">Teacher</label>
+                    <select name="teacher_id" id="teacher_id" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400" required>
                         <option value="">Select Teacher</option>
                         @foreach($teachers as $teacher)
                             <option value="{{ $teacher->id }}">{{ $teacher->name }}</option>
@@ -24,9 +44,9 @@
                     </select>
                 </div>
 
-                <div class="mb-4">
-                    <label for="course_id" class="block text-gray-700 text-sm font-bold mb-2">Course</label>
-                    <select name="course_id" id="course_id" class="form-select rounded-md shadow-sm mt-1 block w-full" required>
+                <div>
+                    <label for="course_id" class="block text-left text-gray-800 font-medium mb-2 !text-[22px]">Course</label>
+                    <select name="course_id" id="course_id" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400" required>
                         <option value="">Select Course</option>
                         @foreach($courses as $course)
                             <option value="{{ $course->id }}">{{ $course->name }}</option>
@@ -34,9 +54,9 @@
                     </select>
                 </div>
 
-                <div class="mb-4">
-                    <label for="section_id" class="block text-gray-700 text-sm font-bold mb-2">Section</label>
-                    <select name="section_id" id="section_id" class="form-select rounded-md shadow-sm mt-1 block w-full" required>
+                <div>
+                    <label for="section_id" class="block text-left text-gray-800 font-medium mb-2 !text-[22px]">Section</label>
+                    <select name="section_id" id="section_id" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400" required>
                         <option value="">Select Section</option>
                         @foreach($sections as $section)
                             <option value="{{ $section->id }}">{{ $section->name }} (Grade {{ $section->grade_level }})</option>
@@ -44,59 +64,58 @@
                     </select>
                 </div>
 
-                <div class="mb-4">
-                    <label for="school_year_id" class="block text-gray-700 text-sm font-bold mb-2">School Year</label>
-                    <select name="school_year_id" id="school_year_id" class="form-select rounded-md shadow-sm mt-1 block w-full" required>
+                <div>
+                    <label for="school_year_id" class="block text-left text-gray-800 font-medium mb-2 !text-[22px]">School Year</label>
+                    <select name="school_year_id" id="school_year_id" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400" required>
                         <option value="">Select School Year</option>
                         @foreach($schoolYears as $schoolYear)
                             <option value="{{ $schoolYear->id }}">{{ $schoolYear->start_year }} - {{ $schoolYear->end_year }}</option>
                         @endforeach
                     </select>
                 </div>
+                    <div class="mb-4">
+                        <label for="school_year_id" class="block text-gray-700 text-sm font-bold mb-2">School Year</label>
+                        <select name="school_year_id" id="school_year_id"
+                            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                            @foreach($schoolYears ?? [] as $schoolYear)
+                                <option value="{{ $schoolYear->id }}" {{ old('school_year_id') == $schoolYear->id ? 'selected' : '' }}>
+                                    {{ $schoolYear->start_year }} - {{ $schoolYear->end_year }}
+                                    @if($schoolYear->is_active) (Active) @endif
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
 
-                <div class="mb-4">
-                    <label class="block text-gray-700 text-sm font-bold mb-2">Days</label>
-                    <div class="mt-2 space-y-2">
-                        <div class="flex items-center">
-                            <input type="checkbox" name="days[]" id="monday" value="Monday" class="h-4 w-4 text-blue-600">
-                            <label for="monday" class="ml-2 text-gray-700">Monday</label>
-                        </div>
-                        <div class="flex items-center">
-                            <input type="checkbox" name="days[]" id="tuesday" value="Tuesday" class="h-4 w-4 text-blue-600">
-                            <label for="tuesday" class="ml-2 text-gray-700">Tuesday</label>
-                        </div>
-                        <div class="flex items-center">
-                            <input type="checkbox" name="days[]" id="wednesday" value="Wednesday" class="h-4 w-4 text-blue-600">
-                            <label for="wednesday" class="ml-2 text-gray-700">Wednesday</label>
-                        </div>
-                        <div class="flex items-center">
-                            <input type="checkbox" name="days[]" id="thursday" value="Thursday" class="h-4 w-4 text-blue-600">
-                            <label for="thursday" class="ml-2 text-gray-700">Thursday</label>
-                        </div>
-                        <div class="flex items-center">
-                            <input type="checkbox" name="days[]" id="friday" value="Friday" class="h-4 w-4 text-blue-600">
-                            <label for="friday" class="ml-2 text-gray-700">Friday</label>
-                        </div>
+                <div>
+                    <label class="block text-left text-gray-800 font-medium mb-2 !text-[22px]">Days</label>
+                    <div class="mt-2 grid grid-cols-2 gap-2">
+                        @foreach(['Monday','Tuesday','Wednesday','Thursday','Friday'] as $day)
+                            <div class="flex items-center">
+                                <input type="checkbox" name="days[]" id="{{ strtolower($day) }}" value="{{ $day }}" class="h-4 w-4 text-blue-600">
+                                <label for="{{ strtolower($day) }}" class="ml-2 text-gray-700">{{ $day }}</label>
+                            </div>
+                        @endforeach
                     </div>
                 </div>
 
-                <div class="mb-4">
-                    <label for="start_time" class="block text-gray-700 text-sm font-bold mb-2">Start Time</label>
-                    <input type="time" name="start_time" id="start_time" class="form-input rounded-md shadow-sm mt-1 block w-full" required>
+                <div>
+                    <label for="start_time" class="block text-left text-gray-800 font-medium mb-2 !text-[22px]">Start Time</label>
+                    <input type="time" name="start_time" id="start_time" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400" required>
                 </div>
 
-                <div class="mb-4">
-                    <label for="end_time" class="block text-gray-700 text-sm font-bold mb-2">End Time</label>
-                    <input type="time" name="end_time" id="end_time" class="form-input rounded-md shadow-sm mt-1 block w-full" required>
+                <div>
+                    <label for="end_time" class="block text-left text-gray-800 font-medium mb-2 !text-[22px]">End Time</label>
+                    <input type="time" name="end_time" id="end_time" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400" required>
                 </div>
 
-                <div class="flex items-center justify-end">
-                    <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                <div class="flex justify-end">
+                    <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-6 rounded-lg shadow transition">
                         Create Schedule
                     </button>
                 </div>
             </form>
         </div>
+
     </div>
 </div>
 @endsection

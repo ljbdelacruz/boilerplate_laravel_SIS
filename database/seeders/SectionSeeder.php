@@ -10,6 +10,7 @@ class SectionSeeder extends Seeder
 {
     public function run(): void
     {
+
         // Get or create a school year
         $schoolYear = SchoolYear::first() ?? SchoolYear::create([
             'year_start' => 2024,
@@ -20,25 +21,25 @@ class SectionSeeder extends Seeder
         $sections = [
             [
                 'name' => 'Section A',
-                'grade_level' => 1,
+                'grade_level' => 'Grade 1',
                 'is_active' => true,
                 'school_year_id' => $schoolYear->id,
             ],
             [
                 'name' => 'Section B',
-                'grade_level' => 2,
+                'grade_level' => 'Grade 2',
                 'is_active' => true,
                 'school_year_id' => $schoolYear->id,
             ],
             [
                 'name' => 'Section C',
-                'grade_level' => 3,
+                'grade_level' => 'Grade 3',
                 'is_active' => true,
                 'school_year_id' => $schoolYear->id,
             ],
             [
                 'name' => 'Section D',
-                'grade_level' => 4,
+                'grade_level' => 'Grade 4',
                 'is_active' => true,
                 'school_year_id' => $schoolYear->id,
             ]

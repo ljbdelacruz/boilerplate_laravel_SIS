@@ -27,7 +27,7 @@ class Student extends Model
 
     protected $casts = [
         'birth_date' => 'date',
-        'grade_level' => 'integer',
+        'grade_level' => 'string',
         'section_id' => 'integer',
         'school_year_id' => 'integer'
     ];

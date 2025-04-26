@@ -12,7 +12,7 @@ class ActivityLogController extends Controller
     {
         $users = User::with(['activityLogs' => function($query) {
             $query->latest()->take(3);
-        }])->paginate(10);
+        }])->paginate(5);
 
         return view('activity-logs.index', compact('users'));
     }
@@ -26,4 +26,6 @@ class ActivityLogController extends Controller
 
         return view('activity-logs.user', compact('user', 'logs'));
     }
+
+    
 }

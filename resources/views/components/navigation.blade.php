@@ -3,7 +3,7 @@
     <ul>
         <li>
             <div class="school-logo">
-                <a href="{{ url('/') }}"><img src="{{ asset('icons/Logo.png') }}" alt="School Logo">USUSAN ELEMENTARY SCHOOL</a>
+                <a href="{{ url('/') }}"><img src="{{ asset('Icons/Logo.png') }}" alt="School Logo">USUSAN ELEMENTARY SCHOOL</a>
             </div>
         </li>
         <li><div id="homehover"><a href="{{ url('/') }}">Home</a></div></li>

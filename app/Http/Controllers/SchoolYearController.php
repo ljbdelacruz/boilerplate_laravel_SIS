@@ -9,7 +9,9 @@ class SchoolYearController extends Controller
 {
     public function index()
     {
-        $schoolYears = SchoolYear::where('is_archived', false)->get();
+        $schoolYears = SchoolYear::where('is_archived', false)
+            ->orderBy('start_year', 'desc')
+            ->paginate(10);
         return view('school-years.index', compact('schoolYears'));
     }
 
@@ -42,7 +44,8 @@ class SchoolYearController extends Controller
     public function update(Request $request, SchoolYear $schoolYear)
     {
         $validated = $request->validate([
-            'school_year' => 'required|string|max:255',
+            'start_year' => 'required|integer|digits:4',
+            'end_year' => 'required|integer|digits:4|gt:start_year',
         ]);
 
         $schoolYear->update($validated);

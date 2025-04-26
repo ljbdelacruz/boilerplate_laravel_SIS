@@ -1,393 +1,129 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Create User</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-</head>
-<body class="bg-gray-100">
-    <div class="container mx-auto px-4 py-8">
-        <div class="mb-4">
-            <a href="{{ route('dashboard') }}" class="text-gray-600 hover:text-gray-900">
-                <span class="inline-flex items-center">
-                    <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
-                    </svg>
-                    Back to Dashboard
-                </span>
+@extends('dashboard.admin')
+
+@section('title', 'Add User')
+
+@section('content')
+<div class="container mx-auto px-4">
+    <div class="max-w-3xl mx-auto">
+
+        {{-- Back Button --}}
+        <div class="flex justify-start mt-6 mb-4">
+            <a href="{{ route('users.index') }}"
+                    onclick="event.preventDefault(); 
+                         const subjectLink = [...document.querySelectorAll('.nav-link')]
+                            .find(link => link.textContent.replace(/\s+/g, ' ').trim() === 'Users'); 
+                         loadContent('{{ route('users.index') }}', subjectLink || 'Users');"
+                    class="bg-yellow-500 hover:bg-yellow-600 text-white font-semibold py-2 px-4 rounded-lg shadow transition">
+                ← Back to Users
             </a>
         </div>
 
-        <div class="max-w-md mx-auto bg-white rounded-lg shadow-md overflow-hidden">
-            <div class="px-6 py-4">
-                <h2 class="text-2xl font-bold mb-4">Create New User</h2>
-                
-                @if ($errors->any())
-                    <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-                        <ul>
-                            @foreach ($errors->all() as $error)
-                                <li>{{ $error }}</li>
-                            @endforeach
-                        </ul>
-                    </div>
-                @endif
+        {{-- Validation Errors --}}
+        @if ($errors->any())
+            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+                <ul class="list-disc list-inside">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
 
-                <form method="POST" action="{{ route('users.store') }}">
-                    @csrf
-                    <div class="mb-4">
-                        <label class="block text-gray-700 text-sm font-bold mb-2" for="name">
-                            Name
-                        </label>
-                        <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
-                            id="name" 
-                            type="text" 
-                            name="name" 
-                            value="{{ old('name') }}" 
-                            required>
-                    </div>
+        {{-- Form Card --}}
+        <div class="bg-yellow-100 shadow-lg rounded-lg p-8 transition">
+    <form method="POST" action="{{ route('users.store') }}">
+        @csrf
 
-                    <div class="mb-4">
-                        <label class="block text-gray-700 text-sm font-bold mb-2" for="email">
-                            Email
-                        </label>
-                        <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
-                            id="email" 
-                            type="email" 
-                            name="email" 
-                            value="{{ old('email') }}" 
-                            required>
-                    </div>
+        <div class="mb-6 text-left">
+            <label for="name" class="block text-gray-800 font-medium mb-2">Name</label>
+            <input type="text" name="name" id="name" value="{{ old('name') }}"
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400"
+                required>
+        </div>
 
-                    <div class="mb-4">
-                        <label class="block text-gray-700 text-sm font-bold mb-2" for="password">
-                            Password
-                        </label>
-                        <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
-                            id="password" 
-                            type="password" 
-                            name="password" 
-                            required>
-                    </div>
+        <div class="mb-6 text-left">
+            <label for="email" class="block text-gray-800 font-medium mb-2">Email</label>
+            <input type="email" name="email" id="email" value="{{ old('email') }}"
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400"
+                required>
+        </div>
 
-                    <div class="mb-4">
-                        <label class="block text-gray-700 text-sm font-bold mb-2" for="password_confirmation">
-                            Confirm Password
-                        </label>
-                        <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
-                            id="password_confirmation" 
-                            type="password" 
-                            name="password_confirmation" 
-                            required>
-                    </div>
+        <div class="mb-6 text-left">
+            <label for="password" class="block text-gray-800 font-medium mb-2">Password</label>
+            <input type="password" name="password" id="password"
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400"
+                required>
+            <p class="text-sm text-gray-500 mt-1">*Password must be at least 8 characters.</p>
+        </div>
 
-                    <div class="mb-4">
-                        <label class="block text-gray-700 text-sm font-bold mb-2" for="role">
-                            Role
-                        </label>
-                        <select class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
-                            id="role" 
-                            name="role" 
-                            required>
-                            <option value="">Select Role</option>
-                            <option value="admin" {{ old('role') == 'admin' ? 'selected' : '' }}>Admin</option>
-                            <option value="teacher" {{ old('role') == 'teacher' ? 'selected' : '' }}>Teacher</option>
-                            <!--<option value="student" {{ old('role') == 'student' ? 'selected' : '' }}>Student</option>-->
-                        </select>
-                    </div>
+        <div class="mb-6 text-left">
+            <label for="password_confirmation" class="block text-gray-800 font-medium mb-2">Confirm Password</label>
+            <input type="password" name="password_confirmation" id="password_confirmation"
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400"
+                required>
+            <p class="text-sm text-gray-500 mt-1">*Re-enter your password to confirm.</p>
+        </div>
 
-                    <!-- Teacher Fields -->
-                    <div id="teacherFields" class="hidden">
-                        <div class="mb-4">
-                            <label class="block text-gray-700 text-sm font-bold mb-2" for="specialization">
-                                Specialization
-                            </label>
-                            <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
-                                id="specialization" 
-                                type="text" 
-                                name="specialization" 
-                                value="{{ old('specialization') }}"
-                                required>
-                        </div>
+        <div class="mb-6 text-left">
+            <label for="role" class="block text-gray-800 font-medium mb-2">Role</label>
+            <select name="role" id="role"
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-400"required>
+                <option value="">Select Role</option>
+                <option value="admin" {{ old('role') == 'admin' ? 'selected' : '' }}>Admin</option>
+                <option value="teacher" {{ old('role') == 'teacher' ? 'selected' : '' }}>Teacher</option>
+                <option value="student" {{ old('role') == 'student' ? 'selected' : '' }}>Student</option>
+            </select>
+        </div>
 
-                        <div class="mb-4">
-                            <label class="block text-gray-700 text-sm font-bold mb-2" for="bio">
-                                Bio
-                            </label>
-                            <textarea class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
-                                id="bio" 
-                                name="bio" 
-                                rows="3">{{ old('bio') }}</textarea>
-                        </div>
+        <div id="teacherFields" class="hidden">
+            <div class="mb-6 text-left">
+                <label for="specialization" class="block text-gray-800 font-medium mb-2">Specialization</label>
+                <input type="text" name="specialization" id="specialization" value="{{ old('specialization') }}"
+                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400">
+            </div>
 
-                        <!-- In the teacher fields section -->
-                        <div class="mb-4">
-                            <label class="block text-gray-700 text-sm font-bold mb-2" for="contact_number">
-                                Contact Number
-                            </label>
-                            <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
-                                id="contact_number" 
-                                type="text" 
-                                name="contact_number" 
-                                value="{{ old('contact_number') }}"
-                                pattern="[0-9]{11}"
-                                title="Please enter a valid 11-digit phone number"
-                                required>
-                        </div>
-                    </div>
+            <div class="mb-6 text-left">
+                <label for="bio" class="block text-gray-800 font-medium mb-2">Bio</label>
+                <textarea name="bio" id="bio" rows="3"
+                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400">{{ old('bio') }}</textarea>
+            </div>
 
-                    <!-- Student Fields 
-                    <div id="studentFields" class="hidden">
-                        <div class="mb-4">
-                            <label class="block text-gray-700 text-sm font-bold mb-2" for="address">
-                                Address
-                            </label>
-                            <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
-                                id="address" 
-                                type="text" 
-                                name="address" 
-                                value="{{ old('address') }}"
-                                required>
-                        </div>
+            <div class="mb-6 text-left">
+                <label for="contact_number" class="block text-gray-800 font-medium mb-2">Contact Number</label>
+                <input type="text" name="contact_number" id="contact_number" value="{{ old('contact_number') }}"
+                    pattern="[0-9]{11}" title="Please enter a valid 11-digit phone number"
+                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400">
+            </div>
+        </div>
 
-                        <div class="mb-4">
-                            <label class="block text-gray-700 text-sm font-bold mb-2" for="first_name">
-                                First Name
-                            </label>
-                            <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
-                                id="first_name" 
-                                type="text" 
-                                name="first_name" 
-                                value="{{ old('first_name') }}"
-                                required>
-                        </div>
+        <div class="flex justify-end">
+            <button type="submit"
+                class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-6 rounded-lg shadow transition">
+                Create New User
+            </button>
+        </div>
+    </form>
+</div>
 
-                        <div class="mb-4">
-                            <label class="block text-gray-700 text-sm font-bold mb-2" for="last_name">
-                                Last Name
-                            </label>
-                            <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
-                                id="last_name" 
-                                type="text" 
-                                name="last_name" 
-                                value="{{ old('last_name') }}"
-                                required>
-                        </div>
+    </div>
+</div>
 
-                        <div class="mb-4">
-                            <label class="block text-gray-700 text-sm font-bold mb-2" for="middle_name">
-                                Middle Name
-                            </label>
-                            <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
-                                id="middle_name" 
-                                type="text" 
-                                name="middle_name" 
-                                value="{{ old('middle_name') }}">
-                        </div>
+{{-- Role Toggle Script --}}
+<script>
+    document.getElementById('role').addEventListener('change', function () {
+        const teacherFields = document.getElementById('teacherFields');
+        const showTeacher = this.value === 'teacher';
 
-                        <div class="mb-4">
-                            <label class="block text-gray-700 text-sm font-bold mb-2" for="student_id">
-                                Student ID
-                            </label>
-                            <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
-                                id="student_id" 
-                                type="text" 
-                                name="student_id" 
-                                value="{{ old('student_id') }}"
-                                required>
-                        </div>
+        teacherFields.classList.toggle('hidden', !showTeacher);
+        [...teacherFields.querySelectorAll('input, textarea')].forEach(el => {
+            el.disabled = !showTeacher;
+        });
+    });
 
-                        <div class="mb-4">
-                            <label class="block text-gray-700 text-sm font-bold mb-2" for="birth_date">
-                                Birth Date
-                            </label>
-                            <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
-                                id="birth_date" 
-                                type="date" 
-                                name="birth_date" 
-                                value="{{ old('birth_date') }}"
-                                required>
-                        </div>
+    // Trigger on load if already selected
+    window.addEventListener('DOMContentLoaded', () => {
+        document.getElementById('role').dispatchEvent(new Event('change'));
+    });
+</script>
+@endsection
 
-                        <div class="mb-4">
-                            <label class="block text-gray-700 text-sm font-bold mb-2" for="gender">
-                                Gender
-                            </label>
-                            <select class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
-                                id="gender" 
-                                name="gender" 
-                                required>
-                                <option value="">Select Gender</option>
-                                <option value="male" {{ old('gender') == 'male' ? 'selected' : '' }}>Male</option>
-                                <option value="female" {{ old('gender') == 'female' ? 'selected' : '' }}>Female</option>
-                                <option value="other" {{ old('gender') == 'other' ? 'selected' : '' }}>Other</option>
-                            </select>
-                        </div>
-
-                        <div class="mb-4">
-                            <label class="block text-gray-700 text-sm font-bold mb-2" for="guardian_name">
-                                Guardian Name
-                            </label>
-                            <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
-                                id="guardian_name" 
-                                type="text" 
-                                name="guardian_name" 
-                                value="{{ old('guardian_name') }}"
-                                required>
-                        </div>
-
-                        <div class="mb-4">
-                            <label class="block text-gray-700 text-sm font-bold mb-2" for="guardian_contact">
-                                Guardian Contact
-                            </label>
-                            <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
-                                id="guardian_contact" 
-                                type="text" 
-                                name="guardian_contact" 
-                                value="{{ old('guardian_contact') }}"
-                                required>
-                        </div>
-
-                        <div class="mb-4">
-                            <label class="block text-gray-700 text-sm font-bold mb-2" for="lrn">
-                                LRN (12 digits)
-                            </label>
-                            <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
-                                id="lrn" 
-                                type="text" 
-                                name="lrn" 
-                                pattern="\d{12}"
-                                title="LRN must be exactly 12 digits"
-                                value="{{ old('lrn') }}">
-                        </div>
-
-                        <div class="mb-4">
-                            <label class="block text-gray-700 text-sm font-bold mb-2" for="grade_level">
-                                Grade Level
-                            </label>
-                            <select name="grade_level" id="grade_level" 
-                                class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-                                <option value="">Select Grade Level</option>
-                                @foreach($gradeLevels as $gradeLevel)
-                                    <option value="{{ $gradeLevel->grade_level }}" {{ old('grade_level') == $gradeLevel->grade_level ? 'selected' : '' }}>
-                                        {{ $gradeLevel->grade_level }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
-
-                        <div class="mb-4">
-                            <label class="block text-gray-700 text-sm font-bold mb-2" for="section_id">
-                                Section
-                            </label>
-                            <select name="section_id" id="section_id" 
-                                class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-                                <option value="">Select Section</option>
-                                @foreach($sections ?? [] as $section)
-                                    <option value="{{ $section->id }}" {{ old('section_id') == $section->id ? 'selected' : '' }}>
-                                        {{ $section->name }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
-
-                        <div class="mb-4">
-                            <label class="block text-gray-700 text-sm font-bold mb-2" for="school_year_id">
-                                School Year
-                            </label>
-                            <select name="school_year_id" id="school_year_id" 
-                                class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-                                @foreach($schoolYears ?? [] as $schoolYear)
-                                    <option value="{{ $schoolYear->id }}" {{ old('school_year_id') == $schoolYear->id ? 'selected' : '' }}>
-                                        {{ $schoolYear->start_year }} - {{ $schoolYear->end_year }}
-                                        @if($schoolYear->is_active) (Active) @endif
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div> 
-                    </div> -->
-
-                    <!-- Replace the existing script section with this updated version -->
-                    <script>
-                        document.getElementById('role').addEventListener('change', function() {
-                            const teacherFields = document.getElementById('teacherFields');
-                            const studentFields = document.getElementById('studentFields');
-                            
-                            // Hide both sections first
-                            teacherFields.classList.add('hidden');
-                            studentFields.classList.add('hidden');
-                            
-                            // Remove required attribute from all fields
-                            const teacherInputs = teacherFields.querySelectorAll('input, select, textarea');
-                            const studentInputs = studentFields.querySelectorAll('input, select, textarea');
-                            
-                            teacherInputs.forEach(input => {
-                                input.required = false;
-                                input.disabled = true;
-                            });
-                            
-                            studentInputs.forEach(input => {
-                                input.required = false;
-                                input.disabled = true;
-                            });
-                            
-                            // Show and enable relevant fields based on role
-                            if (this.value === 'teacher') {
-                                teacherFields.classList.remove('hidden');
-                                teacherInputs.forEach(input => {
-                                    if (input.hasAttribute('data-required')) {
-                                        input.required = true;
-                                    }
-                                    input.disabled = false;
-                                });
-                            } else if (this.value === 'student') {
-                                studentFields.classList.remove('hidden');
-                                studentInputs.forEach(input => {
-                                    if (input.hasAttribute('data-required')) {
-                                        input.required = true;
-                                    }
-                                    input.disabled = false;
-                                });
-                            }
-                        });
-    
-                        // Initial setup on page load
-                        window.addEventListener('load', function() {
-                            const currentRole = document.getElementById('role').value;
-                            if (currentRole) {
-                                document.getElementById('role').dispatchEvent(new Event('change'));
-                            }
-                        });
-                    </script>
-
-                    <!-- Update the required fields in teacher section to use data-required -->
-                    <div id="teacherFields" class="hidden">
-                        <!-- Example for specialization field -->
-                        <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
-                            id="specialization" 
-                            type="text" 
-                            name="specialization" 
-                            value="{{ old('specialization', 'Mathematics') }}"
-                            data-required
-                            disabled>
-                        <!-- ... other teacher fields ... -->
-                    </div>
-
-                    <!-- Update the required fields in student section to use data-required -->
-                    <div id="studentFields" class="hidden">
-                        <!-- Example for student fields -->
-                        <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
-                            id="first_name" 
-                            type="text" 
-                            name="first_name" 
-                            value="{{ old('first_name', 'John') }}"
-                            data-required
-                            disabled>
-                        <!-- ... other student fields ... -->
-                    </div>
-                    <div class="flex items-center justify-between">
-                        <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" 
-                            type="submit">
-                            Create User
-                        </button>
-                    </div>

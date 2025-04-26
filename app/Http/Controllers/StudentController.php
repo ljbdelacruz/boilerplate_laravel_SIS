@@ -9,6 +9,7 @@ use App\Models\SchoolYear;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use App\Models\GradeLevel;
 
 class StudentController extends Controller
 {
@@ -37,12 +38,13 @@ class StudentController extends Controller
             'gender' => 'required|in:male,female,other',
             'contact_number' => 'required|string',
             'guardian_name' => 'required|string',
-            'guardian_contact' => 'required|string'
+            'guardian_contact' => 'required|string',
+            'address' => 'required|string|max:255'
         ]);
 
         DB::transaction(function () use ($validated) {
             // Extract numeric value from grade level string
-            $gradeLevel = (int) filter_var($validated['grade_level'], FILTER_SANITIZE_NUMBER_INT);
+            $gradeLevel = $validated['grade_level'];
             
             $user = User::create([
                 'name' => $validated['first_name'] . ' ' . $validated['last_name'],
@@ -65,7 +67,8 @@ class StudentController extends Controller
                 'guardian_contact' => $validated['guardian_contact'],
                 'section_id' => $validated['section_id'],
                 'grade_level' => $gradeLevel,
-                'school_year_id' => $validated['school_year_id']
+                'school_year_id' => $validated['school_year_id'],
+                'address' => $validated['address']
             ]);
         });
 
@@ -85,7 +88,7 @@ class StudentController extends Controller
         $schoolYears = SchoolYear::where('is_active', true)
                                 ->orderBy('start_year', 'desc')
                                 ->get();
-        $gradeLevels = \App\Models\GradeLevel::orderBy('grade_level')->get();
+        $gradeLevels = GradeLevel::orderBy('grade_level')->get();
         return view('students.create', compact('sections', 'schoolYears', 'gradeLevels'));
     }
 
@@ -102,8 +105,9 @@ class StudentController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,' . $student->user_id,
             'section_id' => 'required|exists:sections,id',
-            'grade_level' => 'required|integer|between:7,12',
-            'school_year_id' => 'required|exists:school_years,id'
+            'grade_level' => 'required|string|max:255',
+            'school_year_id' => 'required|exists:school_years,id',
+            'address' => 'required|string|max:255'
         ]);
 
         DB::transaction(function () use ($validated, $student) {
@@ -115,7 +119,8 @@ class StudentController extends Controller
             $student->update([
                 'section_id' => $validated['section_id'],
                 'grade_level' => $validated['grade_level'],
-                'school_year_id' => $validated['school_year_id']
+                'school_year_id' => $validated['school_year_id'],
+                'address' => $validated['address']
             ]);
         });
 

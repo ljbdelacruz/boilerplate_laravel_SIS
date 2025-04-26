@@ -16,8 +16,8 @@ class UserSeeder extends Seeder
     {
         $users = [
             [
-                'name' => 'Jasper Neil',
-                'email' => 'jndc@gmail.com',
+                'name' => 'Admin User',
+                'email' => 'admin@example.com',
                 'password' => 'Password@1',
                 'role' => 'admin'
             ],
@@ -39,6 +39,7 @@ class UserSeeder extends Seeder
                 'role' => 'student',
                 'student_data' => [
                     'lrn' => '202400001',
+                    'student_id' => '123456789011',
                     'grade_level' => 'Grade 1',
                     'section' => 'Section A',
                     'first_name' => 'John',
@@ -55,6 +56,7 @@ class UserSeeder extends Seeder
                 'role' => 'student',
                 'student_data' => [
                     'lrn' => '202400002',
+                    'student_id' => '123456789012',
                     'grade_level' => 'Grade 2',
                     'section' => 'Section B',
                     'first_name' => 'Maria',
@@ -71,6 +73,7 @@ class UserSeeder extends Seeder
                 'role' => 'student',
                 'student_data' => [
                     'lrn' => '202400003',
+                    'student_id' => '123456789013',
                     'grade_level' => 'Grade 3',
                     'section' => 'Section C',
                     'first_name' => 'James',
@@ -114,7 +117,7 @@ class UserSeeder extends Seeder
                     ]
                 );
             
-                $gradeLevel = (int)substr($userData['student_data']['grade_level'], -1);
+                $gradeLevel = $userData['student_data']['grade_level'];
                 
                 $section = Section::where('grade_level', $gradeLevel)
                                  ->where('name', $userData['student_data']['section'])
@@ -134,8 +137,9 @@ class UserSeeder extends Seeder
                 Student::updateOrCreate(
                     ['user_id' => $user->id],
                     [
-                        'student_id' => $userData['student_data']['lrn'],
-                        'grade_level' => $gradeLevel,  // Changed from string to integer
+                        'lrn' => $userData['student_data']['lrn'],
+                        'student_id' => $userData['student_data']['student_id'],
+                        'grade_level' => $gradeLevel, 
                         'section_id' => $section->id,
                         'school_year_id' => $schoolYear->id,
                         'first_name' => $userData['student_data']['first_name'],

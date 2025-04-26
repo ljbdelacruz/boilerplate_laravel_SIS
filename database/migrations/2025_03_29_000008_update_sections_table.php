@@ -12,7 +12,7 @@ return new class extends Migration
             Schema::create('sections', function (Blueprint $table) {
                 $table->id();
                 $table->string('name');
-                $table->integer('grade_level');
+                $table->string('grade_level');
                 $table->foreignId('school_year_id')->constrained()->onDelete('cascade');
                 $table->boolean('is_active')->default(true);
                 $table->timestamps();
@@ -21,7 +21,7 @@ return new class extends Migration
         } else {
             Schema::table('sections', function (Blueprint $table) {
                 if (!Schema::hasColumn('sections', 'grade_level')) {
-                    $table->integer('grade_level')->after('name');
+                    $table->string('grade_level')->after('name');
                 }
                 if (!Schema::hasColumn('sections', 'is_active')) {
                     $table->boolean('is_active')->default(true)->after('school_year_id');

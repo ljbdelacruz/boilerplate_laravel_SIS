@@ -59,7 +59,7 @@
                         <select name="section_id" id="section" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
                             @foreach($sections as $section)
                                 <option value="{{ $section->id }}" {{ request('section_id') == $section->id ? 'selected' : '' }}>
-                                    {{ $section->name }} (Grade {{ $section->grade_level }})
+                                    {{ $section->name }} ({{ $section->grade_level }})
                                 </option>
                             @endforeach
                         </select>

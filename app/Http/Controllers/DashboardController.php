@@ -12,6 +12,7 @@ class DashboardController extends Controller
 {
     public function index(Request $request)
     {
+        
         if (!Auth::check()) {
             Log::error('User not authenticated');
             return redirect()->route('/');
@@ -38,5 +39,12 @@ class DashboardController extends Controller
                 Log::warning('Unknown role', ['role' => $user->role]);
                 return view('dashboard.user');
         }
+        
     }
+
+    public function showIndexPage()
+{
+    return view('dashboard.index');
+}
+    
 }

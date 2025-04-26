@@ -9,7 +9,7 @@ return new class extends Migration
     public function up()
     {
         Schema::table('students', function (Blueprint $table) {
-            $table->integer('grade_level')->after('user_id');
+            $table->string('grade_level')->after('user_id');
             $table->foreignId('section_id')->nullable()->after('grade_level')->constrained()->onDelete('set null');
         });
     }

@@ -18,7 +18,7 @@
             <div class="mb-6 grid grid-cols-2 gap-4">
                 <div>
                     <p class="font-semibold">Name: {{ $student->first_name }} {{ $student->last_name }}</p>
-                    <p>LRN: {{ $student->student_id }}</p>
+                    <p>LRN: {{ $student->lrn }}</p>
                     <p>Grade Level: {{ $student->grade_level }}</p>
                 </div>
                 <div>

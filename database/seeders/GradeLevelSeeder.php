@@ -17,11 +17,7 @@ class GradeLevelSeeder extends Seeder
             'Grade 3',
             'Grade 4',
             'Grade 5',
-            'Grade 6'/*,
-            'Grade 7',
-            'Grade 8',  //Removed for now
-            'Grade 9',
-            'Grade 10'*/
+            'Grade 6'
         ];
 
         foreach ($gradeLevels as $level) {

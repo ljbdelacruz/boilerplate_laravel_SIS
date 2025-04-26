@@ -55,7 +55,7 @@ class ScheduleController extends Controller
             'teacher_id' => 'required|exists:users,id',
             'course_id' => 'required|exists:courses,id',
             'section_id' => 'required|exists:sections,id',
-            'school_year_id' => 'required|exists:school_years,id',  // Add this line
+            'school_year_id' => 'required|exists:school_years,id',
             'days' => 'required|array',
             'days.*' => 'in:Monday,Tuesday,Wednesday,Thursday,Friday',
             'start_time' => 'required|date_format:H:i',
@@ -63,11 +63,33 @@ class ScheduleController extends Controller
         ]);
 
         foreach ($validated['days'] as $day) {
+            // Check for conflicts
+            $conflict = Schedule::where('day_of_week', $day)
+                ->where('school_year_id', $validated['school_year_id'])
+                ->where(function ($query) use ($validated) {
+                    $query->where(function ($q) use ($validated) {
+                        $q->where('start_time', '<', $validated['end_time'])
+                            ->where('end_time', '>', $validated['start_time']);
+                    });
+                })
+                ->where(function ($query) use ($validated) {
+                    $query->where('teacher_id', $validated['teacher_id'])
+                        ->orWhere('section_id', $validated['section_id']);
+                })
+                ->exists();
+
+            if ($conflict) {
+                return redirect()->back()
+                    ->withInput()
+                    ->withErrors(['error' => 'Schedule conflict detected for the selected day and time.']);
+            }
+
+            // Create the schedule if no conflict
             Schedule::create([
                 'teacher_id' => $validated['teacher_id'],
                 'course_id' => $validated['course_id'],
                 'section_id' => $validated['section_id'],
-                'school_year_id' => $validated['school_year_id'],  // Add this line
+                'school_year_id' => $validated['school_year_id'],
                 'day_of_week' => $day,
                 'start_time' => $validated['start_time'],
                 'end_time' => $validated['end_time'],
@@ -85,27 +107,43 @@ class ScheduleController extends Controller
 
     public function update(Request $request, Schedule $schedule)
     {
-        try {
-            $validated = $request->validate([
-                'teacher_id' => 'required|exists:users,id',
-                'course_id' => 'required|exists:courses,id',
-                'section_id' => 'required|exists:sections,id',
-                'school_year_id' => 'required|exists:school_years,id',
-                'day_of_week' => 'required|in:Monday,Tuesday,Wednesday,Thursday,Friday',
-                'start_time' => 'required|date_format:H:i',
-                'end_time' => 'required|date_format:H:i|after:start_time',
-            ]);
+        $validated = $request->validate([
+            'teacher_id' => 'required|exists:users,id',
+            'course_id' => 'required|exists:courses,id',
+            'section_id' => 'required|exists:sections,id',
+            'school_year_id' => 'required|exists:school_years,id',
+            'day_of_week' => 'required|in:Monday,Tuesday,Wednesday,Thursday,Friday',
+            'start_time' => 'required|date_format:H:i',
+            'end_time' => 'required|date_format:H:i|after:start_time',
+        ]);
 
-            $schedule->update($validated);
+        // Check for conflicts
+        $conflict = Schedule::where('day_of_week', $validated['day_of_week'])
+            ->where('school_year_id', $validated['school_year_id'])
+            ->where(function ($query) use ($validated) {
+                $query->where(function ($q) use ($validated) {
+                    $q->where('start_time', '<', $validated['end_time'])
+                        ->where('end_time', '>', $validated['start_time']);
+                });
+            })
+            ->where(function ($query) use ($validated) {
+                $query->where('teacher_id', $validated['teacher_id'])
+                    ->orWhere('section_id', $validated['section_id']);
+            })
+            ->where('id', '!=', $schedule->id) // Exclude the current schedule
+            ->exists();
 
-            return redirect()->route('schedules.index')
-                ->with('success', 'Schedule updated successfully');
-
-        } catch (\Exception $e) {
+        if ($conflict) {
             return redirect()->back()
                 ->withInput()
-                ->withErrors(['error' => 'Failed to update schedule: ' . $e->getMessage()]);
+                ->withErrors(['error' => 'Schedule conflict detected for the selected day and time.']);
         }
+
+        // Update the schedule if no conflict
+        $schedule->update($validated);
+
+        return redirect()->route('schedules.index')
+            ->with('success', 'Schedule updated successfully');
     }
 
     public function destroy(Schedule $schedule)

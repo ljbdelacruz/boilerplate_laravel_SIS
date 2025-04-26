@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Section;
 use App\Models\SchoolYear;
+use App\Models\GradeLevel;
 use Illuminate\Http\Request;
 
 class SectionController extends Controller
@@ -21,7 +22,7 @@ class SectionController extends Controller
     public function create()
     {
         $schoolYears = SchoolYear::where('is_active', true)->get();
-        $gradeLevels = \App\Models\GradeLevel::orderBy('grade_level')->get();
+        $gradeLevels = GradeLevel::orderBy('grade_level')->get();
         return view('sections.create', compact('schoolYears', 'gradeLevels'));
     }
 
@@ -29,7 +30,7 @@ class SectionController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'grade_level' => 'required_if:role,student|string|exists:grade_levels,grade_level',
+            'grade_level' => 'required|exists:grade_levels,grade_level',
             'school_year_id' => 'required|exists:school_years,id'
         ]);
 
@@ -41,14 +42,15 @@ class SectionController extends Controller
     public function edit(Section $section)
     {
         $schoolYears = SchoolYear::where('is_active', true)->get();
-        return view('sections.edit', compact('section', 'schoolYears'));
+        $gradeLevels = GradeLevel::orderBy('grade_level')->get();
+        return view('sections.edit', compact('section', 'schoolYears', 'gradeLevels'));
     }
 
     public function update(Request $request, Section $section)
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'grade_level' => 'required|integer|between:7,12',
+            'grade_level' => 'required_if:role,student|string|exists:grade_levels,grade_level',
             'school_year_id' => 'required|exists:school_years,id'
         ]);
 

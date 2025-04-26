@@ -37,8 +37,11 @@ Route::put('sections/{section}/archive', [SectionController::class, 'archive'])-
 // Dashboard Routes
 Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/dashboard/index', [DashboardController::class, 'showIndexPage'])->name('dashboard.index');
+
     
 
+    Route::get('/school-years', [SchoolYearController::class, 'index'])->name('school-years.index');
     Route::resource('school-years', SchoolYearController::class);
     Route::resource('courses', CourseController::class);
     Route::put('courses/{course}/archive', [CourseController::class, 'archive'])->name('courses.archive');
@@ -118,8 +121,12 @@ Route::patch('/school-years/{schoolYear}/toggle-active', [SchoolYearController::
 Route::middleware(['auth'])->group(function () {
     Route::get('/activity-logs', [ActivityLogController::class, 'index'])->name('activity-logs.index');
     Route::get('/activity-logs/user/{id}', [ActivityLogController::class, 'userLogs'])->name('activity-logs.user');
+    
+    
+    
 });
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/teacher/schedule', [TeacherController::class, 'schedule'])->name('teacher.schedule');
 });
+

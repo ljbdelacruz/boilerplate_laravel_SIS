@@ -1,62 +1,57 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Courses</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-</head>
-<body class="bg-gray-100">
-    <div class="container mx-auto px-4 py-8">
-        <div class="flex justify-between items-center mb-6">
-            <h1 class="text-2xl font-bold">Courses</h1>
-            <div class="flex space-x-4">
-                <a href="{{ route('dashboard') }}" class="bg-indigo-500 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded">
-                    Back to Dashboard
-                </a>
-                <a href="{{ route('courses.create') }}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                    Add New Course
-                </a>
-            </div>
-        </div>
+@extends('dashboard.admin')
 
-        @if(session('success'))
-            <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
-                {{ session('success') }}
-            </div>
-        @endif
-
-        <div class="bg-white shadow-md rounded-lg overflow-hidden">
-            <table class="min-w-full">
-                <thead class="bg-gray-50">
-                    <tr>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Code</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Description</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Price</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-                    </tr>
-                </thead>
-                <tbody class="bg-white divide-y divide-gray-200">
-                    @foreach($courses as $course)
-                    <tr>
-                        <td class="px-6 py-4 whitespace-nowrap">{{ $course->code }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap">{{ $course->name }}</td>
-                        <td class="px-6 py-4">{{ $course->description }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap">₱{{ number_format($course->price, 2) }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <a href="{{ route('courses.edit', $course->id) }}" class="text-indigo-600 hover:text-indigo-900 mr-3">Edit</a>
-                            <form action="{{ route('courses.archive', $course->id) }}" method="POST" class="inline">
-                                @csrf
-                                @method('PUT')
-                                <button type="submit" class="text-red-600 hover:text-red-900" onclick="return confirm('Are you sure you want to archive this course?')">Archive</button>
-                            </form>
-                        </td>
-                    </tr>
-                    @endforeach
-                </tbody>
-            </table>
-        </div>
+@section('content')
+<div class="container mx-auto px-4">
+    <div class="flex justify-between items-center mb-6">
+        <h1 class="text-2xl font-bold">Subjects</h1>
+        <a href="{{ route('courses.create') }}"
+                onclick="event.preventDefault(); loadContent('{{ route('courses.create') }}', 'Add Subject');"
+                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg">
+                Add New Subject
+            </a>
+        
     </div>
-</body>
-</html>
+
+    @if(session('success'))
+        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4 text-sm text-center">
+            {{ session('success') }}
+        </div>
+    @endif
+
+    <div class="bg-white shadow-2xl rounded-lg overflow-hidden border border-gray-200">
+    <table class="min-w-full text-center text-sm divide-y divide-gray-300">
+        <thead class="bg-yellow-100">
+            <tr>
+                <th class="px-6 py-3 text-xs font-bold text-gray-700 uppercase tracking-wider">Code</th>
+                <th class="px-6 py-3 text-xs font-bold text-gray-700 uppercase tracking-wider">Name</th>
+                <th class="px-6 py-3 text-xs font-bold text-gray-700 uppercase tracking-wider">Description</th>
+                <th class="px-6 py-3 text-xs font-bold text-gray-700 uppercase tracking-wider">Actions</th>
+            </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-200">
+            @foreach($courses as $course)
+                <tr class="hover:bg-yellow-50 transition-colors duration-200">
+                    <td class="px-6 py-4 font-medium text-gray-800">{{ $course->code }}</td>
+                    <td class="px-6 py-4 text-gray-700">{{ $course->name }}</td>
+                    <td class="px-6 py-4 text-gray-700">{{ $course->description }}</td>
+                    <td class="px-4 py-4 whitespace-nowrap text-sm font-medium space-x-2">
+                        <a href="{{ route('courses.edit', $course->id) }}" 
+                        onclick="event.preventDefault(); loadContent('{{ route('courses.edit', $course->id) }}', 'Edit Subject');"
+                        class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg">
+                            Edit
+                        </a>
+                        <form action="{{ route('courses.archive', $course->id) }}" method="POST" class="inline-block">
+                            @csrf
+                            @method('PUT')
+                            <button type="submit" onclick="return confirm('Are you sure you want to archive this course?')" class="inline-block bg-yellow-500 hover:bg-yellow-600 text-white font-semibold px-4 py-2 rounded-lg text-sm transition duration-200">
+                                Archive
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+            @endforeach
+        </tbody>
+    </table>
+</div>
+</div>
+@endsection

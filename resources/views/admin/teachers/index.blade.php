@@ -1,50 +1,61 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Teachers List</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-</head>
-<body class="bg-gray-100">
-    <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-        <div class="px-4 py-6 sm:px-0">
-            <div class="flex justify-between items-center mb-6">
-                <h1 class="text-2xl font-semibold text-gray-900">Teachers List</h1>
-                <a href="{{ route('dashboard') }}" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
-                    Back to Dashboard
-                </a>
-            </div>
+@extends('dashboard.admin')
 
-            <div class="bg-white shadow overflow-hidden sm:rounded-lg">
-                <table class="min-w-full divide-y divide-gray-200">
-                    <thead class="bg-gray-50">
-                        <tr>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody class="bg-white divide-y divide-gray-200">
-                        @foreach($teachers as $teacher)
-                            <tr>
-                                <td class="px-6 py-4 whitespace-nowrap">{{ $teacher->name }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap">{{ $teacher->email }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                                        Active
-                                    </span>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                    <a href="{{ route('teachers.edit', $teacher->id) }}" class="text-indigo-600 hover:text-indigo-900 mr-3">Edit</a>
-                                </td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
+@section('content')
+<div class="container mx-auto px-4">
+    <div class="flex justify-between items-center mb-6">
+        <h1 class="text-2xl font-bold">Teacher Information</h1>
+        <div class="flex gap-4">
+            <a href="{{ route('teachers.upload') }}"
+               onclick="event.preventDefault(); loadContent('{{ route('teachers.upload') }}', 'Batch Upload Teacher');"
+               class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded-lg">
+               Batch Upload
+            </a>
         </div>
     </div>
-</body>
-</html>
+
+    @if(session('success'))
+        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4 text-sm text-center">
+            {{ session('success') }}
+        </div>
+    @endif
+
+    @if(session('error'))
+        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4 text-sm text-center">
+            {{ session('error') }}
+        </div>
+    @endif
+
+    <div class="bg-white shadow-2xl rounded-lg overflow-hidden border border-gray-200">
+        <table class="min-w-full text-center text-sm divide-y divide-gray-300">
+            <thead class="bg-yellow-100">
+                <tr>
+                    <th class="px-6 py-3 text-xs font-bold text-gray-700 uppercase tracking-wider">Name</th>
+                    <th class="px-6 py-3 text-xs font-bold text-gray-700 uppercase tracking-wider">Email</th>
+                    <th class="px-6 py-3 text-xs font-bold text-gray-700 uppercase tracking-wider">Status</th>
+                    <th class="px-6 py-3 text-xs font-bold text-gray-700 uppercase tracking-wider">Actions</th>
+                </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+                @foreach($teachers as $teacher)
+                    <tr class="hover:bg-yellow-50 transition-colors duration-200">
+                        <td class="px-6 py-4 text-gray-800 font-medium">{{ $teacher->name }}</td>
+                        <td class="px-6 py-4 text-gray-700">{{ $teacher->email }}</td>
+                        <td class="px-6 py-4">
+                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                Active
+                            </span>
+                        </td>
+                        <td class="px-4 py-4 whitespace-nowrap text-sm font-medium space-x-2">
+                            <a href="{{ route('teachers.edit', $teacher->id) }}"
+                               onclick="event.preventDefault(); loadContent('{{ route('teachers.edit', $teacher->id) }}', 'Edit Teacher');"
+                               class="bg-green-500 hover:bg-green-600 text-white font-semibold px-4 py-2 rounded-lg text-sm">
+                               Edit
+                            </a>
+                        </td>
+                    </tr>
+                @endforeach
+            </tbody>
+        </table>
+    </div>
+</div>
+@endsection
