@@ -15,6 +15,7 @@ use App\Http\Controllers\TeacherScheduleController;
 use App\Http\Controllers\SectionController;
 use App\Http\Controllers\ScheduleController;
 use App\Http\Controllers\ActivityLogController;
+use App\Http\Controllers\CurriculumController;
 use Illuminate\Support\Facades\Route;
 
 // Set login as default route
@@ -23,8 +24,8 @@ Route::get('/', [AuthController::class, 'showLogin'])->name('login');
 
 Route::get('/school-years-view', [SchoolYearController::class, 'index_view']);
 
- 
- 
+
+
 // Auth Routes
 Route::post('/login', [AuthController::class, 'login'])->name('login.submit');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
@@ -39,12 +40,16 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/dashboard/index', [DashboardController::class, 'showIndexPage'])->name('dashboard.index');
 
-    
+
 
     Route::get('/school-years', [SchoolYearController::class, 'index'])->name('school-years.index');
     Route::resource('school-years', SchoolYearController::class);
     Route::resource('courses', CourseController::class);
+    Route::resource('curriculums', CurriculumController::class);
     Route::put('courses/{course}/archive', [CourseController::class, 'archive'])->name('courses.archive');
+
+
+
 
     // Student Routes
     Route::get('/students/create', [StudentController::class, 'create'])->name('students.create');
@@ -78,6 +83,10 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/teacher/export-sf10/{student}', [TeacherController::class, 'exportSF10'])->name('teacher.export.sf10');
     Route::post('/teacher/handle-excel-upload/{student}', [TeacherController::class, 'handleExcelUpload'])
         ->name('teacher.handle-excel-upload');
+    Route::get('schedules/auto-generate', [ScheduleController::class, 'autoGenerateForm'])->name('schedules.auto-generate-form');
+    Route::post('schedules/auto-generate', [ScheduleController::class, 'autoGenerate'])->name('schedules.auto-generate');
+
+    Route::resource('curriculums', CurriculumController::class);
 });
 
 
@@ -121,9 +130,9 @@ Route::patch('/school-years/{schoolYear}/toggle-active', [SchoolYearController::
 Route::middleware(['auth'])->group(function () {
     Route::get('/activity-logs', [ActivityLogController::class, 'index'])->name('activity-logs.index');
     Route::get('/activity-logs/user/{id}', [ActivityLogController::class, 'userLogs'])->name('activity-logs.user');
-    
-    
-    
+
+
+
 });
 
 Route::middleware(['auth'])->group(function () {

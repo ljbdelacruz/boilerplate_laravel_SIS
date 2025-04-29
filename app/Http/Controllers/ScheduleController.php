@@ -25,13 +25,14 @@ class ScheduleController extends Controller
         return view('schedules.generate', compact('teachers', 'courses'));
     }
 
+
     public function generateSchedule(Request $request)
     {
         // Schedule generation logic will go here
         return redirect()->route('schedules.index')->with('success', 'Schedule generated successfully');
     }
 
-    public function create()
+    public function generate()
     {
         $teachers = User::where('role', 'teacher')->get();
         $courses = Course::all();
@@ -150,5 +151,65 @@ class ScheduleController extends Controller
     {
         $schedule->delete();
         return redirect()->route('schedules.index')->with('success', 'Schedule deleted successfully');
+    }
+
+    public function autoGenerateForm()
+{
+    $schoolYears = \App\Models\SchoolYear::all();
+    $sections = \App\Models\Section::all();
+    $teachers = \App\Models\User::where('role', 'teacher')->get();
+
+    return view('schedules.auto_generate', compact('schoolYears', 'sections', 'teachers'));
+}
+
+public function autoGenerate(Request $request)
+{
+    $validated = $request->validate([
+        'school_year_id' => 'required|exists:school_years,id',
+        'section_id' => 'required|exists:sections,id',
+        'teacher_id' => 'required|exists:users,id',
+    ]);
+
+    $section = \App\Models\Section::findOrFail($validated['section_id']);
+    $teacher = \App\Models\User::findOrFail($validated['teacher_id']);
+    $schoolYear = \App\Models\SchoolYear::findOrFail($validated['school_year_id']);
+
+    // Get all curriculums for this section
+    $curriculums = $section->curriculums()->with('subject')->get();
+
+    foreach ($curriculums as $curriculum) {
+        // Parse time (e.g. "08:00 AM - 09:00 AM")
+        [$start, $end] = array_map('trim', explode('-', $curriculum->time));
+        $start_time = date('H:i', strtotime($start));
+        $end_time = date('H:i', strtotime($end));
+
+        // You can set a default day or customize as needed
+        $day_of_week = 'Monday';
+
+        // Check for existing schedule to avoid duplicates
+        $exists = \App\Models\Schedule::where([
+            'teacher_id' => $teacher->id,
+            'course_id' => $curriculum->subject_id,
+            'section_id' => $section->id,
+            'school_year_id' => $schoolYear->id,
+            'day_of_week' => $day_of_week,
+            'start_time' => $start_time,
+            'end_time' => $end_time,
+        ])->exists();
+
+        if (!$exists) {
+            \App\Models\Schedule::create([
+                'teacher_id' => $teacher->id,
+                'course_id' => $curriculum->subject_id,
+                'section_id' => $section->id,
+                'school_year_id' => $schoolYear->id,
+                'day_of_week' => $day_of_week,
+                'start_time' => $start_time,
+                'end_time' => $end_time,
+            ]);
+        }
+    }
+
+    return redirect()->route('schedules.index')->with('success', 'Schedules auto-generated for section and teacher!');
     }
 }

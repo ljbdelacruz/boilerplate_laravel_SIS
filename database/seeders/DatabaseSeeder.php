@@ -12,6 +12,7 @@ class DatabaseSeeder extends Seeder
             CourseSeeder::class,
             SectionSeeder::class,
             GradeLevelSeeder::class,
+            CurriculumSeeder::class,
         ]);
     }
 }

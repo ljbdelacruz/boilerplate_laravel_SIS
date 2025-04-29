@@ -306,46 +306,10 @@
                         <img src="{{ asset('icons/home.png') }}" class="h-5 w-5 mr-2" alt="Dashboard Icon" />
                         <span class="sidebar-text ml-2">Home</span>
                     </a>
-                    <a href="{{ route('school-years.index') }}" title="School Years"
-                        class="flex items-center px-4 py-2 hover:bg-gray-100 transition rounded nav-link  {{ request()->routeIs('school-years.*') ? 'active-link' : '' }}">
-                        <img src="{{ asset('icons/schoolyr.png') }}" class="h-5 w-5 mr-2" alt="School Year Icon" />
-                        <span class="sidebar-text ml-2">School Years</span>
-                    </a>
-                    <a href="{{ route('courses.index') }}" title="Subjects"
-                        class="flex items-center px-4 py-2 hover:bg-gray-100 transition rounded nav-link  {{ request()->routeIs('courses.*') ? 'active-link' : '' }}">
-                        <img src="{{ asset('icons/course.png') }}" class="h-5 w-5 mr-2" alt="Course Icon" />
-                        <span class="sidebar-text ml-2">Subjects</span>
-                    </a>
-                    <a href="{{ route('users.index') }}" title="Users"
-                        class="flex items-center px-4 py-2 hover:bg-gray-100 transition rounded nav-link  {{ request()->routeIs('users.*') ? 'active-link' : '' }}">
-                        <img src="{{ asset('icons/user.png') }}" class="h-5 w-5 mr-2" alt="Users Icon" />
-                        <span class="sidebar-text ml-2">Users</span>
-                    </a>
-                    <a href="{{ route('students.index') }}" title="Students"
-                        class="flex items-center px-4 py-2 hover:bg-gray-100 transition rounded nav-link  {{ request()->routeIs('students.*') ? 'active-link' : '' }}">
-                        <img src="{{ asset('icons/student.png') }}" class="h-5 w-5 mr-2" alt="Student Icon" />
-                        <span class="sidebar-text ml-2">Students</span>
-                    </a>
-                    <a href="{{ route('teachers.index') }}" title="Teachers"
-                        class="flex items-center px-4 py-2 hover:bg-gray-100 transition rounded nav-link  {{ request()->routeIs('teachers.*') ? 'active-link' : '' }}">
-                        <img src="{{ asset('icons/teacher.png') }}" class="h-5 w-5 mr-2" alt="Teacher Icon" />
-                        <span class="sidebar-text ml-2">Teachers</span>
-                    </a>
-                    <a href="{{ route('schedules.index') }}" title="Schedules"
-                        class="flex items-center px-4 py-2 hover:bg-gray-100 transition rounded nav-link  {{ request()->routeIs('schedules.*') ? 'active-link' : '' }}">
-                        <img src="{{ asset('icons/schedule.png') }}" class="h-5 w-5 mr-2" alt="Schedule Icon" />
-                        <span class="sidebar-text ml-2">Schedules</span>
-                    </a>
-                    <a href="{{ route('sections.index') }}" title="Sections"
-                        class="flex items-center px-4 py-2 hover:bg-gray-100 transition rounded nav-link  {{ request()->routeIs('sections.*') ? 'active-link' : '' }}">
-                        <img src="{{ asset('icons/section.png') }}" class="h-5 w-5 mr-2" alt="Section Icon" />
-                        <span class="sidebar-text ml-2">Sections</span>
-                    </a>
-                    <a href="{{ route('activity-logs.index') }}" title="Activity Logs"
-                        class="flex items-center px-4 py-2 hover:bg-gray-100 transition rounded nav-link ">
-                        <img src="{{ asset('icons/log.png') }}" class="h-5 w-5 mr-2" alt="Log Icon" />
-                        <span class="sidebar-text ml-2">Activity Logs</span>
-                    </a>
+
+                    <!-- Include sidebar template -->
+                    @include('layouts.sidebar')
+
                 </nav>
             </div>
         </div>
