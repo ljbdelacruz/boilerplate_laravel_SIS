@@ -13,6 +13,7 @@ return new class extends Migration
                 $table->id();
                 $table->string('name');
                 $table->string('grade_level');
+                $table->foreignId('adviser_id')->nullable()->constrained('users')->onDelete('set null');
                 $table->foreignId('school_year_id')->constrained()->onDelete('cascade');
                 $table->boolean('is_active')->default(true);
                 $table->timestamps();

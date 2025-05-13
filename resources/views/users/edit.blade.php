@@ -1,186 +1,172 @@
 @extends('dashboard.admin')
 
-@section('title', 'Edit User')
-
 @section('content')
-<div class="container mx-auto px-4">
-    <div class="max-w-3xl mx-auto">
-
-        <div class="flex justify-start mb-4">
-            <a href="{{ route('users.index') }}"
-                onclick="event.preventDefault(); 
-                    const userLink = [...document.querySelectorAll('.nav-link')]
-                        .find(link => link.textContent.replace(/\s+/g, ' ').trim() === 'Users'); 
-                    loadContent('{{ route('users.index') }}', userLink || 'Users');"
-                class="bg-yellow-500 hover:bg-yellow-600 text-white font-semibold py-2 px-4 rounded-lg shadow transition">
-                ← Back to List
-            </a>
-        </div>
-
-        @if ($errors->any())
-            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-                <ul class="list-disc list-inside">
-                    @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
+<div id="page-meta" data-title="Edit User" data-parent="Users">
+    <div class="container mx-auto px-4">
+        <div class="max-w-3xl mx-auto">
+            <div class="flex justify-start mt-6 mb-4">
+                <a href="{{ route('users.index') }}"
+                    onclick="event.preventDefault(); 
+                                                    const schoolYearLink = [...document.querySelectorAll('.nav-link')]
+                                                       .find(link => link.textContent.replace(/\s+/g, ' ').trim() === 'Users'); 
+                                                   const title = schoolYearLink?.getAttribute('data-title') || 'Users'; 
+                                                    loadContent('{{ route('users.index') }}', 'Users Module', 'users');"
+                    class="bg-yellow-500 hover:bg-yellow-600 text-white font-semibold py-2 px-4 rounded-lg shadow transition">
+                    ← Back to List
+                </a>
             </div>
-        @endif
 
-        <div class="bg-yellow-100 shadow-lg rounded-lg p-8 transition">
-            <form id="update-user-form" action="{{ route('users.update', $user) }}" method="POST">
-                @csrf
-                @method('PUT')
-
-                <div class="mb-6 text-left">
-                    <label class="block text-gray-800 font-medium mb-2" for="name">Name</label>
-                    <input type="text" id="name" name="name"
-                        value="{{ old('name', $user->name) }}"
-                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400"
-                required>
+            @if ($errors->any())
+                <div id="errorAlert" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+                    <ul class="list-disc list-inside">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
                 </div>
+            @endif
 
-                <div class="mb-6 text-left">
-                    <label class="block text-gray-800 font-medium mb-2" for="email">Email</label>
-                    <input type="email" id="email" name="email"
-                        value="{{ old('email', $user->email) }}"
-                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400"
-                required>
-                </div>
+            <div class="bg-yellow-100 shadow-lg rounded-lg p-8 transition">
+                <form id="update-user-form" action="{{ route('users.update', $user) }}" method="POST">
+                    @csrf
+                    @method('PUT')
 
-                <div class="mb-6 text-left">
-                    <label class="block text-gray-800 font-medium mb-2" for="password">New Password</label>
-                    <input type="password" id="password" name="password"
-                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400"
-                required>
-                    <p class="text-sm text-gray-500 mt-1">*Leave blank to keep current password.</p>
-                </div>
+                    <!-- Name -->
+                    <div class="mb-6 text-left">
+                        <label for="name" class="block text-gray-800 font-medium mb-2">Name</label>
+                        <input type="text" id="name" name="name" value="{{ old('name', $user->name) }}"
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-400"
+                            required>
+                    </div>
 
-                <div class="mb-6 text-left">
-                    <label class="block text-gray-800 font-medium mb-2" for="password_confirmation">Confirm Password</label>
-                    <input type="password" id="password_confirmation" name="password_confirmation"
-                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400"
-                required>
-                    <p class="text-sm text-gray-500 mt-1">*Re-enter new password if you're changing it.</p>
-                </div>
+                    <!-- Email -->
+                    <div class="mb-6 text-left">
+                        <label for="email" class="block text-gray-800 font-medium mb-2">Email</label>
+                        <input type="email" id="email" name="email" value="{{ old('email', $user->email) }}"
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-400"
+                            required>
+                    </div>
 
-                <div class="mb-6 text-left">
-                    <label class="block text-gray-800 font-medium mb-2" for="role">Role</label>
-                    <select name="role" id="role"
-                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-400" required>
-                        <option value="">Select Role</option>
-                        <option value="admin" {{ old('role', $user->role) == 'admin' ? 'selected' : '' }}>Admin</option>
-                        <option value="teacher" {{ old('role', $user->role) == 'teacher' ? 'selected' : '' }}>Teacher</option>
-                        <option value="student" {{ old('role', $user->role) == 'student' ? 'selected' : '' }}>Student</option>
-                    </select>
-                </div>
+                    <!-- Password -->
+                    <div class="mb-6 text-left relative">
+                        <label for="password" class="block text-gray-800 font-medium mb-2">New Password</label>
+                        <input type="password" id="password" name="password"
+                            class="w-full px-4 py-2 pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-400">
+                        <img src="{{ asset('icons/Hidden.png') }}" alt="Toggle visibility"
+                            class="toggle-password cursor-pointer w-5 h-5 absolute right-4 top-11"
+                            data-target="password">
+                        <p class="text-sm text-gray-500 mt-1">*Leave blank to keep current password.</p>
+                    </div>
 
-                <div id="teacher_fields" class="mb-6 hidden">
-                    <label class="block text-gray-800 font-medium mb-2" for="subject">Subject</label>
-                    <input type="text" name="subject" id="subject"
-                        value="{{ old('subject', $user->subject) }}"
-                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-400">
-                </div>
+                    <!-- Confirm Password -->
+                    <div class="mb-6 text-left relative">
+                        <label for="password_confirmation" class="block text-gray-800 font-medium mb-2">Confirm
+                            Password</label>
+                        <input type="password" id="password_confirmation" name="password_confirmation"
+                            class="w-full px-4 py-2 pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-400">
+                        <img src="{{ asset('icons/Hidden.png') }}" alt="Toggle visibility"
+                            class="toggle-password cursor-pointer w-5 h-5 absolute right-4 top-11"
+                            data-target="password_confirmation">
+                        <p class="text-sm text-gray-500 mt-1">*Re-enter new password if you're changing it.</p>
+                    </div>
 
-                <div id="student_fields" class="mb-6 hidden">
-                    <label class="block text-gray-800 font-medium mb-2" for="grade_level">Grade Level</label>
-                    <input type="text" name="grade_level" id="grade_level"
-                        value="{{ old('grade_level', $user->grade_level) }}"
-                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-400">
-                </div>
+                    <!-- Role -->
+                    <div class="mb-6 text-left">
+                        <label for="role" class="block text-gray-800 font-medium mb-2">Role</label>
+                        <select name="role" id="role"
+                            class="custom-select w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-400"
+                            required>
+                            <option value="">Select Role</option>
+                            <option value="admin" {{ old('role', $user->role) == 'admin' ? 'selected' : '' }}>Admin
+                            </option>
+                            <option value="teacher" {{ old('role', $user->role) == 'teacher' ? 'selected' : '' }}>Teacher
+                            </option>
+                        </select>
+                    </div>
 
-                <div class="flex justify-end pt-4">
-                    <a href="#"
-                        onclick="event.preventDefault();
-                            const form = document.getElementById('update-user-form');
-                            const formData = new FormData(form);
-                            const userLink = [...document.querySelectorAll('.nav-link')].find(link => link.textContent.trim() === 'Users');
+                    <!-- Teacher Fields -->
+                    <div id="teacher_fields"
+                        class="mb-6 text-left {{ old('role', $user->role) === 'teacher' ? '' : 'hidden' }}">
+                        <label class="block text-gray-800 font-medium mb-2" for="specialization">Specialization</label>
+                        <input type="text" id="specialization" name="specialization"
+                            value="{{ old('specialization', $user->teacher->specialization ?? '') }}"
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-400">
 
-                            const loadingPopup = document.createElement('div');
-                            loadingPopup.className = 'fixed inset-0 flex justify-center items-center bg-black bg-opacity-50 z-50';
-                            loadingPopup.innerHTML =
-                                `<div class='bg-white p-6 rounded shadow text-center'>
-                                    <div class='custom-spinner h-10 w-10 mx-auto mb-2'></div>
-                                    <p class='text-gray-700 font-medium'>Updating User...</p>
-                                </div>`;
-                            document.body.appendChild(loadingPopup);
+                        <label class="block text-gray-800 font-medium mb-2 mt-4" for="bio">Bio</label>
+                        <textarea id="bio" name="bio" rows="3"
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-400">{{ old('bio', $user->teacher->bio ?? '') }}</textarea>
 
-                            fetch(form.action, {
-                                method: 'POST',
-                                headers: {
-                                    'X-CSRF-TOKEN': form.querySelector('[name=_token]').value,
-                                    'X-Requested-With': 'XMLHttpRequest'
-                                },
-                                body: formData
-                            }).then(response => {
-                                if (response.ok) {
-                                    setTimeout(() => {
-                                        loadingPopup.remove();
+                        <label class="block text-gray-800 font-medium mb-2 mt-4" for="contact_number">Contact
+                            Number</label>
+                        <input type="text" id="contact_number" name="contact_number"
+                            value="{{ old('contact_number', $user->teacher->contact_number ?? '') }}"
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-400">
+                    </div>
 
-                                        const successPopup = document.createElement('div');
-                                        successPopup.className = 'fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-green-500 text-white px-6 py-4 rounded shadow-lg text-lg font-semibold z-50';
-                                        successPopup.textContent = '✅ User updated successfully!';
-                                        document.body.appendChild(successPopup);
+                    <!-- Submit Button -->
+                    <div class="flex justify-end pt-4">
+                        <button type="submit"
+                            class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-6 rounded-lg shadow transition">
+                            Update User
+                        </button>
+                    </div>
+                    </form>
+            </div>
+            <style>
+                select.custom-select {
+                    appearance: none;
+                    -webkit-appearance: none;
+                    -moz-appearance: none;
+                    background-image: url("data:image/svg+xml,%3Csvg fill='none' stroke='%23333' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+                    background-repeat: no-repeat;
+                    background-position: right 1rem center;
+                    background-size: 1.25rem;
+                    padding-right: 3rem;
+                }
 
-                                        setTimeout(() => {
-                                            successPopup.remove();
-                                            loadContent('{{ route('users.index') }}', userLink || 'Users');
-                                        }, 700);
-                                    }, 500);
-                                } else {
-                                    loadingPopup.remove();
-                                    alert('Something went wrong. Please check your input.');
-                                }
-                            }).catch(error => {
-                                loadingPopup.remove();
-                                alert('An error occurred while updating.');
-                            });"
-                        class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-6 rounded-lg shadow transition">
-                        Update User
-                    </a>
-                </div>
+                .fade-in {
+                    opacity: 1;
+                    transform: translateY(0);
+                    max-height: 500px;
+                    /* enough space for content */
+                    margin-bottom: 1rem;
+                    padding-top: 1rem;
+                    padding-bottom: 1rem;
+                    transition: all 0.5s ease-in-out;
+                    overflow: hidden;
+                }
 
-                <style>
-                    .custom-spinner {
-                        border: 4px solid #3b82f6;
-                        border-top-color: transparent;
-                        border-radius: 50%;
-                        animation: spin-slow 2s linear infinite;
-                    }
+                .fade-out {
+                    opacity: 0;
+                    transform: translateY(20px);
+                    max-height: 0;
+                    margin-bottom: 0;
+                    padding-top: 0;
+                    padding-bottom: 0;
+                    transition: all 0.5s ease-in-out;
+                    overflow: hidden;
+                }
+            </style>
+            <script>
+                document.addEventListener('DOMContentLoaded', () => {
+                    const fadeWithDelay = (id) => {
+                        const el = document.getElementById(id);
+                        if (el) {
+                            // Add fade-in immediately
+                            el.classList.add('fade-in');
 
-                    @keyframes spin-slow {
-                        0% {
-                            transform: rotate(0deg);
+                            // Then remove fade-in and add fade-out after 5s
+                            setTimeout(() => {
+                                el.classList.remove('fade-in');
+                                el.classList.add('fade-out');
+                            }, 5000);
                         }
-                        100% {
-                            transform: rotate(360deg);
-                        }
-                    }
-                </style>
-            </form>
+                    };
+
+                    fadeWithDelay('errorAlert');
+                });
+            </script>
         </div>
     </div>
 </div>
-
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-        const role = document.getElementById('role');
-        const teacherFields = document.getElementById('teacher_fields');
-        const studentFields = document.getElementById('student_fields');
-
-        function toggleFields() {
-            teacherFields.classList.add('hidden');
-            studentFields.classList.add('hidden');
-
-            if (role.value === 'teacher') {
-                teacherFields.classList.remove('hidden');
-            } else if (role.value === 'student') {
-                studentFields.classList.remove('hidden');
-            }
-        }
-
-        role.addEventListener('change', toggleFields);
-        toggleFields(); // Run on load
-    });
-</script>
 @endsection

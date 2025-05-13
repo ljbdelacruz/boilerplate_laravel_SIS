@@ -6,15 +6,26 @@ use App\Models\Schedule;
 use App\Models\Teacher;
 use App\Models\Course;
 use App\Models\Section;
+use App\Models\Curriculum;
 use App\Models\User;
 use App\Models\SchoolYear;  // Add this line
+use App\Traits\ActivityLogger;
 use Illuminate\Http\Request;
+
 
 class ScheduleController extends Controller
 {
+    use ActivityLogger;
     public function index()
     {
-        $schedules = Schedule::with(['teacher', 'course', 'section', 'schoolYear'])->get();
+        $activeSchoolYear = SchoolYear::where('is_active', true)->first();
+
+        if ($activeSchoolYear) {
+            $schedules = Schedule::where('school_year_id', $activeSchoolYear->id)->get();
+        } else {
+            $schedules = collect(); // Empty collection if no active school year
+        }
+
         return view('schedules.index', compact('schedules'));
     }
 
@@ -25,28 +36,176 @@ class ScheduleController extends Controller
         return view('schedules.generate', compact('teachers', 'courses'));
     }
 
-
-    public function generateSchedule(Request $request)
+    public function generate(Request $request)
     {
-        // Schedule generation logic will go here
+        $this->logActivity('schedule', 'Generated new schedule', 'Schedule generation completed');
+        
         return redirect()->route('schedules.index')->with('success', 'Schedule generated successfully');
     }
-
-    public function generate()
+    public function autoGenerateForm()
     {
+        $schoolYears = SchoolYear::where('is_active', true)->get();
+        $teachers = User::where('role', 'teacher')->orderBy('name')->get();
+        // Fetch active courses 
+        $courses = Course::where('is_active', true)->orderBy('grade_level')->get();
+
+        return view('schedules.auto_generate', 
+        compact('schoolYears', 'courses', 'teachers'));
+    
+    }
+
+    public function autoGenerate(Request $request)
+    {
+        $validated = $request->validate([
+            'school_year_id' => 'required|exists:school_years,id',
+            'course_id' => 'required|exists:courses,id',
+            'teacher_id' => 'required|exists:users,id',
+        ]);
+
+        $course = Course::findOrFail($validated['course_id']);
+        $teacher = User::findOrFail($validated['teacher_id']);
+        $schoolYear = SchoolYear::findOrFail($validated['school_year_id']);
+
+        // Find all curriculum entries for the selected course and sy
+        $curriculums = Curriculum::where('subject_id', $course->id)
+            ->whereHas('section', function ($query) use ($schoolYear) {
+                $query->where('school_year_id', $schoolYear->id);
+            })
+            ->with(['section', 'subject']) 
+            ->get();
+
+        // Check if any curriculum items were found if not, redirect with a warning
+        if ($curriculums->isEmpty()) {
+            $errors = [
+                'error' => "No curriculum entries found for the course '{$course->name} ({$course->grade_level})' in the selected school year. Cannot generate schedule."
+            ];
+            return redirect()->route('schedules.auto-generate-form')->with('info', $errors['error'])->withInput();
+       }
+
+        $conflicts = [];
+        $schedulesToCreate = [];
+        $existingCount = 0;
+
+        foreach ($curriculums as $curriculum) {
+            // Ensure the curriculum item has a section and subject linked
+            if (is_null($curriculum->section) || is_null($curriculum->subject)) {
+                \Log::error("Curriculum item ID {$curriculum->id} is missing section or subject relationship.");
+                $conflicts[] = "Skipping item: Curriculum ID {$curriculum->id} has incomplete data.";
+                continue; 
+            }
+            $section = $curriculum->section;
+            $sectionName = $section->name;
+            $start_time = $curriculum->start_time;
+            $end_time = $curriculum->end_time;
+            $subjectName = $curriculum->subject->name;
+            $timeDisplay = \Carbon\Carbon::parse($start_time)->format('h:i A') . ' - ' . \Carbon\Carbon::parse($end_time)->format('h:i A');
+
+            // Check for Teacher Conflict
+            $teacherConflict = Schedule::where('teacher_id', $teacher->id)
+                ->where('school_year_id', $schoolYear->id)
+                ->where('start_time', '<', $end_time)
+                ->where('end_time', '>', $start_time)
+                ->where('section_id', '!=', $section->id) // Check conflict in ohter sections
+                ->with(['section', 'course']) 
+                ->first();
+
+            if ($teacherConflict) {
+                $conflicts[] = "Teacher Conflict for Section '{$sectionName}': {$teacher->name} is already scheduled for {$teacherConflict->course->name} in Section {$teacherConflict->section->name} during {$timeDisplay}.";
+                continue; 
+            }
+
+            // Check for Section Conflict
+            $sectionConflict = Schedule::where('section_id', $section->id)
+                ->where('school_year_id', $schoolYear->id)
+                ->where('start_time', '<', $end_time)
+                ->where('end_time', '>', $start_time)
+                ->with(['teacher', 'course']) 
+                ->first();
+
+            if ($sectionConflict) {
+                $conflicts[] = "Section Conflict for Section '{$sectionName}': Section {$sectionName} already has {$sectionConflict->course->name} with {$sectionConflict->teacher->name} scheduled during {$timeDisplay}.";
+                continue; 
+            }
+
+            // Check if this exact schedule already exists
+            $exactExists = Schedule::where([
+                'teacher_id' => $teacher->id,
+                'course_id' => $course->id,
+                'section_id' => $section->id,
+                'school_year_id' => $schoolYear->id,
+                'start_time' => $start_time,
+                'end_time' => $end_time,
+            ])->exists();
+
+            if ($exactExists) {
+                $existingCount++;
+                continue; 
+            }
+
+            // If no conflicts and not existing, proceed to create the schedule
+            $schedulesToCreate[] = [
+                'teacher_id' => $teacher->id,
+                'course_id' => $curriculum->subject_id,
+                'section_id' => $section->id,
+                'school_year_id' => $schoolYear->id,
+                'start_time' => $start_time,
+                'end_time' => $end_time,
+                'created_at' => now(), 
+                'updated_at' => now(), 
+            ];
+        
+        }
+
+        if (!empty($conflicts)) {
+            // Redirect back with conflict errors messages
+            return redirect()->route('schedules.auto-generate-form')
+                ->withErrors(['conflict' => $conflicts])
+                ->withInput();
+        } elseif (!empty($schedulesToCreate)) {
+            // Bulk insert the valid schedules
+            Schedule::insert($schedulesToCreate);
+            $message = count($schedulesToCreate) . " new schedule(s) generated successfully for Teacher '{$teacher->name}' and Course '{$course->name}'.";
+            if ($existingCount > 0) {
+                $message .= " {$existingCount} schedule(s) already existed.";
+            }
+            return redirect()->route('schedules.index')->with('success', $message);
+        } else {
+            // No conflicts and no new schedules to create so just redirect
+            return redirect()->route('schedules.index')->with('info', 'No new schedules needed to be generated for this section and teacher.');
+        }
+    }
+
+    public function create()
+    {
+        $activeSchoolYear = SchoolYear::where('is_active', true)->first();
+
+        if ($activeSchoolYear) {
+            $sections = Section::where('school_year_id', $activeSchoolYear->id)->get(); 
+        } else {
+            $sections = collect();
+        }
+
         $teachers = User::where('role', 'teacher')->get();
         $courses = Course::all();
-        $sections = Section::where('is_active', true)->get();
-        $schoolYears = SchoolYear::where('is_active', true)->get();  // Add this line
+        $schoolYears = SchoolYear::where('is_active', true)->get();
+
         return view('schedules.create', compact('teachers', 'courses', 'sections', 'schoolYears'));
     }
 
     public function edit(Schedule $schedule)
     {
+        $activeSchoolYear = SchoolYear::where('is_active', true)->first();
+
+        if ($activeSchoolYear) {
+            $sections = Section::where('school_year_id', $activeSchoolYear->id)->get(); 
+        } else {
+            $sections = collect();
+        }
+
         $teachers = User::where('role', 'teacher')->get();
         $courses = Course::all();
-        $sections = Section::where('is_active', true)->get();
         $schoolYears = SchoolYear::where('is_active', true)->get();
+
         return view('schedules.edit', compact('schedule', 'teachers', 'courses', 'sections', 'schoolYears'));
     }
 
@@ -57,47 +216,49 @@ class ScheduleController extends Controller
             'course_id' => 'required|exists:courses,id',
             'section_id' => 'required|exists:sections,id',
             'school_year_id' => 'required|exists:school_years,id',
-            'days' => 'required|array',
-            'days.*' => 'in:Monday,Tuesday,Wednesday,Thursday,Friday',
             'start_time' => 'required|date_format:H:i',
             'end_time' => 'required|date_format:H:i|after:start_time',
         ]);
+        // Check for conflicts
+        $conflict = Schedule::where('school_year_id', $validated['school_year_id'])
+            ->where(function ($query) use ($validated) {
+                $query->where(function ($q) use ($validated) {
+                    $q->where('start_time', '<', $validated['end_time'])
+                        ->where('end_time', '>', $validated['start_time']);
+                });
+            })
+            ->where(function ($query) use ($validated) {
+                $query->where('teacher_id', $validated['teacher_id'])
+                    ->orWhere('section_id', $validated['section_id']);
+            })
+            ->exists();
 
-        foreach ($validated['days'] as $day) {
-            // Check for conflicts
-            $conflict = Schedule::where('day_of_week', $day)
-                ->where('school_year_id', $validated['school_year_id'])
-                ->where(function ($query) use ($validated) {
-                    $query->where(function ($q) use ($validated) {
-                        $q->where('start_time', '<', $validated['end_time'])
-                            ->where('end_time', '>', $validated['start_time']);
-                    });
-                })
-                ->where(function ($query) use ($validated) {
-                    $query->where('teacher_id', $validated['teacher_id'])
-                        ->orWhere('section_id', $validated['section_id']);
-                })
-                ->exists();
+        if ($conflict) {
+            return redirect()->back()
+                ->withInput()
+                ->withErrors(['error' => 'Schedule conflict detected for the selected teacher, section, or time.']);
 
-            if ($conflict) {
-                return redirect()->back()
-                    ->withInput()
-                    ->withErrors(['error' => 'Schedule conflict detected for the selected day and time.']);
-            }
-
-            // Create the schedule if no conflict
-            Schedule::create([
-                'teacher_id' => $validated['teacher_id'],
-                'course_id' => $validated['course_id'],
-                'section_id' => $validated['section_id'],
-                'school_year_id' => $validated['school_year_id'],
-                'day_of_week' => $day,
-                'start_time' => $validated['start_time'],
-                'end_time' => $validated['end_time'],
-            ]);
         }
 
-        return redirect()->route('schedules.index')->with('success', 'Schedules created successfully');
+        // Create the schedule and log the activity
+         Schedule::create([
+            'teacher_id' => $validated['teacher_id'],
+            'course_id' => $validated['course_id'],
+            'section_id' => $validated['section_id'],
+            'school_year_id' => $validated['school_year_id'],
+            'start_time' => $validated['start_time'],
+            'end_time' => $validated['end_time'],
+        ]);
+
+        // Log the activity using the trait
+        $teacher = User::find($validated['teacher_id']);
+        $course = Course::find($validated['course_id']);
+        $section = Section::find($validated['section_id']);
+           
+        $this->logActivity('schedule', 'Created new schedule', "Added schedule for Teacher: {$teacher->name}, Course: {$course->name}, Section: {$section->name}, " . 
+               "Time: {$validated['start_time']} - {$validated['end_time']}");
+
+        return redirect()->route('schedules.index')->with('success', 'Schedule created successfully');
     }
 
     public function manage()
@@ -113,14 +274,12 @@ class ScheduleController extends Controller
             'course_id' => 'required|exists:courses,id',
             'section_id' => 'required|exists:sections,id',
             'school_year_id' => 'required|exists:school_years,id',
-            'day_of_week' => 'required|in:Monday,Tuesday,Wednesday,Thursday,Friday',
             'start_time' => 'required|date_format:H:i',
             'end_time' => 'required|date_format:H:i|after:start_time',
         ]);
 
         // Check for conflicts
-        $conflict = Schedule::where('day_of_week', $validated['day_of_week'])
-            ->where('school_year_id', $validated['school_year_id'])
+        $conflict = Schedule::where('school_year_id', $validated['school_year_id'])
             ->where(function ($query) use ($validated) {
                 $query->where(function ($q) use ($validated) {
                     $q->where('start_time', '<', $validated['end_time'])
@@ -134,82 +293,53 @@ class ScheduleController extends Controller
             ->where('id', '!=', $schedule->id) // Exclude the current schedule
             ->exists();
 
+        $oldData = $schedule->toArray(); 
+
         if ($conflict) {
-            return redirect()->back()
+            return redirect()->route('schedules.edit', $schedule->id)
                 ->withInput()
-                ->withErrors(['error' => 'Schedule conflict detected for the selected day and time.']);
+                ->withErrors(['error' => 'Schedule conflict detected for the selected teacher, section, or time.']);
         }
 
-        // Update the schedule if no conflict
         $schedule->update($validated);
+        $newData = $schedule->fresh()->toArray();
 
-        return redirect()->route('schedules.index')
-            ->with('success', 'Schedule updated successfully');
+        // For a more descriptive log message
+        $teacher = User::find($validated['teacher_id']);
+        $course = Course::find($validated['course_id']);
+        $section = Section::find($validated['section_id']);
+        $description = "Updated schedule for Teacher: " . ($teacher ? $teacher->name : 'N/A') .
+                       ", Course: " . ($course ? $course->name : 'N/A') .
+                       ", Section: " . ($section ? $section->name : 'N/A') .
+                       ", Time: {$validated['start_time']} - {$validated['end_time']}";
+
+        $this->logActivity(
+            'update',
+            $description,
+            'schedules', // module
+            $oldData,
+            $newData,
+            'success'
+        );
+
+        return redirect()->route('schedules.index')->with('success', 'Schedule updated successfully');
     }
 
     public function destroy(Schedule $schedule)
     {
+        // Log the activity before deleting
+        $teacher = $schedule->teacher;
+        $course = $schedule->course;
+        $section = $schedule->section;
+        $timeInfo = "{$schedule->start_time} - {$schedule->end_time}";
+        
+        $this->logActivity(
+            'schedule', 
+            'Deleted schedule', 
+            "Removed schedule for Teacher: {$teacher->name}, Course: {$course->name}, Section: {$section->name}, Time: {$timeInfo}"
+        );
+
         $schedule->delete();
         return redirect()->route('schedules.index')->with('success', 'Schedule deleted successfully');
-    }
-
-    public function autoGenerateForm()
-{
-    $schoolYears = \App\Models\SchoolYear::all();
-    $sections = \App\Models\Section::all();
-    $teachers = \App\Models\User::where('role', 'teacher')->get();
-
-    return view('schedules.auto_generate', compact('schoolYears', 'sections', 'teachers'));
-}
-
-public function autoGenerate(Request $request)
-{
-    $validated = $request->validate([
-        'school_year_id' => 'required|exists:school_years,id',
-        'section_id' => 'required|exists:sections,id',
-        'teacher_id' => 'required|exists:users,id',
-    ]);
-
-    $section = \App\Models\Section::findOrFail($validated['section_id']);
-    $teacher = \App\Models\User::findOrFail($validated['teacher_id']);
-    $schoolYear = \App\Models\SchoolYear::findOrFail($validated['school_year_id']);
-
-    // Get all curriculums for this section
-    $curriculums = $section->curriculums()->with('subject')->get();
-
-    foreach ($curriculums as $curriculum) {
-        // Parse time (e.g. "08:00 AM - 09:00 AM")
-        [$start, $end] = array_map('trim', explode('-', $curriculum->time));
-        $start_time = date('H:i', strtotime($start));
-        $end_time = date('H:i', strtotime($end));
-
-        // You can set a default day or customize as needed
-        $day_of_week = 'Monday';
-
-        // Check for existing schedule to avoid duplicates
-        $exists = \App\Models\Schedule::where([
-            'teacher_id' => $teacher->id,
-            'course_id' => $curriculum->subject_id,
-            'section_id' => $section->id,
-            'school_year_id' => $schoolYear->id,
-            'day_of_week' => $day_of_week,
-            'start_time' => $start_time,
-            'end_time' => $end_time,
-        ])->exists();
-
-        if (!$exists) {
-            \App\Models\Schedule::create([
-                'teacher_id' => $teacher->id,
-                'course_id' => $curriculum->subject_id,
-                'section_id' => $section->id,
-                'school_year_id' => $schoolYear->id,
-                'day_of_week' => $day_of_week,
-                'start_time' => $start_time,
-                'end_time' => $end_time,
-            ]);
-        }
-    }
-
-    return redirect()->route('schedules.index')->with('success', 'Schedules auto-generated for section and teacher!');
     }
 }

@@ -3,38 +3,111 @@
 namespace App\Http\Controllers;
 
 use App\Models\SchoolYear;
+use App\Traits\ActivityLogger;
 use Illuminate\Http\Request;
 
 class SchoolYearController extends Controller
 {
+    use ActivityLogger;
     public function index()
     {
         $schoolYears = SchoolYear::where('is_archived', false)
             ->orderBy('start_year', 'desc')
             ->paginate(10);
-        return view('school-years.index', compact('schoolYears'));
+        // Count the number of active school years
+        $activeSchoolYearCount = SchoolYear::where('is_archived', false)
+            ->where('is_active', true)->count();
+        return view('school-years.index', compact('schoolYears', 'activeSchoolYearCount'));
     }
 
     public function create()
     {
-        return view('school-years.create');
+        $latestSchoolYear = SchoolYear::where('is_archived', false)
+                                      ->orderBy('end_year', 'desc')
+                                      ->first();
+
+        $suggestedStartYear = date('Y');
+        $suggestedEndYear = date('Y') + 1;
+
+        if ($latestSchoolYear) {
+            $suggestedStartYear = $latestSchoolYear->end_year;
+            $suggestedEndYear = $latestSchoolYear->end_year + 1;
+        }
+        return view('school-years.create', compact('suggestedStartYear', 'suggestedEndYear'));
     }
 
     public function store(Request $request)
-    {
+{
+    try {
         $validated = $request->validate([
             'start_year' => 'required|integer|digits:4',
-            'end_year' => 'required|integer|digits:4|gt:start_year',
+            'end_year' => [
+                'required',
+                'integer',
+                'digits:4',
+                'gt:start_year',
+                function ($attribute, $value, $fail) use ($request) {
+                    if ($value - $request->start_year !== 1) {
+                        $fail('The school year range must be exactly one year.');
+                    }
+                }
+            ]
         ]);
 
-        // Deactivate all other school years if this one is set as active
+        // Check for conflicting school years
+        $overlap = SchoolYear::where('is_archived', false)
+            ->where(function ($query) use ($validated) {
+                $query->whereBetween('start_year', [$validated['start_year'], $validated['end_year'] - 1])
+                    ->orWhereBetween('end_year', [$validated['start_year'] + 1, $validated['end_year']])
+                    ->orWhere(function ($query) use ($validated) {
+                        $query->where('start_year', '<', $validated['start_year'])
+                            ->where('end_year', '>', $validated['end_year']);
+                    });
+            })->exists();
+
+        if ($overlap) {
+            $this->logActivity(
+                'create',
+                'Warning: Failed to create school year - overlap detected',
+                'school_year',
+                null,
+                $validated,
+                'error'
+            );
+            
+            return redirect()->back()
+                ->withErrors(['error' => 'A school year with overlapping dates already exists.'])
+                ->withInput();
+        }
+
         if ($request->has('is_active') && $request->is_active) {
             SchoolYear::where('is_active', true)->update(['is_active' => false]);
         }
 
-        SchoolYear::create($validated);
+        $schoolYear = SchoolYear::create($validated);
+
+        $this->logActivity(
+            'create',
+            'Created new school year: ' . $schoolYear->start_year . '-' . $schoolYear->end_year,
+            'school_year',
+            null,
+            $schoolYear->toArray(),
+            'success'
+        );
+
         return redirect()->route('school-years.index')->with('success', 'School Year created successfully');
+    } catch (\Exception $e) {
+        $this->logActivity(
+            'create',
+            'Warning: Failed to create school year: ' . $e->getMessage(),
+            'school_year',
+            null,
+            $validated ?? null,
+            'error'
+        );
+        throw $e;
     }
+}
 
     public function edit(SchoolYear $schoolYear)
     {
@@ -43,34 +116,144 @@ class SchoolYearController extends Controller
 
     public function update(Request $request, SchoolYear $schoolYear)
     {
-        $validated = $request->validate([
-            'start_year' => 'required|integer|digits:4',
-            'end_year' => 'required|integer|digits:4|gt:start_year',
-        ]);
-
-        $schoolYear->update($validated);
-
-        return redirect()->route('school-years.index')
-            ->with('success', 'School Year updated successfully');
+        try {
+            $oldData = $schoolYear->toArray();
+            $validated = $request->validate([
+                'start_year' => 'required|integer|digits:4',
+                'end_year' => [
+                    'required',
+                    'integer',
+                    'digits:4',
+                    'gt:start_year',
+                    function ($attribute, $value, $fail) use ($request) {
+                        if ($value - $request->start_year !== 1) {
+                            $fail('The school year range must be exactly one year.');
+                        }
+                    }
+                ]
+            ]);
+    
+            $overlap = SchoolYear::where('id', '!=', $schoolYear->id)
+                ->where('is_archived', false)
+                ->where(function ($query) use ($validated) {
+                    $query->whereBetween('start_year', [$validated['start_year'], $validated['end_year'] - 1])
+                        ->orWhereBetween('end_year', [$validated['start_year'] + 1, $validated['end_year']])
+                        ->orWhere(function ($query) use ($validated) {
+                            $query->where('start_year', '<', $validated['start_year'])
+                                ->where('end_year', '>', $validated['end_year']);
+                        });
+                })->exists();
+    
+            if ($overlap) {
+                $this->logActivity(
+                    'update',
+                    'Warning: Failed to update school year - overlap detected',
+                    'school_year',
+                    $oldData,
+                    $validated,
+                    'error'
+                );
+                
+                return redirect()->back()
+                    ->withErrors(['error' => 'A school year with overlapping dates already exists.'])
+                    ->withInput();
+            }
+    
+            $schoolYear->update($validated);
+    
+            $this->logActivity(
+                'update',
+                'Updated school year: ' . $schoolYear->start_year . '-' . $schoolYear->end_year,
+                'school_year',
+                $oldData,
+                $schoolYear->fresh()->toArray(),
+                'success'
+            );
+    
+            return redirect()->route('school-years.index')
+                ->with('success', 'School Year updated successfully');
+        } catch (\Exception $e) {
+            $this->logActivity(
+                'update',
+                'Warning: Failed to update school year: ' . $e->getMessage(),
+                'school_year',
+                $oldData ?? null,
+                $validated ?? null,
+                'error'
+            );
+            throw $e;
+        }
     }
 
     public function destroy(SchoolYear $schoolYear)
     {
-        $schoolYear->update(['is_archived' => true]);
-        return redirect()->route('school-years.index')
-            ->with('success', 'School Year archived successfully');
+        try {
+            $oldData = $schoolYear->toArray();
+            $schoolYear->update(['is_archived' => true]);
+    
+            $this->logActivity(
+                'archive',
+                'Archived school year: ' . $schoolYear->start_year . '-' . $schoolYear->end_year,
+                'school_year',
+                $oldData,
+                $schoolYear->fresh()->toArray(),
+                'success'
+            );
+    
+            return redirect()->route('school-years.index')
+                ->with('success', 'School Year archived successfully');
+        } catch (\Exception $e) {
+            $this->logActivity(
+                'archive',
+                'Warning: Failed to archive school year: ' . $e->getMessage(),
+                'school_year',
+                $oldData ?? null,
+                null,
+                'error'
+            );
+            throw $e;
+        }
     }
-
     public function toggleActive(SchoolYear $schoolYear)
     {
-        // If we're activating this school year, deactivate all others first
-        if (!$schoolYear->is_active) {
-            SchoolYear::where('is_active', true)->update(['is_active' => false]);
+        // Prevent deactivating the last active school year
+        if ($schoolYear->is_active) {
+            $activeCount = SchoolYear::where('is_archived', false)->where('is_active', true)->count();
+            if ($activeCount <= 1) {
+                return redirect()->route('school-years.index')->with('error', 'Cannot deactivate the only active school year.');
+            }
         }
-        
-        $schoolYear->update(['is_active' => !$schoolYear->is_active]);
-        
-        return redirect()->route('school-years.index')
-            ->with('success', 'School year status updated successfully');
+        // If we're activating this school year, deactivate all others first
+        try {
+            $oldData = $schoolYear->toArray();
+            
+            if (!$schoolYear->is_active) {
+                SchoolYear::where('is_active', true)->update(['is_active' => false]);
+            }
+            
+            $schoolYear->update(['is_active' => !$schoolYear->is_active]);
+    
+            $this->logActivity(
+                'toggle',
+                'Changed school year status to: ' . ($schoolYear->is_active ? 'active' : 'inactive'),
+                'school_year',
+                $oldData,
+                $schoolYear->fresh()->toArray(),
+                'success'
+            );
+            
+            return redirect()->route('school-years.index')
+                ->with('success', 'School year status updated successfully');
+        } catch (\Exception $e) {
+            $this->logActivity(
+                'toggle',
+                'Warning: Failed to toggle school year status: ' . $e->getMessage(),
+                'school_year',
+                $oldData ?? null,
+                null,
+                'error'
+            );
+            throw $e;
+        }
     }
 }

@@ -24,4 +24,9 @@ class Teacher extends Model
                     ->withPivot('school_year_id')
                     ->withTimestamps();
     }
+
+    public function advisedSections()
+    {
+        return $this->hasMany(Section::class, 'adviser_id');
+    }
 }

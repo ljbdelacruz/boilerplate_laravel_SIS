@@ -14,7 +14,8 @@ class Curriculum extends Model
     protected $fillable = [
         'section_id',
         'subject_id',
-        'time',
+        'start_time',
+        'end_time',
     ];
 
     public function section()

@@ -8,19 +8,11 @@ return new class extends Migration
 {
     public function up()
     {
-        if (!Schema::hasColumn('courses', 'price')) {
-            Schema::table('courses', function (Blueprint $table) {
-                $table->decimal('price', 10, 2)->after('description');
-            });
-        }
+       
     }
 
     public function down()
     {
-        if (Schema::hasColumn('courses', 'price')) {
-            Schema::table('courses', function (Blueprint $table) {
-                $table->dropColumn('price');
-            });
-        }
+    
     }
 };

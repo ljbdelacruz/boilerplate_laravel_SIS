@@ -8,13 +8,26 @@ use Illuminate\Http\Request;
 
 class ActivityLogController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $users = User::with(['activityLogs' => function($query) {
-            $query->latest()->take(3);
-        }])->paginate(5);
+        $selectedRole = $request->input('role');
+        $allRoles = User::select('role')->distinct()->whereIn('role', ['admin', 'teacher'])->orderBy('role')->pluck('role');
 
-        return view('activity-logs.index', compact('users'));
+        $usersQuery = User::with(['activityLogs' => function($query) {
+            $query->latest()->take(3);
+        }]);
+
+        if ($selectedRole) {
+            $usersQuery->where('role', $selectedRole);
+        } else {
+            $usersQuery->whereIn('role', ['admin', 'teacher']);
+        }
+        
+        $users = $usersQuery->orderBy('name')->paginate(10);
+
+        $users->appends(['role' => $selectedRole]);
+
+        return view('activity-logs.index', compact('users', 'allRoles', 'selectedRole'));
     }
 
     public function userLogs($userId)
@@ -26,6 +39,4 @@ class ActivityLogController extends Controller
 
         return view('activity-logs.user', compact('user', 'logs'));
     }
-
-    
 }

@@ -10,7 +10,7 @@ class Course extends Model
         'code',
         'name',
         'description',
-        'price',
+        'grade_level',
         'is_active'
     ];
 
@@ -26,6 +26,16 @@ class Course extends Model
         return $this->belongsToMany(User::class, 'teacher_courses', 'course_id', 'teacher_id')
                     ->withPivot('school_year_id')
                     ->withTimestamps();
+    }
+
+    public function parent()
+    {
+        return $this->belongsTo(Course::class, 'parent_id');
+    }
+
+    public function children()
+    {
+        return $this->hasMany(Course::class, 'parent_id');
     }
 
     public function schedules()

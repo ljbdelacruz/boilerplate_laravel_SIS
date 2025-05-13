@@ -10,5 +10,5 @@ echo "Waiting for MySQL to be ready..."
 docker-compose exec app php artisan key:generate
 
 # run migrations and seeders
-docker-compose exec app php artisan migrate:fresh --seed
+docker-compose exec app php artisan migrate --seed
 

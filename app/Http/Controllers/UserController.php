@@ -13,12 +13,15 @@ use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Imports\StudentsImport;
 use App\Imports\TeachersImport;
+use App\Traits\ActivityLogger;
 
 class UserController extends Controller
 {
+    use ActivityLogger;
+
     public function index()
     {
-        $users = User::paginate(10);
+        $users = User::whereIn('role', ['admin', 'teacher'])->paginate(10);
         return view('users.index', compact('users'));
     }
 
@@ -29,13 +32,16 @@ class UserController extends Controller
                                 ->orderBy('start_year', 'desc')
                                 ->get();
         $gradeLevels = \App\Models\GradeLevel::orderBy('grade_level')->get();
+    
         return view('users.create', compact('sections', 'schoolYears', 'gradeLevels'));
+        
     }
 
     public function store(Request $request)
     {
-        // In the store method, add 'lrn' to the validation rules
-        $validated = $request->validate([
+        try {
+            // In the store method, add 'lrn' to the validation rules
+            $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8|confirmed',
@@ -61,46 +67,68 @@ class UserController extends Controller
             'address' => 'required_if:role,student|string|max:255',
         ]);
 
-        DB::transaction(function () use ($validated) {
-            $user = User::create([
-                'name' => $validated['role'] === 'student' 
-                    ? $validated['first_name'] . ' ' . $validated['last_name']
-                    : $validated['name'],
-                'email' => $validated['email'],
-                'password' => Hash::make($validated['password']),
-                'role' => $validated['role']
-            ]);
-
-            if ($validated['role'] === 'teacher') {
-                Teacher::create([
-                    'user_id' => $user->id,
-                    'specialization' => $validated['specialization'],
-                    'bio' => $validated['bio'] ?? null,
-                    'contact_number' => $validated['contact_number']
+    
+            DB::transaction(function () use ($validated) {
+                $user = User::create([
+                    'name' => $validated['role'] === 'student' 
+                        ? $validated['first_name'] . ' ' . $validated['last_name']
+                        : $validated['name'],
+                    'email' => $validated['email'],
+                    'password' => Hash::make($validated['password']),
+                    'role' => $validated['role']
                 ]);
-            } elseif ($validated['role'] === 'student') {
-                $gradeLevel = (int) filter_var($validated['grade_level'], FILTER_SANITIZE_NUMBER_INT);
-                
-                Student::create([
-                    'user_id' => $user->id,
-                    'lrn' => $validated['lrn'], // Change this line to use LRN
-                    'first_name' => $validated['first_name'],
-                    'last_name' => $validated['last_name'],
-                    'middle_name' => $validated['middle_name'],
-                    'birth_date' => $validated['birth_date'],
-                    'gender' => strtolower($validated['gender']),
-                    'contact_number' => $validated['contact_number'] ?? null,
-                    'guardian_name' => $validated['guardian_name'],
-                    'guardian_contact' => $validated['guardian_contact'],
-                    'address' => $validated['address'],
-                    'section_id' => $validated['section_id'],
-                    'grade_level' => $gradeLevel,
-                    'school_year_id' => $validated['school_year_id']
-                ]);
-            }
-        });
-
-        return redirect()->route('users.index')->with('success', 'User created successfully');
+            
+                if ($validated['role'] === 'teacher') {
+                    Teacher::create([
+                        'user_id' => $user->id, 
+                        'specialization' => $validated['specialization'],
+                        'bio' => $validated['bio'] ?? null,
+                        'contact_number' => $validated['contact_number']
+                    ]);
+                    
+                    $this->logActivity(
+                        'create',
+                        'Created new teacher: ' . $user->name,
+                        'users',
+                        null,
+                        array_merge($user->toArray(), [
+                            'specialization' => $validated['specialization'],
+                            'bio' => $validated['bio'] ?? null,
+                            'contact_number' => $validated['contact_number']
+                        ]),
+                        'success'
+                    );
+                } elseif ($validated['role'] === 'student') {
+                    Student::create([/* ...existing student creation... */]);
+                    
+                    $this->logActivity(
+                        'create',
+                        'Created new student: ' . $user->name,
+                        'users',
+                        null,
+                        array_merge($user->toArray(), [
+                            'student_id' => $validated['student_id'],
+                            'grade_level' => $validated['grade_level'],
+                            'section_id' => $validated['section_id']
+                        ]),
+                        'success'
+                    );
+                }
+            });
+    
+            return redirect()->route('users.index')->with('success', 'User created successfully');
+        } catch (\Exception $e) {
+            $this->logActivity(
+                'create',
+                'Warning: Failed to create user: ' . $e->getMessage(),
+                'users',
+                null,
+                $validated ?? null,
+                'error'
+            );
+            throw $e;
+        }
+        
     }
 
     public function edit(User $user)
@@ -135,22 +163,52 @@ class UserController extends Controller
         $request->validate([
             'file' => 'required|mimes:xlsx,xls',
         ]);
-
+    
         try {
             DB::beginTransaction();
             Excel::import(new StudentsImport, $request->file('file'));
             DB::commit();
-            return redirect()->route('users.index')->with('success', 'Students imported successfully');
+    
+            $this->logActivity(
+                'import',
+                'Successfully imported students from Excel file',
+                'users',
+                null,
+                ['file_name' => $request->file('file')->getClientOriginalName()],
+                'success'
+            );
+    
+            return redirect()->route('students.index')->with('success', 'Students imported successfully');
         } catch (\Maatwebsite\Excel\Validators\ValidationException $e) {
             DB::rollBack();
             $failures = $e->failures();
-            $errors = [];
-            foreach ($failures as $failure) {
-                $errors[] = "Row {$failure->row()}: {$failure->errors()[0]}";
-            }
+            $errors = collect($failures)->map(fn($failure) => "Row {$failure->row()}: {$failure->errors()[0]}")->toArray();
+            
+            $this->logActivity(
+                'import',
+                'Warning: Failed to import students: Validation errors',
+                'users',
+                null,
+                [
+                    'file_name' => $request->file('file')->getClientOriginalName(),
+                    'errors' => $errors
+                ],
+                'error'
+            );
+    
             return back()->with('error', 'Validation errors in Excel file: ' . implode(', ', $errors));
         } catch (\Exception $e) {
             DB::rollBack();
+            
+            $this->logActivity(
+                'import',
+                'Warning: Failed to import students: ' . $e->getMessage(),
+                'users',
+                null,
+                ['file_name' => $request->file('file')->getClientOriginalName()],
+                'error'
+            );
+    
             return back()->with('error', 'Error importing students: ' . $e->getMessage());
         }
     }
@@ -165,7 +223,7 @@ class UserController extends Controller
             DB::beginTransaction();
             Excel::import(new TeachersImport, $request->file('file'));
             DB::commit();
-            return redirect()->route('users.index')->with('success', 'Teachers imported successfully');
+            return redirect()->route('teachers.index')->with('success', 'Teachers imported successfully');
         } catch (\Maatwebsite\Excel\Validators\ValidationException $e) {
             DB::rollBack();
             $failures = $e->failures();

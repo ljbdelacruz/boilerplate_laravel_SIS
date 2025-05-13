@@ -13,8 +13,8 @@ return new class extends Migration
             $table->string('name');
             $table->string('code');
             $table->text('description')->nullable();
-            $table->integer('grade_level');
-            $table->decimal('price', 10, 2)->default(0);
+            $table->string('grade_level');
+            $table->unsignedBigInteger('parent_id')->nullable();
             $table->boolean('is_active')->default(true);
             $table->timestamps();
         });

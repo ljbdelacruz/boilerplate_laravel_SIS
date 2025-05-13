@@ -2,12 +2,12 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin | Ususan Elementary School</title>
     <link rel="icon" href="{{ asset('icons/logo.png') }}" />
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.7.13/lottie.min.js"></script>
 
     <style>
         .fade-in {
@@ -78,18 +78,15 @@
 
         #sidebar .school-name {
             white-space: normal;
-            /* Allow wrapping */
             word-break: break-word;
-            /* Allow breaking words if necessary */
             overflow-wrap: break-word;
-            /* Ensure wrapping happens correctly */
             line-height: 1.25;
             display: inline-block;
             height: 2.0rem;
             width: 10.0rem;
         }
 
-        /* Make sure nav container layout stays consistent */
+
         #sidebar .nav-links-container {
             transition: padding 0.3s ease;
             padding-top: 1rem;
@@ -98,7 +95,6 @@
             flex-direction: column;
         }
 
-        /* Prevent nav-links from jumping when expanding */
         #sidebar .nav-link {
             transition: all 0.3s ease;
             display: flex;
@@ -113,14 +109,13 @@
         }
 
 
-        /* Hide text and logo in collapsed mode */
+
         #sidebar.collapsed .sidebar-logo,
         #sidebar.collapsed .school-name,
         #sidebar.collapsed .sidebar-text {
             display: none !important;
         }
 
-        /* Center icons vertically and horizontally */
         #sidebar.collapsed .nav-link {
             justify-content: center;
             padding: 0.75rem 0;
@@ -135,7 +130,7 @@
             margin-right: 0;
         }
 
-        /* Keep full width and fixed height for uniform hover */
+
         #sidebar.collapsed .nav-link:hover,
         #sidebar.collapsed .active-link {
             background-color: #f3f4f6;
@@ -151,7 +146,7 @@
             padding-top: 0rem;
         }
 
-        /* ✅ Adjust main content */
+
         #main {
             transition: margin-left 0.3s ease;
         }
@@ -270,29 +265,59 @@
                 margin-left: 0 !important;
             }
         }
+
+        #dropdownMenu {
+            min-width: 7rem;
+            background-color: #e6db8b;
+            border-radius: 0.6rem;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.16);
+            z-index: 50;
+            align-items: center;
+            overflow: hidden;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        #dropdownMenu.show {
+            opacity: 1;
+            /* Fully visible when 'show' class is added */
+            pointer-events: auto;
+            /* Allow interactions when shown */
+        }
+
+        #dropdownMenu .hover-red:hover {
+            color: red;
+        }
+
+        #dropdownMenu button {
+            transition: all 0.2s ease;
+        }
+
+        #dropdownToggle {
+            transition: opacity 0.2s ease;
+        }
     </style>
 </head>
 
-<body class="bg-gray-100 text-gray-800">
+<body class="bg-gray-100">
     <!-- Sidebar -->
     <div class="flex">
         <div id="sidebar"
             class="bg-yellow-300 h-screen w-64 fixed top-0 left-0 transition-all duration-300 ease-in-out flex flex-col z-50 overflow-hidden round-lg"
             style="background-color: #edd26f">
             <!-- Logo -->
-            <div class="h-16 px-4 flex items-center justify-between shadow-lg border-b sidebar-header"
-                style="background-color: #EAD180;">
+            <div class="h-16 px-4 flex items-center justify-between shadow-lg sidebar-header"
+                style="background-color: #EAD180; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.25);">
                 <!-- Logo + School Name -->
                 <div class="flex items-center space-x-3 overflow-hidden">
-                    <img src="{{ asset('icons/logo.png') }}" class="h-10 w-10 flex-shrink-0 sidebar-logo"
-                        alt="Logo" />
+                    <img src="{{ asset('icons/logo.png') }}" class="h-10 w-10 flex-shrink-0 sidebar-logo" alt="Logo" />
                     <div class="w-full overflow-hidden">
                         <span class="text-sm font-semibold sidebar-text school-name block">
                             Ususan Elementary School
                         </span>
                     </div>
                 </div>
-
                 <!-- Burger Icon -->
                 <img src="{{ asset('icons/burger-bar.png') }}" alt="Menu" id="burger-toggle"
                     class="h-6 w-6 cursor-pointer hover:opacity-80 transition" />
@@ -301,24 +326,76 @@
             <!-- Modules Navigation -->
             <div class="nav-links-container flex flex-col flex-grow">
                 <nav class="space-y-1 mt-4 flex-1 overflow-y-auto px-2" id="nav-links">
-                    <a href="{{ route('dashboard.index') }}" title="Home"
-                        class="flex items-center px-4 py-2 hover:bg-gray-100 transition rounded nav-link ">
-                        <img src="{{ asset('icons/home.png') }}" class="h-5 w-5 mr-2" alt="Dashboard Icon" />
+                    <a href="{{ route('dashboard.index') }}"
+                        class="flex items-center px-4 py-2 hover:bg-gray-100 transition rounded nav-link"
+                        data-url="{{ route('dashboard.index') }}" data-title="Home">
+                        <img src="{{ asset('icons/home.png') }}" class="h-5 w-5 mr-2" alt="dashboard Icon" />
                         <span class="sidebar-text ml-2">Home</span>
                     </a>
-
-                    <!-- Include sidebar template -->
-                    @include('layouts.sidebar')
-
+                    <a href="{{ route('school-years.index') }}"
+                        class="flex items-center px-4 py-2 hover:bg-gray-100 transition rounded nav-link"
+                        data-url="{{ route('school-years.index') }}" data-title="School Years Module"
+                        data-group="school-years">
+                        <img src="{{ asset('icons/schoolyr.png') }}" class="h-5 w-5 mr-2" alt="School Year Icon" />
+                        <span class="sidebar-text ml-2">School Years</span>
+                    </a>
+                    <a href="{{ route('courses.index') }}"
+                        class="flex items-center px-4 py-2 hover:bg-gray-100 transition rounded nav-link"
+                        data-url="{{ route('courses.index') }}" data-title="Subjects Module" data-group="courses">
+                        <img src="{{ asset('icons/course.png') }}" class="h-5 w-5 mr-2" alt="Subject Icon" />
+                        <span class="sidebar-text ml-2">Subjects</span>
+                    </a>
+                    <a href="{{ route('users.index') }}"
+                        class="flex items-center px-4 py-2 hover:bg-gray-100 transition rounded nav-link"
+                        data-url="{{ route('users.index') }}" data-title="Users Module" data-group="users">
+                        <img src="{{ asset('icons/user.png') }}" class="h-5 w-5 mr-2" alt="User Icon" />
+                        <span class="sidebar-text ml-2">Users</span>
+                    </a>
+                    <a href="{{ route('students.index') }}"
+                        class="flex items-center px-4 py-2 hover:bg-gray-100 transition rounded nav-link"
+                        data-url="{{ route('students.index') }}" data-title="Students Module" data-group="students">
+                        <img src="{{ asset('icons/student.png') }}" class="h-5 w-5 mr-2" alt="Student Icon" />
+                        <span class="sidebar-text ml-2">Students</span>
+                    </a>
+                    <a href="{{ route('teachers.index') }}"
+                        class="flex items-center px-4 py-2 hover:bg-gray-100 transition rounded nav-link"
+                        data-url="{{ route('teachers.index') }}" data-title="Teachers Module" data-group="teachers">
+                        <img src="{{ asset('icons/teacher.png') }}" class="h-5 w-5 mr-2" alt="Teacher Icon" />
+                        <span class="sidebar-text ml-2">Teachers</span>
+                    </a>
+                    <a href="{{ route('curriculums.index') }}"
+                        class="flex items-center px-4 py-2 hover:bg-gray-100 transition rounded nav-link"
+                        data-url="{{ route('curriculums.index') }}" data-title="Curriculums Module"
+                        data-group="curriculums">
+                        <img src="{{ asset('icons/curriculum.png') }}" class="h-5 w-5 mr-2" alt="Curriculum Icon" />
+                        <span class="sidebar-text ml-2">Curriculums</span>
+                    </a>
+                    <a href="{{ route('schedules.index') }}"
+                        class="flex items-center px-4 py-2 hover:bg-gray-100 transition rounded nav-link"
+                        data-url="{{ route('schedules.index') }}" data-title="Schedules Module" data-group="schedules">
+                        <img src="{{ asset('icons/schedule.png') }}" class="h-5 w-5 mr-2" alt="Schedule Icon" />
+                        <span class="sidebar-text ml-2">Schedules</span>
+                    </a>
+                    <a href="{{ route('sections.index') }}"
+                        class="flex items-center px-4 py-2 hover:bg-gray-100 transition rounded nav-link"
+                        data-url="{{ route('sections.index') }}" data-title="Sections Module" data-group="sections">
+                        <img src="{{ asset('icons/section.png') }}" class="h-5 w-5 mr-2" alt="Section Icon" />
+                        <span class="sidebar-text ml-2">Sections</span>
+                    </a>
+                    <a href="{{ route('activity-logs.index') }}"
+                        class="flex items-center px-4 py-2 hover:bg-gray-100 transition rounded nav-link"
+                        data-url="{{ route('activity-logs.index') }}" data-title="Activity Logs"
+                        data-group="activity-logs">
+                        <img src="{{ asset('icons/log.png') }}" class="h-5 w-5 mr-2" alt="Activity Log Icon" />
+                        <span class="sidebar-text ml-2">Activity Logs</span>
+                    </a>
                 </nav>
             </div>
         </div>
 
-        <!-- Main Content Area -->
         <div class="ml-64 flex-1 min-h-screen flex flex-col transition-all duration-300 topbar" id="main">
-
             <nav class="relative bg-gray-50 h-16 px-4 flex items-center justify-between sticky top-0 z-40 shadow-lg"
-                style="background-color: #EAD180;">
+                style="background-color: #EAD180; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.25);">
                 <!-- Title -->
                 <!-- Burger Icon for Small Screens -->
                 <div class="flex items-center gap-2">
@@ -328,25 +405,40 @@
                         Admin | Home
                     </div>
                 </div>
-                <!-- Right: User & Logout -->
-                <div class="flex items-center gap-4">
+
+                {{-- Right: User Info + Dropdown (unchanged) --}}
+                <div class="flex items-center gap-4 relative">
                     <!-- User Info -->
                     <div class="flex flex-col items-end leading-tight user-info">
                         <span class="text-xs text-red-500 font-semibold">ADMIN</span>
                         <span class="font-bold text-[20px]">{{ Auth::user()->name }}</span>
                     </div>
 
-                    <!-- Logout (Vertically Centered) -->
-                    <form method="POST" action="{{ route('logout') }}" class="flex items-center">
-                        @csrf
-                        <button type="submit" class="focus:outline-none">
-                            <img src="{{ asset('icons/logout.png') }}" alt="Logout"
-                                class="h-8 w-8 hover:opacity-80 transition" title="Logout" />
+                    <div class="relative">
+                        <button id="dropdownToggle"
+                            class="flex items-center justify-center w-7 h-7 rounded-full transition-transform duration-200 transform hover:scale-110 focus:outline-none"
+                            style="background-color: #000000; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);">
+                            <svg class="w-5 h-5 transition-colors duration-200" fill="none" stroke="currentColor"
+                                stroke-width="3" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"
+                                style="color: #ffffff;">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+                            </svg>
                         </button>
-                    </form>
-                </div>
 
+                        <!-- Dropdown Menu -->
+                        <div id="dropdownMenu"
+                            class="absolute right-0 top-9 mt-2 border border-gray-300 shadow-lg z-50 opacity-0 pointer-events-none transition-opacity duration-300">
+                            <form method="POST" action="{{ route('logout') }}" class="w-full">
+                                @csrf
+                                <button type="submit"
+                                    class="block w-full px-4 py-2 text-sm text-gray-700 hover:bg-[#e6db8b] hover-red font-bold">
+                                    Logout
+                                </button>
+                            </form>
+                        </div>
+                    </div>
             </nav>
+
             <!-- Dynamic Content -->
             <div class="p-6 overflow-y-auto bg-gray-50 flex-1 transition-opacity duration-300 opacity-100"
                 id="content-frame">
@@ -355,242 +447,300 @@
                 </div>
             </div>
 
-            <script>
-                const titleMap = {
-                    'Home': 'Admin | Home',
-
-                    'School Years': 'Admin | School Years Module',
-                    'Add School Year': 'Admin | Adding School Year',
-                    'Edit School Year': 'Admin | Edit School Year',
-
-                    'Subjects': 'Admin | Subjects Module',
-                    'Add Subject': 'Admin | Adding Subject',
-                    'Edit Subject': 'Admin | Edit Subject',
-
-                    'Users': 'Admin | Users Module',
-                    'Add User': 'Admin | Create User',
-                    'Edit User': 'Admin | Edit User',
-
-                    'Students': 'Admin | Students Module',
-                    'Add Student': 'Admin | Add Student',
-                    'Batch Upload Student': 'Admin | Batch Upload',
-                    'View Student': 'Admin | View Student',
-                    'Edit Student': 'Admin | Edit Student',
-
-                    'Teachers': 'Admin | Teachers Module',
-                    'Add Teacher': 'Admin | Add New Teacher',
-                    'Batch Upload Teacher': 'Admin | Batch Upload',
-                    'Edit Teacher': 'Admin | Edit Teacher',
-
-                    'Schedules': 'Admin | Schedules Module',
-                    'Add Schedule': 'Admin | Add Schedule',
-                    'Edit Schedule': 'Admin | Edit Schedule',
-
-                    'Sections': 'Admin | Sections Module',
-                    'Add Section': 'Admin | Add Section',
-                    'Edit Section': 'Admin | Edit Section',
+        </div>
+    </div>
 
 
-                    'Activity Logs': 'Admin | Activity Logs',
-                    'View Activity Log': 'Admin | View Activity Log'
-                };
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const contentFrame = document.getElementById("content-frame");
+            const pageTitle = document.getElementById("page-title");
+            const pageMeta = document.getElementById("page-meta");
+            const sidebar = document.getElementById('sidebar');
+            const burgerSidebar = document.getElementById('burger-toggle');
+            const burgerMain = document.getElementById('main-burger-toggle');
+            const toggleButton = document.getElementById('dropdownToggle');
+            const dropdownMenu = document.getElementById('dropdownMenu');
+            let lottieAnimation = null;
 
-                function updatePageTitle(moduleName) {
-                    const titleEl = document.getElementById('page-title');
-                    titleEl.textContent = titleMap[moduleName] || titleMap['Home'];
-                }
+            function setActiveLink(url) {
+                const currentPath = new URL(url, window.location.origin).pathname;
 
-                const contentFrame = document.getElementById("content-frame");
-                const links = document.querySelectorAll(".nav-link");
+                document.querySelectorAll('.nav-link').forEach(link => {
+                    const linkUrl = new URL(link.getAttribute('data-url'), window.location.origin).pathname;
+                    const linkGroup = link.getAttribute('data-group');
+                    const linkTitle = link.getAttribute('data-title');
 
-                function loadContent(url, linkOrName) {
-                    const moduleName = typeof linkOrName === 'string' ?
-                        linkOrName :
-                        linkOrName?.textContent.replace(/\s+/g, ' ').trim() || 'Home';
+                    const isMatch = currentPath === linkUrl ||
+                        currentPath.startsWith(linkUrl) ||
+                        (linkGroup && currentPath.includes(linkGroup));
 
-                    updatePageTitle(moduleName);
+                    link.classList.toggle('active-link', isMatch);
 
-                    contentFrame.innerHTML = `
-        <div class="flex flex-col justify-center items-center h-full w-full">
-            <div id="lottie-loader" class="w-32 h-32"></div>
-        </div>`;
-
-                    lottie.loadAnimation({
-                        container: document.getElementById('lottie-loader'),
-                        renderer: 'svg',
-                        loop: true,
-                        autoplay: true,
-                        path: '/icons/animations/bookanimation.json'
-                    });
-
-                    fetch(url)
-                        .then(res => res.text())
-                        .then(html => {
-                            const parser = new DOMParser();
-                            const doc = parser.parseFromString(html, "text/html");
-                            const newC = doc.querySelector("#content-frame")?.innerHTML || doc.body.innerHTML;
-
-                            contentFrame.innerHTML = `<div class="fade-in">${newC}</div>`;
-                            history.pushState(null, "", url);
-
-                            links.forEach(l => l.classList.remove("active-link"));
-
-                            if (linkOrName instanceof Element) {
-                                linkOrName.classList.add("active-link");
-                            } else {
-                                const fallbackMap = {
-                                    'Add School Year': 'School Years',
-                                    'Edit School Year': 'School Years',
-
-                                    'Add Subject': 'Subjects',
-                                    'Edit Subject': 'Subjects',
-
-                                    'Add User': 'Users',
-                                    'Edit User': 'Users',
-
-                                    'Add Student': 'Students',
-                                    'Batch Upload Student': 'Students',
-                                    'View Student': 'Students',
-                                    'Edit Student': 'Students',
-
-                                    'Add Teacher': 'Teachers',
-                                    'Batch Upload Teacher': 'Teachers',
-                                    'Edit Teacher': 'Teachers',
-
-                                    'Add Schedule': 'Schedules',
-                                    'Edit Schedule': 'Schedules',
-
-                                    'Add Section': 'Sections',
-                                    'Edit Section': 'Sections',
-
-                                    'View Activity Log': 'Activity Logs'
-
-                                };
-                                const fallbackLabel = fallbackMap[linkOrName] || linkOrName;
-                                const fallbackLink = [...links].find(l =>
-                                    l.textContent.replace(/\s+/g, " ").trim() === fallbackLabel
-                                );
-                                if (fallbackLink) fallbackLink.classList.add("active-link");
-                            }
-                        })
-                        .catch(err => {
-                            contentFrame.innerHTML = '<p class="text-red-500">Failed to load content.</p>';
-                            console.error(err);
-                        });
-                }
-
-                // Click handlers
-                links.forEach(link => {
-                    link.addEventListener("click", e => {
-                        e.preventDefault();
-                        loadContent(link.href, link);
-                    });
+                    if (isMatch && pageTitle) {
+                        pageTitle.textContent = 'Admin | ' + linkTitle;
+                    }
                 });
+            }
 
-                // On page load: load the current page OR fallback to Dashboard
-                window.addEventListener("DOMContentLoaded", () => {
-                    const path = window.location.pathname;
-                    const activeLink = Array.from(links).find(l => l.pathname === path);
+            function showLoaderInFrame() {
+                contentFrame.innerHTML = `
+            <div class="flex flex-col justify-center items-center h-full w-full">
+                <div id="lottie-loader" class="w-32 h-32"></div>
+            </div>
+        `;
+                contentFrame.style.opacity = 1;
 
-                    if (activeLink) {
-                        loadContent(activeLink.href, activeLink);
+                lottieAnimation = lottie.loadAnimation({
+                    container: document.getElementById('lottie-loader'),
+                    renderer: 'svg',
+                    loop: true,
+                    autoplay: true,
+                    path: '/icons/animations/bookanimation.json'
+                });
+            }
+
+            function loadPage(url, push = true) {
+                showLoaderInFrame();
+
+                fetch(url)
+                    .then(res => res.text())
+                    .then(html => {
+                        const parser = new DOMParser();
+                        const doc = parser.parseFromString(html, 'text/html');
+                        const newContent = doc.querySelector('#content-frame')?.innerHTML;
+
+                        setTimeout(() => {
+                            if (lottieAnimation) {
+                                lottieAnimation.destroy();
+                                lottieAnimation = null;
+                            }
+
+                            if (newContent) {
+                                contentFrame.style.opacity = 0;
+                                contentFrame.innerHTML = newContent;
+
+                                doc.querySelectorAll("script").forEach(oldScript => {
+                                    const newScript = document.createElement("script");
+                                    if (oldScript.src) {
+                                        if (!document.querySelector(`script[src="${oldScript.src}"]`)) {
+                                            newScript.src = oldScript.src;
+                                            document.body.appendChild(newScript);
+                                        }
+                                    } else {
+                                        newScript.textContent = oldScript.textContent;
+                                        document.body.appendChild(newScript);
+                                    }
+                                    oldScript.remove();
+                                });
+
+                                const meta = contentFrame.querySelector('#page-meta');
+                                if (meta) {
+                                    const newTitle = meta.getAttribute('data-title');
+                                    if (pageTitle && newTitle) {
+                                        pageTitle.textContent = 'Admin | ' + newTitle;
+                                    }
+                                } else {
+                                    setActiveLink(url);
+                                }
+
+                                if (url.includes('users/create') || url.match(/users\/\d+\/edit/)) {
+                                    if (typeof initializeUserFormScripts === 'function') {
+                                        initializeUserFormScripts();
+                                    }
+                                }
+
+                                if (url.includes('curriculum')) {
+                                    if (typeof initCurriculumView === 'function') {
+                                        initCurriculumView();
+                                    }
+                                }
+
+                                contentFrame.style.opacity = 1;
+
+                                if (push) {
+                                    history.pushState({ path: url }, '', url);
+                                }
+                            } else {
+                                contentFrame.innerHTML = "<p class='text-red-500'>Error loading content.</p>";
+                            }
+                        }, 400);
+                    })
+                    .catch(() => {
+                        contentFrame.innerHTML = "<p class='text-red-500'>Failed to load page.</p>";
+                    });
+            }
+
+            function loadContent(url, title, group = '') {
+                if (pageTitle && title) {
+                    pageTitle.textContent = 'Admin | ' + title;
+                }
+                loadPage(url);
+            }
+
+            window.loadContent = loadContent;
+
+            // Set initial active link
+            const currentUrl = window.location.href;
+            setActiveLink(currentUrl);
+
+            if (pageMeta) {
+                const customTitle = pageMeta.getAttribute('data-title');
+                if (customTitle && pageTitle) {
+                    pageTitle.textContent = 'Admin | ' + customTitle;
+                }
+
+                const parentModule = pageMeta.dataset.parent?.trim();
+                if (parentModule) {
+                    document.querySelectorAll(".nav-link").forEach(link => link.classList.remove("active-link"));
+
+                    const matchingLink = [...document.querySelectorAll(".nav-link")].find(link =>
+                        link.textContent.trim() === parentModule
+                    );
+
+                    if (matchingLink) {
+                        matchingLink.classList.add("active-link");
+
+                        const submenu = matchingLink.nextElementSibling;
+                        if (submenu?.classList.contains("submenu")) {
+                            submenu.style.display = 'block';
+                        }
+                    }
+                }
+            }
+
+            if (currentUrl.includes('users/create') || currentUrl.match(/users\/\d+\/edit/)) {
+                if (typeof initializeUserFormScripts === 'function') {
+                    initializeUserFormScripts();
+                }
+            }
+
+            if (currentUrl.includes('curriculum')) {
+                if (typeof initCurriculumView === 'function') {
+                    initCurriculumView();
+                }
+            }
+
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const url = this.getAttribute('data-url');
+                    loadContent(url, this.getAttribute('data-title'), this.getAttribute('data-group'));
+                });
+            });
+
+            window.addEventListener('popstate', function (e) {
+                if (e.state?.path) {
+                    loadPage(e.state.path, false);
+                }
+            });
+
+            if (window.location.pathname === '/dashboard') {
+                const defaultUrl = document.querySelector('.nav-link[data-title="Home"]')?.getAttribute('data-url');
+                if (defaultUrl) {
+                    loadContent(defaultUrl, 'Home');
+                }
+            }
+
+            // SIDEBAR BEHAVIOR
+            function isSmallScreen() {
+                return window.innerWidth <= 1024;
+            }
+
+            function toggleSidebar() {
+                if (isSmallScreen()) {
+                    sidebar.classList.toggle('show');
+                } else {
+                    sidebar.classList.toggle('collapsed');
+                }
+            }
+
+            function enforceBurgerVisibility() {
+                if (burgerMain) {
+                    burgerMain.style.display = window.innerWidth > 1024 ? 'none' : 'block';
+                }
+            }
+
+            enforceBurgerVisibility();
+
+            if (burgerMain) {
+                burgerMain.addEventListener('click', toggleSidebar);
+            }
+
+            if (burgerSidebar) {
+                burgerSidebar.addEventListener('click', function () {
+                    if (isSmallScreen()) {
+                        sidebar.classList.remove('show');
                     } else {
-                        const dashboardLink = Array.from(links).find(l =>
-                            l.textContent.trim().toLowerCase() === 'home'
-                        );
-
-                        if (dashboardLink) {
-                            loadContent(dashboardLink.href, dashboardLink);
-                        } else {
-                            contentFrame.innerHTML = `
-            <div class="text-center text-red-500 mt-10 text-lg">
-                Home module could not be loaded.
-            </div>`;
-                        }
+                        sidebar.classList.toggle('collapsed');
                     }
                 });
+            }
 
-                // Handle browser back/forward navigation
-                window.addEventListener("popstate", () => {
-                    const path = window.location.pathname;
-                    const match = Array.from(links).find(l => l.pathname === path);
-                    loadContent(match?.href || window.location.href, match);
+            document.addEventListener('click', function (e) {
+                if (
+                    isSmallScreen() &&
+                    sidebar.classList.contains('show') &&
+                    !sidebar.contains(e.target) &&
+                    !burgerMain.contains(e.target)
+                ) {
+                    sidebar.classList.remove('show');
+                }
+            });
+
+            window.addEventListener('resize', function () {
+                if (!isSmallScreen()) {
+                    sidebar.classList.remove('show');
+                }
+                enforceBurgerVisibility();
+            });
+
+            // DROPDOWN
+            if (toggleButton && dropdownMenu) {
+                toggleButton.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    dropdownMenu.classList.toggle('show');
                 });
 
-
-                document.addEventListener('DOMContentLoaded', function() {
-                    const sidebar = document.getElementById('sidebar');
-                    const burgerSidebar = document.getElementById('burger-toggle'); // in sidebar
-                    const burgerMain = document.getElementById('main-burger-toggle'); // in top nav
-                    const main = document.getElementById('main');
-
-                    // Track state for large vs small screens
-                    function isSmallScreen() {
-                        return window.innerWidth <= 1024;
+                window.addEventListener('click', function (e) {
+                    if (!toggleButton.contains(e.target) && !dropdownMenu.contains(e.target)) {
+                        dropdownMenu.classList.remove('show');
                     }
+                });
+            }
+        });
 
-                    function toggleSidebar() {
-                        if (isSmallScreen()) {
-                            // Mobile behavior: slide sidebar in/out
-                            sidebar.classList.toggle('show');
-                        } else {
-                            // Desktop behavior: collapse sidebar
-                            sidebar.classList.toggle('collapsed');
-                        }
-                    }
+        // FORM INITIALIZER
+        function initializeUserFormScripts() {
+            const roleSelect = document.getElementById('role');
+            if (roleSelect) {
+                roleSelect.addEventListener('change', function () {
+                    const teacherFields = document.getElementById('teacherFields');
+                    const showTeacher = this.value === 'teacher';
+                    teacherFields.classList.toggle('hidden', !showTeacher);
 
-                    // ✅ Ensure burger visibility is correct on page load and resize
-                    function enforceBurgerVisibility() {
-                        if (burgerMain) {
-                            if (window.innerWidth > 1024) {
-                                burgerMain.style.display = 'none';
-                            } else {
-                                burgerMain.style.display = 'block';
-                            }
-                        }
-                    }
-
-                    // Initial check
-                    enforceBurgerVisibility();
-
-                    // Click from top burger (always available)
-                    if (burgerMain) {
-                        burgerMain.addEventListener('click', toggleSidebar);
-                    }
-
-                    // Click from sidebar burger (only on large screens)
-                    if (burgerSidebar) {
-                        burgerSidebar.addEventListener('click', function() {
-                            if (isSmallScreen()) {
-                                sidebar.classList.remove('show');
-                            } else {
-                                sidebar.classList.toggle('collapsed');
-                            }
-                        });
-                    }
-
-                    // OPTIONAL: hide sidebar when clicking outside (on small screens)
-                    document.addEventListener('click', function(e) {
-                        if (
-                            isSmallScreen() &&
-                            sidebar.classList.contains('show') &&
-                            !sidebar.contains(e.target) &&
-                            !burgerMain.contains(e.target)
-                        ) {
-                            sidebar.classList.remove('show');
-                        }
-                    });
-
-                    // On resize, hide mobile sidebar and re-check burger visibility
-                    window.addEventListener('resize', function() {
-                        if (!isSmallScreen()) {
-                            sidebar.classList.remove('show');
-                        }
-                        enforceBurgerVisibility();
+                    [...teacherFields.querySelectorAll('input, textarea')].forEach(el => {
+                        el.disabled = !showTeacher;
                     });
                 });
-            </script>
-            @stack('scripts')
+
+                roleSelect.dispatchEvent(new Event('change'));
+            }
+
+            document.querySelectorAll('.toggle-password').forEach(icon => {
+                icon.addEventListener('click', function () {
+                    const targetId = this.dataset.target;
+                    const input = document.getElementById(targetId);
+
+                    const isPassword = input.type === 'password';
+                    input.type = isPassword ? 'text' : 'password';
+
+                    this.src = isPassword ? "/icons/Hidden.png" : "/icons/Eye.png";
+                    this.alt = isPassword ? 'Hide Password' : 'Show Password';
+                });
+            });
+        }
+    </script>
 </body>
 
 </html>

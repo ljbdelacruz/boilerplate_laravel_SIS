@@ -47,16 +47,14 @@
                     </div>
                     <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
                         <dt class="text-sm font-medium text-gray-500">School Year</dt>
-                        <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">{{ $student->schoolYear->start_year }} - {{ $student->schoolYear->end_year }}</dd>
+                        <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">{{ $student->schoolYear->school_year ?? 'Not Assigned' }}</dd>
                     </div>
                 </dl>
             </div>
             <div class="px-4 py-3 bg-gray-50 text-right sm:px-6">
-            <a href="{{ route('admin.students.edit', $student) }}"
-                               onclick="event.preventDefault(); loadContent('{{ route('admin.students.edit', $student) }}', 'Edit Student');"
-                               class="bg-green-500 hover:bg-green-600 text-white font-semibold px-4 py-2 rounded-lg text-sm">
-                               Edit
-                            </a>
+                <a href="{{ route('admin.students.edit', $student) }}" class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                    Edit Student
+                </a>
             </div>
         </div>
     </div>

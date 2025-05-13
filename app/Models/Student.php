@@ -3,10 +3,12 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Student extends Model
 {
+    use SoftDeletes;
     protected $fillable = [
         'lrn',
         'user_id',
@@ -26,7 +28,7 @@ class Student extends Model
     ];
 
     protected $casts = [
-        'birth_date' => 'date',
+        'birth_date' => 'date:d-m-Y',
         'grade_level' => 'string',
         'section_id' => 'integer',
         'school_year_id' => 'integer'
@@ -50,5 +52,10 @@ class Student extends Model
     public function grades()
     {
         return $this->hasMany(Grade::class);
+    }
+
+    public function enrollmentHistories()
+    {
+        return $this->hasMany(StudentEnrollmentHistory::class);
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Traits\ActivityLogger;
 use App\Models\ActivityLog; // Add this at the top with other imports
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -12,6 +13,7 @@ use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
 {
+    use ActivityLogger; // Use the trait for logging activities
     public function showLogin()
     {
         if (Auth::check()) {

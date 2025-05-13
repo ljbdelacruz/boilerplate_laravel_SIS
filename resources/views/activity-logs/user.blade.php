@@ -1,18 +1,19 @@
 @extends('dashboard.admin')
 
 @section('content')
-    <div class="container mx-auto px-4 py-0">
+ <div id="page-meta" data-title="View User Logs" data-parent="Activity Logs">
+    <div class="container mx-auto px-4">
         <div class="max-w-6xl mx-auto">
 
             <div class="bg-yellow-100 shadow-lg rounded-lg overflow-hidden p-6">
                 <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
                     <h2 class="text-3xl font-bold text-gray-600 mb-4 md:mb-0">Activity Logs: {{ $user->name }}</h2>
-                    <a href="{{ route('activity-logs.index') }}"
-                        onclick="event.preventDefault(); 
-            const logLink = [...document.querySelectorAll('.nav-link')]
-                .find(link => link.textContent.replace(/\s+/g, ' ').trim() === 'Activity Logs'); 
-            loadContent('{{ route('activity-logs.index') }}', logLink || 'Activity Logs');"
-                        class="bg-blue-500 hover:bg-blue-600 text-white font-semibold px-4 py-2 rounded-lg text-sm transition">
+                    <a href="{{ route('activity-logs.index') }}"onclick="event.preventDefault(); 
+                                                const schoolYearLink = [...document.querySelectorAll('.nav-link')]
+                                                   .find(link => link.textContent.replace(/\s+/g, ' ').trim() === 'Activity Logs'); 
+                                               const title = schoolYearLink?.getAttribute('data-title') || 'Activity Logs'; 
+                                                loadContent('{{ route('activity-logs.index') }}', title, 'activity-logs');"
+                        class="bg-yellow-500 hover:bg-yellow-600 text-white font-semibold py-2 px-4 rounded-lg shadow transition">
                         ← Back to All Logs
                     </a>
                 </div>
@@ -24,8 +25,6 @@
                                 <th class="px-6 py-3 text-xs font-medium text-gray-700 uppercase tracking-wider">Action</th>
                                 <th class="px-6 py-3 text-xs font-medium text-gray-700 uppercase tracking-wider">Description
                                 </th>
-                                <th class="px-6 py-3 text-xs font-medium text-gray-700 uppercase tracking-wider">IP Address
-                                </th>
                                 <th class="px-6 py-3 text-xs font-medium text-gray-700 uppercase tracking-wider">Date</th>
                             </tr>
                         </thead>
@@ -34,8 +33,7 @@
                                 <tr>
                                     <td class="px-6 py-4 whitespace-nowrap text-gray-800">{{ $log->action }}</td>
                                     <td class="px-6 py-4 text-gray-700">{{ $log->description }}</td>
-                                    <td class="px-6 py-4 text-gray-600">{{ $log->ip_address }}</td>
-                                    <td class="px-6 py-4 text-gray-600">{{ $log->created_at->format('Y-m-d H:i:s') }}</td>
+                                    <td class="px-6 py-4 text-gray-600">{{ $log->created_at->format('Y-m-d h:i A') }}</td>
                                 </tr>
                             @empty
                                 <tr>
@@ -46,12 +44,11 @@
                         </tbody>
                     </table>
                 </div>
-
-                <div class="flex justify-end mt-6">
-                    {{ $logs->links('vendor.tailwind-custom') }}
-                </div>
-
+            
+            <div class="px-6 mt-6 mb-2">
+                {{ $logs->links() }}
             </div>
         </div>
     </div>
+ </div>
 @endsection

@@ -11,7 +11,6 @@ class Schedule extends Model
         'course_id',
         'section_id',
         'school_year_id',
-        'day_of_week',
         'start_time',
         'end_time'
     ];
