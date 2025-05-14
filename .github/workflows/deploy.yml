@@ -13,17 +13,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up SSH key
-        run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.EC2_KEY }}" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan -H ${{ vars.EC2_HOST }} >> ~/.ssh/known_hosts
-
-      - name: Copy files to EC2
-        run: |
-          rsync -avz --exclude=".git" --exclude="vendor" -e "ssh -i ~/.ssh/id_rsa" ./ ${{ vars.EC2_USER }}@${{ vars.EC2_HOST }}:/home/${{ vars.EC2_USER }}/app
-
       - name: Create .env file from template
         run: |
           cp .env.example .env
@@ -41,6 +30,17 @@ jobs:
           export APP_KEY=${{ vars.APP_KEY }}
           export APP_URL=${{ vars.APP_URL }}
           envsubst < .env > .env.tmp && mv .env.tmp .env
+
+      - name: Set up SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.EC2_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H ${{ vars.EC2_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Copy files to EC2
+        run: |
+          rsync -avz --exclude=".git" --exclude="vendor" -e "ssh -i ~/.ssh/id_rsa" ./ ${{ vars.EC2_USER }}@${{ vars.EC2_HOST }}:/home/${{ vars.EC2_USER }}/app
 
       - name: Deploy on EC2
         run: |
