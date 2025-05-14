@@ -497,7 +497,7 @@
                     loop: true,
                     autoplay: true,
                     path: '/icons/animations/bookanimation.json'
-                });lottieAnimation.setSpeed(0.5);
+                });
             }
 
             function loadPage(url, push = true) {
