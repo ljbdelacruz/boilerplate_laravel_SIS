@@ -39,7 +39,7 @@
                             </label>
                             <input type="number" name="start_year" id="start_year"
                                 class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400"
-                                min="2000" max="2099" value="{{ old('start_year', date('Y')) }}" required>
+                                min="2000" max="2099" value="{{ old('start_year', $suggestedStartYear) }}" required>
                         </div>
 
                         <div class="mb-4 text-left">
@@ -48,7 +48,7 @@
                             </label>
                             <input type="number" name="end_year" id="end_year"
                                 class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400"
-                                min="2000" max="2099" value="{{ old('end_year', date('Y') + 1) }}" required>
+                                min="2000" max="2099" value="{{ old('end_year', $suggestedEndYear) }}" required>
                         </div>
 
                         <div class="flex justify-end pt-4">
