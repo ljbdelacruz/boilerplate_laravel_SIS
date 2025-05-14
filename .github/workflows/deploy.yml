@@ -15,7 +15,7 @@ jobs:
       - name: Set up SSH key
         run: |
           mkdir -p ~/.ssh
-          echo "${{ vars.EC2_KEY }}" > ~/.ssh/id_rsa
+          echo "${{ secrets.EC2_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -H ${{ vars.EC2_HOST }} >> ~/.ssh/known_hosts
 
