@@ -15,8 +15,7 @@ RUN apt-get update && apt-get install -y \
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Install PHP extensions
-RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd
-RUN docker-php-ext-install zip
+RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd zip
 
 # Get latest Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
@@ -24,17 +23,15 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 # Set working directory
 WORKDIR /var/www
 
-# Copy existing application directory
+# Copy application files
 COPY . /var/www
 
-# Install dependencies
-RUN composer install
+# Install PHP dependencies
+RUN composer install --no-interaction --prefer-dist --optimize-autoloader
 
-# Change ownership of our applications
+# Set permissions (optional, but recommended)
 RUN chown -R www-data:www-data /var/www
 
-# Expose port 9000
 EXPOSE 9000
 
-# Start PHP-FPM
 CMD ["php-fpm"]
