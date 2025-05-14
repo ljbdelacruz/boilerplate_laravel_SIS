@@ -28,6 +28,8 @@ jobs:
       - name: inject secrets into .env
         run: |
           sed -i 's/\r$//' .env
+          export DB_HOST=db
+          export DB_PORT=3306
           export DB_USERNAME=${{ vars.DB_USERNAME }}
           export DB_PASSWORD=${{ vars.DB_PASSWORD }}
           export APP_KEY=${{ vars.APP_KEY }}
