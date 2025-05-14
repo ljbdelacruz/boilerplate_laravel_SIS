@@ -138,7 +138,7 @@
 
         <div class="login-form-container">
             <div class="flex justify-center mb-6">
-                <img src="{{ asset('icons/logo.png') }}" alt="School Logo" class="w-28 h-28" />
+                <img src="{{ asset('icons/Logo.png') }}" alt="School Logo" class="w-28 h-28" />
             </div>
 
             <h2 class="text-2xl font-bold text-center mb-6">Teacher | Admin Login</h2>
