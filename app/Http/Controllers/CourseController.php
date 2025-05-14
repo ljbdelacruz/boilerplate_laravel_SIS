@@ -22,7 +22,7 @@ class CourseController extends Controller
             $coursesQuery->where('grade_level', $selectedGradeLevel);
         }
 
-        $courses = $coursesQuery->orderBy('name')->get();
+        $courses = $coursesQuery->orderBy('name')->paginate(10);
 
         return view('courses.index', compact('courses', 'gradeLevels', 'selectedGradeLevel'));
     }

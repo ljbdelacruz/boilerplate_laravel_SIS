@@ -73,6 +73,9 @@
                     @endforeach
                 </tbody>
             </table>
+            <div class="px-6 py-4">
+                {{ $courses->links() }}
+                </div>
         </div>
     </div>
     <style>
