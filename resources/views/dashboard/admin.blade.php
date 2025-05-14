@@ -311,7 +311,7 @@
                 style="background-color: #EAD180; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.25);">
                 <!-- Logo + School Name -->
                 <div class="flex items-center space-x-3 overflow-hidden">
-                    <img src="{{ asset('icons/logo.png') }}" class="h-10 w-10 flex-shrink-0 sidebar-logo" alt="Logo" />
+                    <img src="{{ asset('icons/Logo.png') }}" class="h-10 w-10 flex-shrink-0 sidebar-logo" alt="Logo" />
                     <div class="w-full overflow-hidden">
                         <span class="text-sm font-semibold sidebar-text school-name block">
                             Ususan Elementary School
