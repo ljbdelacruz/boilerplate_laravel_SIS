@@ -69,7 +69,11 @@
                     @endforeach
                 </tbody>
             </table>
+            <div class="px-6 py-4">
+                {{ $schoolYears->links() }}
+            </div>
         </div>
+        
     </div>
 
     <!-- Confirmation Modal -->
