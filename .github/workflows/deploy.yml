@@ -42,6 +42,8 @@ jobs:
           echo "${{ secrets.EC2_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -H ${{ vars.EC2_HOST }} >> ~/.ssh/known_hosts
+          ls -l ~/.ssh
+          cat ~/.ssh/id_rsa | head -5
 
       - name: Fix permissions on EC2 before rsync
         run: |
@@ -88,5 +90,5 @@ jobs:
             cd /home/${{ vars.EC2_USER }}/app
             docker-compose exec -T app chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache
             docker-compose exec -T app chmod -R 775 /var/www/storage /var/www/bootstrap/cache
-            docker-compose exec app php artisan migrate --seed
+            docker-compose exec app php artisan migrate:fresh --seed
           EOF
