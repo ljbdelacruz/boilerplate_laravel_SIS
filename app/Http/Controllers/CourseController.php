@@ -24,6 +24,9 @@ class CourseController extends Controller
 
         $courses = $coursesQuery->orderBy('name')->paginate(10);
 
+        if ($selectedGradeLevel) {
+            $courses->appends(['grade_level' => $selectedGradeLevel]);
+        }
         return view('courses.index', compact('courses', 'gradeLevels', 'selectedGradeLevel'));
     }
 
