@@ -564,7 +564,7 @@
                             } else {
                                 contentFrame.innerHTML = "<p class='text-red-500'>Error loading content.</p>";
                             }
-                        }, 400);
+                        }, 750);
                     })
                     .catch(() => {
                         contentFrame.innerHTML = "<p class='text-red-500'>Failed to load page.</p>";
