@@ -24,6 +24,22 @@ jobs:
         run: |
           rsync -avz --exclude=".git" --exclude="vendor" -e "ssh -i ~/.ssh/id_rsa" ./ ${{ vars.EC2_USER }}@${{ vars.EC2_HOST }}:/home/${{ vars.EC2_USER }}/app
 
+      - name: Create .env file from template
+        run: |
+          cp .env.example .env
+          echo "DB_USERNAME=${{ vars.DB_USERNAME }}" >> .env
+          echo "DB_PASSWORD=${{ vars.DB_PASSWORD }}" >> .env
+          echo "MYSQL_ROOT_PASSWORD=${{ vars.MYSQL_ROOT_PASSWORD }}" >> .env
+          echo "APP_KEY=${{ vars.APP_KEY }}" >> .env
+          echo "APP_URL=${{ vars.APP_URL }}" >> .env
+
+      - name: Inject secrets into .env
+        run: |
+          sed -i "s/^DB_USERNAME=.*/DB_USERNAME=${{ vars.DB_USERNAME }}/" .env
+          sed -i "s/^DB_PASSWORD=.*/DB_PASSWORD=${{ vars.DB_PASSWORD }}/" .env
+          sed -i "s/^APP_KEY=.*/APP_KEY=${{ vars.APP_KEY }}/" .env
+          sed -i "s/^APP_KEY=.*/APP_URL=${{ vars.APP_URL }}/" .env
+
       - name: Deploy on EC2
         run: |
           ssh -i ~/.ssh/id_rsa ${{ vars.EC2_USER }}@${{ vars.EC2_HOST }} << 'EOF'
