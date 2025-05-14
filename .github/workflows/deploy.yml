@@ -56,6 +56,7 @@ jobs:
             docker-compose pull
             docker-compose build --no-cache
             docker-compose up -d --remove-orphans
+            docker-compose exec -T app composer install --no-interaction --prefer-dist --optimize-autoloader
             docker-compose exec -T app php artisan migrate --force --seed
             docker-compose exec -T app php artisan config:cache
             docker-compose exec -T app php artisan route:cache
