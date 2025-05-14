@@ -28,6 +28,13 @@ jobs:
         run: |
           ssh -i ~/.ssh/id_rsa ${{ vars.EC2_USER }}@${{ vars.EC2_HOST }} << 'EOF'
             cd /home/${{ vars.EC2_USER }}/app
+            # Install Docker Compose if not present
+            if ! command -v docker-compose &> /dev/null
+            then
+              sudo curl -SL "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+              sudo chmod +x /usr/local/bin/docker-compose
+            fi
+            docker-compose --version
             docker-compose pull
             docker-compose build --no-cache
             docker-compose up -d --remove-orphans
