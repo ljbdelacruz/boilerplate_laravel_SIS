@@ -57,6 +57,9 @@ jobs:
             docker-compose build --no-cache
             docker-compose up -d --remove-orphans
             docker-compose exec -T app composer install --no-interaction --prefer-dist --optimize-autoloader
+            # Fix permissions for Laravel
+            docker-compose exec -T app chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache
+            docker-compose exec -T app chmod -R 775 /var/www/storage /var/www/bootstrap/cache
             docker-compose exec -T app php artisan migrate --force --seed
             docker-compose exec -T app php artisan config:cache
             docker-compose exec -T app php artisan route:cache
