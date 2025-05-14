@@ -36,10 +36,11 @@ jobs:
       - name: inject secrets into .env
         run: |
           sed -i 's/\r$//' .env
-          sed -i "s/^DB_USERNAME=.*/DB_USERNAME=${{ vars.DB_USERNAME }}/" .env
-          sed -i "s/^DB_PASSWORD=.*/DB_PASSWORD=${{ vars.DB_PASSWORD }}/" .env
-          sed -i "s/^APP_KEY=.*/APP_KEY=${{ vars.APP_KEY }}/" .env
-          sed -i "s/^APP_URL=.*/APP_URL=${{ vars.APP_URL }}/" .env
+          export DB_USERNAME=${{ vars.DB_USERNAME }}
+          export DB_PASSWORD=${{ vars.DB_PASSWORD }}
+          export APP_KEY=${{ vars.APP_KEY }}
+          export APP_URL=${{ vars.APP_URL }}
+          envsubst < .env > .env.tmp && mv .env.tmp .env
 
       - name: Deploy on EC2
         run: |
