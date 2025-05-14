@@ -39,6 +39,14 @@ jobs:
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -H ${{ vars.EC2_HOST }} >> ~/.ssh/known_hosts
 
+      - name: Fix permissions on EC2 before rsync
+        run: |
+          ssh -i ~/.ssh/id_rsa ${{ vars.EC2_USER }}@${{ vars.EC2_HOST }} \
+            "cd /home/${{ vars.EC2_USER }} && \
+            sudo mkdir -p app/storage app/bootstrap/cache && \
+            sudo chown -R $USER:$USER app/storage app/bootstrap app/bootstrap/cache && \
+            sudo chmod -R 775 app/storage app/bootstrap app/bootstrap/cache"
+
       - name: Copy files to EC2
         run: |
           rsync -avz --exclude=".git" --exclude="vendor" -e "ssh -i ~/.ssh/id_rsa" ./ ${{ vars.EC2_USER }}@${{ vars.EC2_HOST }}:/home/${{ vars.EC2_USER }}/app
