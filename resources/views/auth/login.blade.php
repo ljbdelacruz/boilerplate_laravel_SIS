@@ -174,7 +174,7 @@
                             class="absolute left-3.5 top-1/2 transform -translate-y-1/2 w-4 h-4 opacity-70" />
                         <input type="password" name="password" id="password" placeholder="Enter your password" required
                             class="login-input pl-9 pr-8 w-full" />
-                        <img id="togglePassword" src="{{ asset('icons/eye.png') }}" alt="Toggle Password"
+                        <img id="togglePassword" src="{{ asset('icons/Eye.png') }}" alt="Toggle Password"
                             class="toggle-password right-2 top-1/2 transform -translate-y-1/2" />
                     </div>
                 </div>
@@ -193,7 +193,7 @@
             toggleIcon.addEventListener("click", () => {
                 visible = !visible;
                 passwordInput.type = visible ? "text" : "password";
-                toggleIcon.src = visible ? "{{ asset('icons/hidden.png') }}" : "{{ asset('icons/eye.png') }}";
+                toggleIcon.src = visible ? "{{ asset('icons/Hidden.png') }}" : "{{ asset('icons/Eye.png') }}";
             });
 
             document.addEventListener('DOMContentLoaded', function () {
