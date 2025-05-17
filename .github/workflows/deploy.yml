@@ -66,6 +66,9 @@ jobs:
             # Fix permissions on the host
             sudo chown -R 1000:1000 storage bootstrap/cache
             sudo chmod -R 775 storage bootstrap/cache
+            # Clean up old/unused Docker images, containers, and volumes
+            docker system prune -af
+            docker volume prune -f
             # Install Docker Compose if not present
             if ! command -v docker-compose &> /dev/null
             then
