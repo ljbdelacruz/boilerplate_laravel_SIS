@@ -81,6 +81,15 @@
                                 </div>
 
                                 <div class="px-2">
+                                    <label for="suffix"
+                                        class="block text-gray-800 font-medium mb-2 text-lg text-left">Suffix</label>
+                                    <input type="text" id="suffix" name="suffix"
+                                        value="{{ old('suffix', $student->suffix) }}"
+                                        placeholder="Enter suffix (optional)"
+                                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400" />
+                                </div>
+
+                                <div class="px-2">
                                     <label for="birth_date"
                                         class="block text-gray-800 font-medium mb-2 text-lg text-left">Birth Date</label>
                                     <input type="date" id="birth_date" name="birth_date"
@@ -101,7 +110,7 @@
                                             {{ old('gender', $student->gender) == 'female' ? 'selected' : '' }}>Female
                                         </option>
                                         <option value="other"
-                                            {{ old('gender', $student->gender) == 'other' ? 'selected' : '' }}>Other
+                                            {{ old('gender', $student->gender) == 'other' ? 'selected' : '' }}>Prefer Not To Say
                                         </option>
                                     </select>
                                 </div>
@@ -160,8 +169,11 @@
                                         class="custom-select w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400">
                                         @foreach ($schoolYears as $schoolYear)
                                             <option value="{{ $schoolYear->id }}"
-                                                {{ old('school_year_id', $student->school_year_id) == $schoolYear->id ? 'selected' : '' }}>
-                                                {{ $schoolYear->year_start }} - {{ $schoolYear->year_end }}
+                                                {{ old('school_year_id') == $schoolYear->id ? 'selected' : '' }}>
+                                                {{ $schoolYear->start_year }} - {{ $schoolYear->end_year }}
+                                                @if ($schoolYear->is_active)
+                                                    (Active)
+                                                @endif
                                             </option>
                                         @endforeach
                                     </select>

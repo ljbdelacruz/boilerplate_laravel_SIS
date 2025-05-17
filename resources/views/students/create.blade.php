@@ -77,6 +77,14 @@
                                 </div>
 
                                 <div class="px-2">
+                                    <label for="suffix" class="block text-gray-800 font-medium mb-2 text-lg text-left">Suffix
+                                        Name</label>
+                                    <input type="text" id="suffix" name="suffix" value="{{ old('suffix') }}"
+                                        placeholder="Enter suffix name (optional)"
+                                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400" />
+                                </div>
+
+                                <div class="px-2">
                                     <label for="birth_date" class="block text-gray-800 font-medium mb-2 text-lg text-left">Birth
                                         Date</label>
                                     <input type="date" id="birth_date" name="birth_date" value="{{ old('birth_date') }}"
@@ -93,7 +101,7 @@
                                         <option value="male" {{ old('gender') == 'male' ? 'selected' : '' }}>Male</option>
                                         <option value="female" {{ old('gender') == 'female' ? 'selected' : '' }}>Female
                                         </option>
-                                        <option value="other" {{ old('gender') == 'other' ? 'selected' : '' }}>Other</option>
+                                        <option value="other" {{ old('gender') == 'other' ? 'selected' : '' }}>Prefer Not To Say</option>
                                     </select>
                                 </div>
 

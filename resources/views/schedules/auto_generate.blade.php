@@ -91,6 +91,20 @@
                             </select>
                         </div>
 
+                        {{-- Time Slot --}}
+                        <div class="mb-4 text-left">
+                            <label for="time_slot" class="block text-gray-800 font-medium mb-2 text-xl">
+                                Time Slot
+                            </label>
+                            <select name="time_slot" id="time_slot"
+                                class="custom-select w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-400"
+                                required>
+                                <option value="" disabled {{ old('time_slot') ? '' : 'selected' }}>Select Time Slot</option>
+                                <option value="morning" {{ old('time_slot') == 'morning' ? 'selected' : '' }}>Morning (7:00 AM - 12:00 PM)</option>
+                                <option value="afternoon" {{ old('time_slot') == 'afternoon' ? 'selected' : '' }}>Afternoon (1:00 PM - 6:00 PM)</option>
+                            </select>
+                        </div>
+
                         {{-- Submit --}}
                         <div class="flex justify-end pt-4">
                             <button type="submit" id="generateScheduleBtn"
@@ -98,7 +112,7 @@
                                 Generate Schedule
                             </button>
                         </div>
-                </div>
+                    </div>
                 </form>
 
 
@@ -172,11 +186,8 @@
             const submitBtn = document.getElementById('generateScheduleBtn');
             const formData = new FormData(form);
 
-            // Animate the button with "Checking..."
             submitBtn.disabled = true;
             submitBtn.innerHTML = `<span class="dots">Checking</span>`;
-
-
 
         document.addEventListener('DOMContentLoaded', () => {
             const fadeWithDelay = (id) => {
@@ -195,6 +206,11 @@
 
             fadeWithDelay('infoAlert');
             fadeWithDelay('errorAlert');
+        });
+
+            // If you intend to submit the form via AJAX, you would do it here.
+            // For a standard form submission, this will allow the browser to proceed.
+            form.submit(); // Or use AJAX
         });
     </script>
     </div>

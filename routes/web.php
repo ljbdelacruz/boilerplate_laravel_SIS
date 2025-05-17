@@ -154,3 +154,7 @@ Route::middleware(['auth'])->group(function () {
 Route::middleware(['auth'])->group(function () {
     Route::get('/teacher/schedule', [TeacherController::class, 'schedule'])->name('teacher.schedule');
 });
+
+Route::put('users/{user}/archive', [UserController::class, 'archive'])->name('users.archive');
+Route::get('users/archived', [UserController::class, 'archivedIndex'])->name('users.archived');
+Route::put('users/{id}/restore', [UserController::class, 'restore'])->name('users.restore');

@@ -45,26 +45,22 @@
                                     {{ $schoolYear->is_active ? 'Active' : 'Inactive' }}
                                 </span>
                             </td>
-                            <td class="px-4 py-4 whitespace-nowrap text-sm font-medium space-x-2">
+                            <td class="px-4 py-4 whitespace-nowrap text-sm font-medium">
                                 <form action="{{ route('school-years.toggle-active', $schoolYear) }}" method="POST"
-                                    class="inline-block activation-form">
+                                    class="flex justify-center">
                                     @csrf
                                     @method('PATCH')
                                     <button type="button"
-                                        class="inline-block w-28 {{ $schoolYear->is_active ? 'bg-red-500 hover:bg-red-700' : 'bg-green-500 hover:bg-green-700' }} 
-                   text-white font-semibold px-4 py-2 rounded-lg text-sm transition duration-200
-                   {{ $schoolYear->is_active && $activeSchoolYearCount <= 1 ? 'opacity-50 cursor-not-allowed' : '' }}"
+                                        class="w-28 {{ $schoolYear->is_active ? 'bg-red-500 hover:bg-red-700' : 'bg-green-500 hover:bg-green-700' }} 
+                            text-white font-semibold px-4 py-2 rounded-lg text-sm transition duration-200
+                            {{ $schoolYear->is_active && $activeSchoolYearCount <= 1 ? 'opacity-50 cursor-not-allowed' : '' }}"
                                         {{ $schoolYear->is_active && $activeSchoolYearCount <= 1 ? 'disabled' : '' }}
                                         onclick="confirmActivation(this)">
                                         {{ $schoolYear->is_active ? 'Deactivate' : 'Activate' }}
                                     </button>
                                 </form>
-                                <a href="{{ route('school-years.edit', $schoolYear->id) }}"
-                                    onclick="event.preventDefault(); loadContent('{{ route('school-years.edit', $schoolYear->id) }}', 'Edit School Year', 'school-years');"
-                                    class="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-4 rounded-lg">
-                                    Edit
-                                </a>
                             </td>
+
                         </tr>
                     @endforeach
                 </tbody>
@@ -73,7 +69,7 @@
                 {{ $schoolYears->links() }}
             </div>
         </div>
-        
+
     </div>
 
     <!-- Confirmation Modal -->
