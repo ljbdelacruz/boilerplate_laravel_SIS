@@ -24,6 +24,7 @@ class TeachersImport implements ToModel, WithHeadingRow, WithValidation, SkipsEm
                 'email',
                 'max:255',
                 //Rule::unique('users', 'email') 
+                //test
             ],
             'contact_number' => 'required|string|max:20', 
             'specialization' => 'required|string|max:255',
