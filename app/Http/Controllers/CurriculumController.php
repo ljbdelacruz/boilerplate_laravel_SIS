@@ -81,14 +81,78 @@ class CurriculumController extends Controller
 
         return view('curriculums.create', compact('sections', 'courses', 'activeSchoolYear'));
     }
-
+// push
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'section_id' => 'required|exists:sections,id',
             'subject_id' => 'required|exists:courses,id',
-            'start_time' => 'required|date_format:H:i',
-            'end_time' => 'required|date_format:H:i|after:start_time',
+            'start_time' => [
+                'required',
+                'date_format:H:i',
+                function ($attribute, $value, $fail) {
+                    try {
+                        $time = \Carbon\Carbon::createFromFormat('H:i', $value);
+                    } catch (\InvalidArgumentException $e) {
+                        return;
+                    }
+                    $morningStart = \Carbon\Carbon::parse('07:00:00');
+                    $morningEnd = \Carbon\Carbon::parse('12:00:00');
+                    $afternoonStart = \Carbon\Carbon::parse('13:00:00');
+                    $afternoonEnd = \Carbon\Carbon::parse('18:00:00');
+
+                    $isValid = ($time->gte($morningStart) && $time->lte($morningEnd)) ||
+                               ($time->gte($afternoonStart) && $time->lte($afternoonEnd));
+
+                    if (!$isValid) {
+                        $fail('The curriculum start time must be between 7:00 AM - 12:00 PM or 1:00 PM - 6:00 PM.');
+                    }
+                }
+            ],
+            'end_time' => [
+                'required',
+                'date_format:H:i',
+                'after:start_time',
+                function ($attribute, $value, $fail) use ($request) { // Duration rule
+                    $startTimeString = $request->input('start_time');
+                    if (empty($startTimeString)) return;
+                    try {
+                        $startTime = \Carbon\Carbon::createFromFormat('H:i', $startTimeString);
+                        $endTime = \Carbon\Carbon::createFromFormat('H:i', $value);
+                        if ($startTime->diffInMinutes($endTime) > 60) {
+                            $fail('The curriculum duration cannot exceed 60 minutes.');
+                        }
+                    } catch (\InvalidArgumentException $e) { return; }
+                },
+                function ($attribute, $value, $fail) use ($request) { // Time slot consistency rule
+                    $startTimeString = $request->input('start_time');
+                    if (empty($startTimeString)) return;
+
+                    try {
+                        $start = \Carbon\Carbon::createFromFormat('H:i', $startTimeString);
+                        $end = \Carbon\Carbon::createFromFormat('H:i', $value);
+                    } catch (\InvalidArgumentException $e) { return; }
+
+                    $morningStart = \Carbon\Carbon::parse('07:00:00');
+                    $morningEnd = \Carbon\Carbon::parse('12:00:00');
+                    $afternoonStart = \Carbon\Carbon::parse('13:00:00');
+                    $afternoonEnd = \Carbon\Carbon::parse('18:00:00');
+
+                    $isEndTimeValid = ($end->gte($morningStart) && $end->lte($morningEnd)) ||
+                                      ($end->gte($afternoonStart) && $end->lte($afternoonEnd));
+                    if (!$isEndTimeValid) {
+                        $fail('The curriculum end time must be between 7:00 AM - 12:00 PM or 1:00 PM - 6:00 PM.');
+                        return;
+                    }
+
+                    $isStartTimeInMorning = $start->gte($morningStart) && $start->lte($morningEnd);
+                    $isEndTimeInMorning = $end->gte($morningStart) && $end->lte($morningEnd);
+
+                    if ($isStartTimeInMorning != $isEndTimeInMorning) {
+                        $fail('The curriculum must be entirely within the 7 AM - 12 PM slot or the 1 PM - 6 PM slot. It cannot span across the 12 PM - 1 PM break.');
+                    }
+                },
+            ],
         ]);
 
         if ($validator->fails()) {
@@ -156,8 +220,72 @@ class CurriculumController extends Controller
         $validator = Validator::make($request->all(), [
             'section_id' => 'required|exists:sections,id',
             'subject_id' => 'required|exists:courses,id',
-            'start_time' => 'required|date_format:H:i',
-            'end_time' => 'required|date_format:H:i|after:start_time',
+            'start_time' => [
+                'required',
+                'date_format:H:i',
+                function ($attribute, $value, $fail) {
+                    try {
+                        $time = \Carbon\Carbon::createFromFormat('H:i', $value);
+                    } catch (\InvalidArgumentException $e) {
+                        return;
+                    }
+                    $morningStart = \Carbon\Carbon::parse('07:00:00');
+                    $morningEnd = \Carbon\Carbon::parse('12:00:00');
+                    $afternoonStart = \Carbon\Carbon::parse('13:00:00');
+                    $afternoonEnd = \Carbon\Carbon::parse('18:00:00');
+
+                    $isValid = ($time->gte($morningStart) && $time->lte($morningEnd)) ||
+                               ($time->gte($afternoonStart) && $time->lte($afternoonEnd));
+
+                    if (!$isValid) {
+                        $fail('The curriculum start time must be between 7:00 AM - 12:00 PM or 1:00 PM - 6:00 PM.');
+                    }
+                }
+            ],
+            'end_time' => [
+                'required',
+                'date_format:H:i',
+                'after:start_time',
+                function ($attribute, $value, $fail) use ($request) { // Duration rule
+                    $startTimeString = $request->input('start_time');
+                    if (empty($startTimeString)) return;
+                    try {
+                        $startTime = \Carbon\Carbon::createFromFormat('H:i', $startTimeString);
+                        $endTime = \Carbon\Carbon::createFromFormat('H:i', $value);
+                        if ($startTime->diffInMinutes($endTime) > 60) {
+                            $fail('The curriculum duration cannot exceed 60 minutes.');
+                        }
+                    } catch (\InvalidArgumentException $e) { return; }
+                },
+                function ($attribute, $value, $fail) use ($request) { // Time slot consistency rule
+                    $startTimeString = $request->input('start_time');
+                    if (empty($startTimeString)) return;
+
+                    try {
+                        $start = \Carbon\Carbon::createFromFormat('H:i', $startTimeString);
+                        $end = \Carbon\Carbon::createFromFormat('H:i', $value);
+                    } catch (\InvalidArgumentException $e) { return; }
+
+                    $morningStart = \Carbon\Carbon::parse('07:00:00');
+                    $morningEnd = \Carbon\Carbon::parse('12:00:00');
+                    $afternoonStart = \Carbon\Carbon::parse('13:00:00');
+                    $afternoonEnd = \Carbon\Carbon::parse('18:00:00');
+
+                    $isEndTimeValid = ($end->gte($morningStart) && $end->lte($morningEnd)) ||
+                                      ($end->gte($afternoonStart) && $end->lte($afternoonEnd));
+                    if (!$isEndTimeValid) {
+                        $fail('The curriculum end time must be between 7:00 AM - 12:00 PM or 1:00 PM - 6:00 PM.');
+                        return;
+                    }
+
+                    $isStartTimeInMorning = $start->gte($morningStart) && $start->lte($morningEnd);
+                    $isEndTimeInMorning = $end->gte($morningStart) && $end->lte($morningEnd);
+
+                    if ($isStartTimeInMorning != $isEndTimeInMorning) {
+                        $fail('The curriculum must be entirely within the 7 AM - 12 PM slot or the 1 PM - 6 PM slot. It cannot span across the 12 PM - 1 PM break.');
+                    }
+                },
+            ],
         ]);
 
         if ($validator->fails()) {

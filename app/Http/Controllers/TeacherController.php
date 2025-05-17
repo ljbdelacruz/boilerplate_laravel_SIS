@@ -31,28 +31,65 @@ class TeacherController extends Controller
         $schoolYears = SchoolYear::where('is_active', true)
             ->orderBy('start_year', 'desc')
             ->get();
-        $sections = Section::orderBy('grade_level')->orderBy('name')->get();
+        // $sections = Section::orderBy('grade_level')->orderBy('name')->get(); // No longer needed for general listing here
         $activeSchoolYear = SchoolYear::where('is_active', true)->first();
 
         $schedules = [];
+        $teacherCourses = collect();
+        $students = collect();
+        $selectedCourseModel = null;
+        $sectionsForSelectedCourse = collect();
+        $activeSchoolYearId = null;
+
         if ($activeSchoolYear) {
+            $activeSchoolYearId = $activeSchoolYear->id;
             $schedules = Schedule::where('teacher_id', auth()->id())
-                ->where('school_year_id', $activeSchoolYear->id) // Filter by active school year
+                ->where('school_year_id', $activeSchoolYearId) // Filter by active school year
                 ->with(['course', 'section', 'schoolYear'])
                 ->get();
+
+            if (!$schedules->isEmpty()) {
+                // Prepare options for the course filter dropdown
+                // Each option will display Course (Section Grade - Section Name)
+                // The value will be the course_id for filtering
+                $teacherCourses = $schedules->map(function ($schedule) {
+                    if ($schedule->course && $schedule->section) {
+                        return (object)[
+                            'filter_value' => $schedule->course->id, // Value for the dropdown option
+                            'display_text' => $schedule->course->name . ' (' . $schedule->section->grade_level . ' - ' . $schedule->section->name . ')',
+                            'unique_key' => $schedule->course->id . '_' . $schedule->section->id, // For making sure each class (course-section) is listed once
+                        ];
+                    }
+                    return null;
+                })->filter() // Remove any nulls if course/section was missing
+                ->unique('unique_key') // List each unique course-section pair once
+                ->sortBy('display_text');
+            }
         }
 
-        $students = [];
-        if ($activeSchoolYear && !$schedules->isEmpty()) { // Check if schedules exist
-            $students = Student::whereHas('section', function ($query) use ($activeSchoolYear, $schedules) {
-                $query->where('school_year_id', $activeSchoolYear->id)
-                      ->whereIn('id', $schedules->pluck('section_id')->unique()); // Use unique section IDs
-            })->with(['section'])
-              ->orderBy('last_name')
-              ->orderBy('first_name')
-              ->get();
+        $selectedCourseId = request('course_id');
+
+        if ($activeSchoolYear && $selectedCourseId && !$schedules->isEmpty()) {
+            $selectedCourseModel = Course::find($selectedCourseId);
+
+            // Find schedules for the selected course
+            $schedulesForCourse = $schedules->where('course_id', (int)$selectedCourseId);
+
+            if (!$schedulesForCourse->isEmpty()) {
+                $sectionIdsForCourse = $schedulesForCourse->pluck('section_id')->unique();
+                $sectionsForSelectedCourse = Section::whereIn('id', $sectionIdsForCourse)->orderBy('grade_level')->orderBy('name')->get();
+
+                $students = Student::whereHas('section', function ($query) use ($activeSchoolYearId, $sectionIdsForCourse) {
+                    $query->where('school_year_id', $activeSchoolYearId)
+                          ->whereIn('id', $sectionIdsForCourse);
+                })
+                ->with(['section', 'grades']) 
+                ->orderBy('last_name')
+                ->orderBy('first_name')
+                ->get();
+            }
         }
-        return view('dashboard.teacher', compact('schoolYears', 'sections', 'schedules', 'students')); // Add 'students'
+        return view('dashboard.teacher', compact('schoolYears', 'schedules', 'students', 'teacherCourses', 'selectedCourseId', 'activeSchoolYear', 'activeSchoolYearId', 'selectedCourseModel', 'sectionsForSelectedCourse'));
     }
 
     public function viewStudents(Request $request)
@@ -62,19 +99,97 @@ class TeacherController extends Controller
                                 ->get();
         
         $activeSchoolYear = SchoolYear::where('is_active', true)->first();
-        $sections = Section::where('school_year_id', $activeSchoolYear->id)
-            ->orderBy('grade_level')
-            ->orderBy('name')
-            ->get();
-        
-        $students = null;
-        if ($request->filled(['school_year_id', 'section_id'])) {
-            $students = Student::where('school_year_id', $request->school_year_id)
-                             ->where('section_id', $request->section_id)
-                             ->get();
+
+        // Initialize variables that teacher.blade.php expects
+        $schedules = collect();
+        $teacherCourses = collect();
+        $students = collect(); // Default to empty collection
+        $selectedCourseModel = null;
+        $sectionsForSelectedCourse = collect();
+        $activeSchoolYearId = null;
+        $sections = collect(); // Sections for general listing, if still needed
+
+        if ($activeSchoolYear) {
+            $activeSchoolYearId = $activeSchoolYear->id;
+            
+            // Fetch schedules for the logged-in teacher for the active school year
+            // This is needed for "My Teaching Schedule" and to derive teacherCourses
+            $schedules = Schedule::where('teacher_id', auth()->id())
+                ->where('school_year_id', $activeSchoolYearId)
+                ->with(['course', 'section', 'schoolYear'])
+                ->get();
+
+            if (!$schedules->isEmpty()) {
+                $teacherCourses = $schedules->map(function ($schedule) {
+                    if ($schedule->course && $schedule->section) {
+                        return (object)[
+                            'filter_value' => $schedule->course->id,
+                            'display_text' => $schedule->course->name . ' (' . $schedule->section->grade_level . ' - ' . $schedule->section->name . ')',
+                            'unique_key' => $schedule->course->id . '_' . $schedule->section->id,
+                        ];
+                    }
+                    return null;
+                })->filter()
+                ->unique('unique_key')
+                ->sortBy('display_text');
+            }
+
+            // Original section-based student fetching for viewStudents
+            // This part might need re-evaluation if viewStudents is supposed to use the course filter
+            if ($request->filled('section_id') && $request->filled('school_year_id')) {
+                 // Ensure school_year_id from request matches activeSchoolYearId for consistency
+                if ($request->school_year_id == $activeSchoolYearId) {
+                    $students = Student::where('school_year_id', (int)$request->school_year_id)
+                                     ->where('section_id', (int)$request->section_id)
+                                     ->with(['section', 'grades']) // Eager load for consistency
+                                     ->orderBy('last_name')
+                                     ->orderBy('first_name')
+                                     ->get();
+                }
+            }
+            // Fetch sections for the active school year (original logic from viewStudents)
+            $sections = Section::where('school_year_id', $activeSchoolYear->id)
+                                ->orderBy('grade_level')
+                                ->orderBy('name')
+                                ->get();
         }
         
-        return view('dashboard.teacher', compact('schoolYears', 'sections', 'students'));
+        // Get selected course ID from request, similar to index()
+        $selectedCourseId = request('course_id'); 
+
+        // If a course is selected, and students haven't been fetched by section_id,
+        // then fetch students by course (similar to index method)
+        if ($activeSchoolYear && $selectedCourseId && $students->isEmpty() && !$schedules->isEmpty()) {
+            $selectedCourseModel = Course::find($selectedCourseId);
+            $schedulesForCourse = $schedules->where('course_id', (int)$selectedCourseId);
+
+            if (!$schedulesForCourse->isEmpty()) {
+                $sectionIdsForCourse = $schedulesForCourse->pluck('section_id')->unique();
+                $sectionsForSelectedCourse = Section::whereIn('id', $sectionIdsForCourse)->orderBy('grade_level')->orderBy('name')->get();
+
+                $students = Student::whereHas('section', function ($query) use ($activeSchoolYearId, $sectionIdsForCourse) {
+                    $query->where('school_year_id', $activeSchoolYearId)
+                          ->whereIn('id', $sectionIdsForCourse);
+                })
+                ->with(['section', 'grades'])
+                ->orderBy('last_name')
+                ->orderBy('first_name')
+                ->get();
+            }
+        }
+
+        return view('dashboard.teacher', compact(
+            'schoolYears', 
+            'sections', 
+            'students', 
+            'schedules', 
+            'teacherCourses', 
+            'selectedCourseId', 
+            'activeSchoolYear', 
+            'activeSchoolYearId', 
+            'selectedCourseModel', 
+            'sectionsForSelectedCourse'
+        ));
     }
 
     public function saveGrades(Request $request, Student $student)
@@ -319,6 +434,7 @@ class TeacherController extends Controller
         $subjects = Course::whereNull('parent_id')
             ->with('children')
             ->where('grade_level', $gradeLevelForSelectedYear)
+            ->where('is_active', true)
             ->orderBy('id')
             ->get();
     
@@ -1323,6 +1439,14 @@ class TeacherController extends Controller
             }
             $spreadsheet->setActiveSheetIndex(0);
 
+            // Adds Protected View to the spreadsheet
+            foreach ($spreadsheet->getAllSheets() as $sheet) {
+                $sheet->getStyle($sheet->calculateWorksheetDimension())
+                    ->getProtection()->setLocked(\PhpOffice\PhpSpreadsheet\Style\Protection::PROTECTION_PROTECTED);
+                $sheet->getProtection()->setSheet(true);
+                $sheet->getProtection()->setPassword('D1xz$t3RnK1m$zZ43V3r@1'); //password by Mag-iba
+            }
+
             // Generate file
             $writer = new Xlsx($spreadsheet);
             $filename = "SF10_{$student->student_id}_{$student->last_name}_{$student->first_name}.xlsx";
@@ -1495,7 +1619,7 @@ class TeacherController extends Controller
                     $sheet0 = $spreadsheet->getSheet(0);
                     $this->processGradeSection($sheet0, $student, 'Grade 1', 'M29', 'D29', 'A', 34, 'F29', 'E30', 'F', 'G', 'H', 'I', $updatedGradesData);
                     $this->processGradeSection($sheet0, $student, 'Grade 2', 'AC29', 'S29', 'P', 34, 'U29', 'T30', 'V', 'W', 'X', 'Y', $updatedGradesData);
-                    $this->processGradeSection($sheet0, $student, 'Grade 3', 'M59', 'D59', 'A', 65, 'F59', 'C60', 'F', 'G', 'H', 'I', $updatedGradesData); // Used C60 for G3 adviser as per export
+                    $this->processGradeSection($sheet0, $student, 'Grade 3', 'M59', 'D59', 'A', 65, 'F59', 'C60', 'F', 'G', 'H', 'I', $updatedGradesData); 
                     $this->processGradeSection($sheet0, $student, 'Grade 4', 'AC59', 'S59', 'P', 65, 'U59', 'T60', 'V', 'W', 'X', 'Y', $updatedGradesData);
                 }
 

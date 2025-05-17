@@ -60,6 +60,7 @@ class ScheduleController extends Controller
             'school_year_id' => 'required|exists:school_years,id',
             'course_id' => 'required|exists:courses,id',
             'teacher_id' => 'required|exists:users,id',
+            'time_slot' => 'required|in:morning,afternoon', // Added validation for time_slot
         ]);
 
         $course = Course::findOrFail($validated['course_id']);
@@ -67,17 +68,27 @@ class ScheduleController extends Controller
         $schoolYear = SchoolYear::findOrFail($validated['school_year_id']);
 
         // Find all curriculum entries for the selected course and sy
-        $curriculums = Curriculum::where('subject_id', $course->id)
+        $curriculumQuery = Curriculum::where('subject_id', $course->id)
             ->whereHas('section', function ($query) use ($schoolYear) {
                 $query->where('school_year_id', $schoolYear->id);
             })
-            ->with(['section', 'subject']) 
-            ->get();
+            ->with(['section', 'subject']);
+
+        // Filter by time_slot
+        // Morning: 07:00:00 to 12:00:00 (inclusive)
+        // Afternoon: 13:00:00 to 18:00:00 (inclusive)
+        if ($validated['time_slot'] === 'morning') {
+            $curriculumQuery->whereTime('start_time', '>=', '07:00:00')->whereTime('start_time', '<=', '12:00:00');
+        } elseif ($validated['time_slot'] === 'afternoon') {
+            $curriculumQuery->whereTime('start_time', '>=', '13:00:00')->whereTime('start_time', '<=', '18:00:00');
+        }
+
+        $curriculums = $curriculumQuery->get();
 
         // Check if any curriculum items were found if not, redirect with a warning
         if ($curriculums->isEmpty()) {
             $errors = [
-                'error' => "No curriculum entries found for the course '{$course->name} ({$course->grade_level})' in the selected school year. Cannot generate schedule."
+                'error' => "No {$validated['time_slot']} curriculum entries found for the course '{$course->name} ({$course->grade_level})' in the selected school year. Cannot generate schedule."
             ];
             return redirect()->route('schedules.auto-generate-form')->with('info', $errors['error'])->withInput();
        }
@@ -216,8 +227,74 @@ class ScheduleController extends Controller
             'course_id' => 'required|exists:courses,id',
             'section_id' => 'required|exists:sections,id',
             'school_year_id' => 'required|exists:school_years,id',
-            'start_time' => 'required|date_format:H:i',
-            'end_time' => 'required|date_format:H:i|after:start_time',
+            'start_time' => [
+                'required',
+                'date_format:H:i',
+                function ($attribute, $value, $fail) {
+                    try {
+                        $time = \Carbon\Carbon::createFromFormat('H:i', $value);
+                    } catch (\InvalidArgumentException $e) {
+                        // This should be caught by 'date_format' rule, but as a safeguard:
+                        // $fail('Invalid start time format.'); 
+                        return;
+                    }
+                    $morningStart = \Carbon\Carbon::parse('07:00:00');
+                    $morningEnd = \Carbon\Carbon::parse('12:00:00');
+                    $afternoonStart = \Carbon\Carbon::parse('13:00:00');
+                    $afternoonEnd = \Carbon\Carbon::parse('18:00:00');
+
+                    $isValid = ($time->gte($morningStart) && $time->lte($morningEnd)) ||
+                               ($time->gte($afternoonStart) && $time->lte($afternoonEnd));
+
+                    if (!$isValid) {
+                        $fail('The schedule start time must be between 7:00 AM - 12:00 PM or 1:00 PM - 6:00 PM.');
+                    }
+                }
+            ],
+            'end_time' => [
+                'required',
+                'date_format:H:i',
+                'after:start_time',
+                function ($attribute, $value, $fail) use ($request) { // Duration rule
+                    $startTimeString = $request->input('start_time');
+                    if (empty($startTimeString)) return; 
+                    try {
+                        $startTime = \Carbon\Carbon::createFromFormat('H:i', $startTimeString);
+                        $endTime = \Carbon\Carbon::createFromFormat('H:i', $value);
+                        if ($startTime->diffInMinutes($endTime) > 60) {
+                            $fail('The schedule duration cannot exceed 60 minutes.');
+                        }
+                    } catch (\InvalidArgumentException $e) { return; }
+                },
+                function ($attribute, $value, $fail) use ($request) { // Time slot consistency rule
+                    $startTimeString = $request->input('start_time');
+                    if (empty($startTimeString)) return;
+
+                    try {
+                        $start = \Carbon\Carbon::createFromFormat('H:i', $startTimeString);
+                        $end = \Carbon\Carbon::createFromFormat('H:i', $value);
+                    } catch (\InvalidArgumentException $e) { return; }
+
+                    $morningStart = \Carbon\Carbon::parse('07:00:00');
+                    $morningEnd = \Carbon\Carbon::parse('12:00:00');
+                    $afternoonStart = \Carbon\Carbon::parse('13:00:00');
+                    $afternoonEnd = \Carbon\Carbon::parse('18:00:00');
+
+                    $isEndTimeValid = ($end->gte($morningStart) && $end->lte($morningEnd)) ||
+                                      ($end->gte($afternoonStart) && $end->lte($afternoonEnd));
+                    if (!$isEndTimeValid) {
+                        $fail('The schedule end time must be between 7:00 AM - 12:00 PM or 1:00 PM - 6:00 PM.');
+                        return;
+                    }
+
+                    $isStartTimeInMorning = $start->gte($morningStart) && $start->lte($morningEnd);
+                    $isEndTimeInMorning = $end->gte($morningStart) && $end->lte($morningEnd);
+
+                    if ($isStartTimeInMorning != $isEndTimeInMorning) {
+                        $fail('The schedule must be entirely within the 7 AM - 12 PM slot or the 1 PM - 6 PM slot. It cannot span across the 12 PM - 1 PM break.');
+                    }
+                },
+            ],
         ]);
         // Check for conflicts
         $conflict = Schedule::where('school_year_id', $validated['school_year_id'])
@@ -274,8 +351,72 @@ class ScheduleController extends Controller
             'course_id' => 'required|exists:courses,id',
             'section_id' => 'required|exists:sections,id',
             'school_year_id' => 'required|exists:school_years,id',
-            'start_time' => 'required|date_format:H:i',
-            'end_time' => 'required|date_format:H:i|after:start_time',
+            'start_time' => [
+                'required',
+                'date_format:H:i',
+                function ($attribute, $value, $fail) {
+                    try {
+                        $time = \Carbon\Carbon::createFromFormat('H:i', $value);
+                    } catch (\InvalidArgumentException $e) {
+                        return;
+                    }
+                    $morningStart = \Carbon\Carbon::parse('07:00:00');
+                    $morningEnd = \Carbon\Carbon::parse('12:00:00');
+                    $afternoonStart = \Carbon\Carbon::parse('13:00:00');
+                    $afternoonEnd = \Carbon\Carbon::parse('18:00:00');
+
+                    $isValid = ($time->gte($morningStart) && $time->lte($morningEnd)) ||
+                               ($time->gte($afternoonStart) && $time->lte($afternoonEnd));
+
+                    if (!$isValid) {
+                        $fail('The schedule start time must be between 7:00 AM - 12:00 PM or 1:00 PM - 6:00 PM.');
+                    }
+                }
+            ],
+            'end_time' => [
+                'required',
+                'date_format:H:i',
+                'after:start_time',
+                function ($attribute, $value, $fail) use ($request) { // Duration rule
+                    $startTimeString = $request->input('start_time');
+                    if (empty($startTimeString)) return;
+                    try {
+                        $startTime = \Carbon\Carbon::createFromFormat('H:i', $startTimeString);
+                        $endTime = \Carbon\Carbon::createFromFormat('H:i', $value);
+                        if ($startTime->diffInMinutes($endTime) > 60) {
+                            $fail('The schedule duration cannot exceed 60 minutes.');
+                        }
+                    } catch (\InvalidArgumentException $e) { return; }
+                },
+                function ($attribute, $value, $fail) use ($request) { // Time slot consistency rule
+                    $startTimeString = $request->input('start_time');
+                    if (empty($startTimeString)) return;
+
+                    try {
+                        $start = \Carbon\Carbon::createFromFormat('H:i', $startTimeString);
+                        $end = \Carbon\Carbon::createFromFormat('H:i', $value);
+                    } catch (\InvalidArgumentException $e) { return; }
+
+                    $morningStart = \Carbon\Carbon::parse('07:00:00');
+                    $morningEnd = \Carbon\Carbon::parse('12:00:00');
+                    $afternoonStart = \Carbon\Carbon::parse('13:00:00');
+                    $afternoonEnd = \Carbon\Carbon::parse('18:00:00');
+
+                    $isEndTimeValid = ($end->gte($morningStart) && $end->lte($morningEnd)) ||
+                                      ($end->gte($afternoonStart) && $end->lte($afternoonEnd));
+                    if (!$isEndTimeValid) {
+                        $fail('The schedule end time must be between 7:00 AM - 12:00 PM or 1:00 PM - 6:00 PM.');
+                        return;
+                    }
+
+                    $isStartTimeInMorning = $start->gte($morningStart) && $start->lte($morningEnd);
+                    $isEndTimeInMorning = $end->gte($morningStart) && $end->lte($morningEnd);
+
+                    if ($isStartTimeInMorning != $isEndTimeInMorning) {
+                        $fail('The schedule must be entirely within the 7 AM - 12 PM slot or the 1 PM - 6 PM slot. It cannot span across the 12 PM - 1 PM break.');
+                    }
+                },
+            ],
         ]);
 
         // Check for conflicts

@@ -237,4 +237,69 @@ class UserController extends Controller
             return back()->with('error', 'Error importing teachers: ' . $e->getMessage());
         }
     }
+
+    public function archive(User $user)
+    {
+        try {
+            $oldData = $user->toArray();
+            $user->delete();
+
+            $this->logActivity(
+                'archive',
+                'Archived user: ' . $user->name,
+                'users',
+                $oldData,
+                null
+            );
+
+            return redirect()->route('users.index')
+                ->with('success', 'User "' . $user->name . '" has been archived successfully.');
+        } catch (\Exception $e) {
+            $this->logActivity(
+                'archive',
+                'Failed to archive user: ' . $user->name,
+                'users',
+                null,
+                ['error' => $e->getMessage()],
+                'error'
+            );
+            
+            return back()->with('error', 'Failed to archive user: ' . $e->getMessage());
+        }
+    }
+
+    public function archivedIndex()
+    {
+        $users = User::onlyTrashed()->paginate(10);
+        return view('users.archived', compact('users'));
+    }
+
+    public function restore($id)
+    {
+        try {
+            $user = User::onlyTrashed()->findOrFail($id);
+            $user->restore();
+
+            $this->logActivity(
+                'restore',
+                'Restored user: ' . $user->name,
+                'users',
+                null,
+                $user->toArray()
+            );
+
+            return redirect()->route('users.archived')->with('success', 'User restored successfully');
+        } catch (\Exception $e) {
+            $this->logActivity(
+                'restore',
+                'Failed to restore user',
+                'users',
+                null,
+                ['error' => $e->getMessage()],
+                'error'
+            );
+
+            return back()->with('error', 'Failed to restore user');
+        }
+    }
 }

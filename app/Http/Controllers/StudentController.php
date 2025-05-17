@@ -49,6 +49,7 @@ class StudentController extends Controller
                 'first_name' => 'required|string|max:255',
                 'last_name' => 'required|string|max:255',
                 'middle_name' => 'nullable|string|max:255',
+                'suffix' => 'nullable|string|max:255',
                 'email' => 'required|email|unique:users,email',
                 'lrn' => 'required|string|unique:students,lrn',
                 'student_id' => 'required|string|unique:students,student_id',
@@ -79,6 +80,7 @@ class StudentController extends Controller
                     'first_name' => $validated['first_name'],
                     'last_name' => $validated['last_name'],
                     'middle_name' => $validated['middle_name'],
+                    'suffix' => $validated['suffix'] ?? null,
                     'birth_date' => $validated['birth_date'],
                     'gender' => strtolower($validated['gender']),
                     'contact_number' => $validated['contact_number'],
@@ -154,6 +156,7 @@ class StudentController extends Controller
                 'first_name' => 'required|string|max:255',
                 'last_name' => 'required|string|max:255',
                 'middle_name' => 'nullable|string|max:255',
+                'suffix' => 'nullable|string|max:255',
                 'section_id' => 'required|exists:sections,id',
                 'gender' => 'required|in:male,female,other',
                 'birth_date' => 'required|date',
@@ -163,7 +166,6 @@ class StudentController extends Controller
                 'guardian_contact' => 'required|string',
                 'grade_level' => 'required|string|exists:grade_levels,grade_level',
                 'school_year_id' => 'required|exists:school_years,id',
-                
             ]);
 
             DB::transaction(function () use ($validated, $student) {
@@ -177,6 +179,7 @@ class StudentController extends Controller
                 'first_name' => $validated['first_name'],
                 'last_name' => $validated['last_name'],
                 'middle_name' => $validated['middle_name'],
+                'suffix' => $validated['suffix'] ?? null,
                 'birth_date' => $validated['birth_date'],
                 'gender' => strtolower($validated['gender']),
                 'address' => $validated['address'],

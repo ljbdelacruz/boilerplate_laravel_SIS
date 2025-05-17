@@ -30,30 +30,8 @@ class DashboardController extends Controller
             case 'admin':
                 return view('dashboard.admin');
             case 'teacher':
-                $schoolYears = SchoolYear::where('is_active', true)
-                    ->orderBy('start_year', 'desc')
-                    ->get();
-                $sections = Section::orderBy('grade_level')->orderBy('name')->get();
-                $activeSchoolYear = SchoolYear::where('is_active', true)->first();
-
-                $schedules = [];
-                if ($activeSchoolYear) {
-                    $schedules = Schedule::where('teacher_id', auth()->id())
-                        ->where('school_year_id', $activeSchoolYear->id) // Filter by active school year
-                        ->with(['course', 'section', 'schoolYear'])
-                        ->get();
-                }
-
-                $students = [];
-                if ($activeSchoolYear) {
-                    $students = \App\Models\Student::whereHas('section', function ($query) use ($activeSchoolYear, $schedules) {
-                        $query->where('school_year_id', $activeSchoolYear->id)
-                            ->whereIn('id', $schedules->pluck('section_id')); // Filter sections based on teacher's schedule
-                    })->with(['section'])->get();
-                }
-
-                return view('dashboard.teacher', 
-                compact('schoolYears', 'sections', 'schedules', 'students'));
+                // Redirect teachers to the dedicated TeacherController dashboard
+                return redirect()->route('teacher.dashboard', $request->query());
             case 'student':
                 return view('dashboard.student');
             default:
