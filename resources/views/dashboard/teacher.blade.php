@@ -94,7 +94,7 @@
 
     <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
         <div class="mb-6">
-            <!-- Reserved for buttons -->
+
         </div>
 
         <div class="grid grid-cols-1 gap-6">
@@ -105,7 +105,7 @@
                     <img src="{{ asset('icons/teaching.png') }}" alt="Teaching Icon" class="w-6 h-6">
                     My Teaching Schedule
                 </h3>
-                <div class="overflow-x-auto">
+                <div class="overflow-x-auto rounded-lg">
                     <table
                         class="min-w-full table-fixed text-sm text-gray-700 border border-gray-200 rounded-lg text-center">
                         <thead class="bg-yellow-100 text-gray-800 uppercase text-xs font-bold">
@@ -138,14 +138,22 @@
 
             <!-- Student List -->
             <div class="bg-white shadow-2xl rounded-2xl p-6">
-                <h3 class="text-xl font-bold text-gray-700 mb-6 flex items-center gap-2">
-                    <img src="{{ asset('icons/students.png') }}" alt="Students Icon" class="w-6 h-6">
-                    My Students
-                </h3>
+                <div class="mb-6 flex items-center justify-between">
+                    <h3 class="text-xl font-bold text-gray-700 flex items-center gap-2">
+                        <img src="{{ asset('icons/students.png') }}" alt="Students Icon" class="w-6 h-6">
+                        My Students
+                    </h3>
+                    <!-- Buddy System For Grade Validation -->
+                    <a href="{{ route('advisory.index') }}"
+                        class="bg-purple-500 hover:bg-purple-600 text-white font-semibold py-2 px-4 rounded-lg shadow transition">
+                        View Advisory Class
+                    </a>
+                </div>
                 <!-- Filter Dropdowns -->
                 <form method="GET" action="{{ route('teacher.dashboard') }}"
                     class="mb-6 flex flex-wrap items-center gap-4">
-                    <label for="filter_course" class="text-base font-semibold text-gray-700">Filter by Subject/Course:</label>
+                    <label for="filter_course" class="text-base font-semibold text-gray-700">Filter by
+                        Subject/Course:</label>
 
                     <select id="filter_course" name="course_id"
                         class="custom-select w-60 px-3 py-2 rounded-lg border border-gray-300" required>
@@ -176,11 +184,13 @@
                             <p class="text-lg font-bold text-gray-800">
                                 Taught in Section{{ $sectionsForSelectedCourse->count() > 1 ? 's' : '' }}:
                                 @foreach($sectionsForSelectedCourse as $section)
-                                    <span class="text-green-600 font-semibold">{{ $section->grade_level }} - {{ $section->name }}</span>{{ !$loop->last ? ', ' : '' }}
+                                    <span class="text-green-600 font-semibold">{{ $section->grade_level }} -
+                                        {{ $section->name }}</span>{{ !$loop->last ? ', ' : '' }}
                                 @endforeach
                             </p>
                         @else
-                            <p class="text-gray-600">This course is not currently scheduled in any specific sections for you.</p>
+                            <p class="text-gray-600">This course is not currently scheduled in any specific sections for you.
+                            </p>
                         @endif
                     @endif
                 </div>
@@ -189,7 +199,7 @@
                     <input type="hidden" name="subject_id" value="{{ $selectedCourseId ?? '' }}">
                     <input type="hidden" name="school_year_id" value="{{ $activeSchoolYearId ?? '' }}">
 
-                    <div class="overflow-x-auto">
+                    <div class="overflow-x-auto rounded-lg">
                         <table
                             class="min-w-full table-fixed text-sm text-gray-700 border border-gray-200 rounded-lg text-center">
                             <thead class="bg-yellow-100 text-gray-800 uppercase text-xs font-bold">
@@ -208,8 +218,8 @@
                                     @php
                                         $grades = null;
                                         if ($selectedCourseId && $activeSchoolYearId) {
-                                            $grades = $student->grades 
-                                                ->where('subject_id', (int)$selectedCourseId)
+                                            $grades = $student->grades
+                                                ->where('subject_id', (int) $selectedCourseId)
                                                 ->where('school_year_id', $activeSchoolYearId)
                                                 ->first();
                                         }
@@ -256,13 +266,15 @@
                                         <td class="px-6 py-4 w-1/6 text-center font-semibold">
                                             {{ $finalRating ?? '-' }}
                                         </td>
-                                        <td class="px-6 py-4 w-1/6 text-center font-semibold {{ $remarks === 'PASSED' ? 'text-green-600' : ($remarks === 'FAILED' ? 'text-red-600' : '') }}">
+                                        <td
+                                            class="px-6 py-4 w-1/6 text-center font-semibold {{ $remarks === 'PASSED' ? 'text-green-600' : ($remarks === 'FAILED' ? 'text-red-600' : '') }}">
                                             {{ $remarks }}
                                         </td>
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="7" class="text-center py-4 text-gray-500">No students available for the selected course.</td>
+                                        <td colspan="7" class="text-center py-4 text-gray-500">No students available for the
+                                            selected course.</td>
                                     </tr>
                                 @endforelse
                             </tbody>
@@ -277,9 +289,23 @@
                     </div>
                 </form>
             </div>
-
+        </div>
+        <!-- Custom Alert Modal -->
+        <div id="customAlertModal"
+            class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+            <div class="bg-white w-full max-w-md p-6 rounded-xl shadow-xl text-sm text-center">
+                <h2 class="text-lg font-semibold text-gray-800 mb-2">Notification</h2>
+                <p id="customAlertMessage" class="text-gray-700 whitespace-pre-line mb-4"></p>
+                <div class="text-center">
+                    <button onclick="closeCustomAlert()"
+                        class="bg-purple-500 hover:bg-purple-600 text-white px-4 py-1.5 rounded-md transition">
+                        OK
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
+
     <style>
         select.custom-select {
             appearance: none;
@@ -336,10 +362,10 @@
 
         document.addEventListener('DOMContentLoaded', function () {
             const sectionInfo = document.getElementById('sectionInfo');
-            const courseSelect = document.getElementById('filter_course'); 
+            const courseSelect = document.getElementById('filter_course');
 
             @if($selectedCourseId && $selectedCourseModel)
-                sectionInfo.style.display = 'block'; 
+                sectionInfo.style.display = 'block';
                 requestAnimationFrame(() => {
                     sectionInfo.classList.add('show');
                 });
@@ -347,79 +373,97 @@
 
     });
 
-    function submitAllGrades() {
-        const subjectId = document.querySelector('input[name="subject_id"]').value;
-        const schoolYearId = document.querySelector('input[name="school_year_id"]').value;
-        const studentRows = document.querySelectorAll('table tbody tr');
-        let promises = [];
-        let successCount = 0;
-        let errorCount = 0;
-        let errorMessages = [];
+        function showCustomAlert(message, reload = false) {
+            const modal = document.getElementById('customAlertModal');
+            const messageBox = document.getElementById('customAlertMessage');
+            messageBox.textContent = message;
+            modal.classList.remove('hidden');
 
-        if (!subjectId) {
-            alert('Please select a subject/course first.');
-            return;
+            if (reload) {
+                // Reload after a short delay to let user see the alert
+                setTimeout(() => {
+                    window.location.reload();
+                }, 2000);
+            }
         }
 
-        studentRows.forEach(row => {
-            const studentIdInput = row.querySelector('input[name^="grades["]');
-            if (!studentIdInput) return; // Skip header or empty rows
+        function closeCustomAlert() {
+            document.getElementById('customAlertModal').classList.add('hidden');
+        }
 
-            const studentIdMatch = studentIdInput.name.match(/grades\[(\d+)\]/);
-            if (!studentIdMatch) return;
-            const studentId = studentIdMatch[1];
+        function submitAllGrades() {
+            const subjectId = document.querySelector('input[name="subject_id"]').value;
+            const schoolYearId = document.querySelector('input[name="school_year_id"]').value;
+            const studentRows = document.querySelectorAll('table tbody tr');
+            let promises = [];
+            let successCount = 0;
+            let errorCount = 0;
+            let errorMessages = [];
 
-            const prelim = row.querySelector(`input[name="grades[${studentId}][prelim]"]`).value;
-            const midterm = row.querySelector(`input[name="grades[${studentId}][midterm]"]`).value;
-            const prefinal = row.querySelector(`input[name="grades[${studentId}][prefinal]"]`).value;
-            const final = row.querySelector(`input[name="grades[${studentId}][final]"]`).value;
-
-            const formData = {
-                subject_id: subjectId,
-                school_year_id: schoolYearId,
-                prelim: prelim || null, // Send null if empty
-                midterm: midterm || null,
-                prefinal: prefinal || null,
-                final: final || null
-            };
-
-            promises.push(
-                fetch(`/save-grades/${studentId}`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                        'Accept': 'application/json'
-                    },
-                    body: JSON.stringify(formData)
-                })
-                .then(response => response.json().then(data => ({ status: response.status, body: data, studentId: studentId })))
-                .then(result => {
-                    if (result.body.success) {
-                        successCount++;
-                    } else {
-                        errorCount++;
-                        errorMessages.push(`Student ID ${result.studentId}: ${result.body.message || result.body.error || 'Unknown error'}`);
-                    }
-                })
-                .catch(error => {
-                    errorCount++;
-                    errorMessages.push(`Student ID ${studentId}: Network or parsing error - ${error.message}`);
-                })
-            );
-        });
-
-        Promise.all(promises).then(() => {
-            let alertMessage = `${successCount} student(s) grades saved successfully.`;
-            if (errorCount > 0) {
-                alertMessage += `\n${errorCount} student(s) grades failed to save.\nDetails:\n${errorMessages.join('\n')}`;
+            if (!subjectId) {
+                alert('Please select a subject/course first.');
+                return;
             }
-            alert(alertMessage);
-            if (errorCount === 0 && successCount > 0) {
-                window.location.reload(); 
-            }
-        });
-    }
+
+            studentRows.forEach(row => {
+                const studentIdInput = row.querySelector('input[name^="grades["]');
+                if (!studentIdInput) return; // Skip header or empty rows
+
+                const studentIdMatch = studentIdInput.name.match(/grades\[(\d+)\]/);
+                if (!studentIdMatch) return;
+                const studentId = studentIdMatch[1];
+
+                const prelim = row.querySelector(`input[name="grades[${studentId}][prelim]"]`).value;
+                const midterm = row.querySelector(`input[name="grades[${studentId}][midterm]"]`).value;
+                const prefinal = row.querySelector(`input[name="grades[${studentId}][prefinal]"]`).value;
+                const final = row.querySelector(`input[name="grades[${studentId}][final]"]`).value;
+
+                const formData = {
+                    subject_id: subjectId,
+                    school_year_id: schoolYearId,
+                    prelim: prelim || null, // Send null if empty
+                    midterm: midterm || null,
+                    prefinal: prefinal || null,
+                    final: final || null
+                };
+
+                promises.push(
+                    fetch(`/save-grades/${studentId}`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                            'Accept': 'application/json'
+                        },
+                        body: JSON.stringify(formData)
+                    })
+                        .then(response => response.json().then(data => ({ status: response.status, body: data, studentId: studentId })))
+                        .then(result => {
+                            if (result.body.success) {
+                                successCount++;
+                            } else {
+                                errorCount++;
+                                errorMessages.push(`Student ID ${result.studentId}: ${result.body.message || result.body.error || 'Unknown error'}`);
+                            }
+                        })
+                        .catch(error => {
+                            errorCount++;
+                            errorMessages.push(`Student ID ${studentId}: Network or parsing error - ${error.message}`);
+                        })
+                );
+            });
+
+            Promise.all(promises).then(() => {
+                let alertMessage = `${successCount} student(s) grades saved successfully.`;
+                if (errorCount > 0) {
+                    alertMessage += `\n${errorCount} student(s) grades failed to save.\nDetails:\n${errorMessages.join('\n')}`;
+                }
+
+                // Show custom alert
+                const shouldReload = errorCount === 0 && successCount > 0;
+                showCustomAlert(alertMessage, shouldReload);
+            });
+        }
     </script>
 </body>
 

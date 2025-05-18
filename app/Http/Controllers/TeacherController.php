@@ -1712,4 +1712,54 @@ class TeacherController extends Controller
     
         return view('teacher.schedule', compact('schedules', 'sections', 'timeSlots', 'scheduledSections', 'days', 'selectedDay'));
     }
+
+    public function showAdvisoryClass(Request $request)
+    {
+        $currentUser = Auth::user();
+        $activeSchoolYear = SchoolYear::where('is_active', true)->first();
+
+        $advisoryStudents = collect();
+        $advisorySection = null;
+        $coursesForFilter = collect();
+        $selectedCourseId = $request->input('course_id');
+        $selectedCourseModel = null;
+
+
+        if ($currentUser && $activeSchoolYear) {
+            $advisorySection = Section::where('adviser_id', $currentUser->id)
+                                      ->where('school_year_id', $activeSchoolYear->id)
+                                      ->where('is_active', true) 
+                                      ->with(['students' => function ($query) use ($activeSchoolYear, $selectedCourseId) {
+                                          if ($selectedCourseId && $activeSchoolYear) {
+                                              $query->with(['grades' => function ($gradeQuery) use ($selectedCourseId, $activeSchoolYear) {
+                                                  $gradeQuery->where('subject_id', $selectedCourseId)
+                                                             ->where('school_year_id', $activeSchoolYear->id);
+                                              }]);
+                                          } else {
+                                              $query->with('grades');
+                                          }
+                                      }])
+                                      ->first();
+
+            if ($advisorySection) {
+                $advisoryStudents = $advisorySection->students; 
+                $coursesForFilter = Course::where('grade_level', $advisorySection->grade_level)
+                                          ->where('is_active', true)
+                                          ->orderBy('name')
+                                          ->get();
+                if ($selectedCourseId) {
+                    $selectedCourseModel = Course::find($selectedCourseId);
+                }
+            }
+        }
+        
+        return view('teacher.advisory', [ 
+            'advisorySection' => $advisorySection,
+            'advisoryStudents' => $advisoryStudents,
+            'coursesForFilter' => $coursesForFilter,
+            'selectedCourseId' => $selectedCourseId,
+            'selectedCourseModel' => $selectedCourseModel,
+            'activeSchoolYear' => $activeSchoolYear, 
+        ]);
+    }
 }

@@ -123,6 +123,7 @@ Route::middleware(['auth'])->group(function () {
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/teacher/dashboard', [TeacherController::class, 'index'])->name('teacher.dashboard');
+    Route::get('/advisory', [TeacherController::class, 'showAdvisoryClass'])->name('advisory.index');
     Route::get('/teacher/view-students', [TeacherController::class, 'viewStudents'])->name('teacher.view.students');
     Route::get('/teachers', [TeacherController::class, 'list'])->name('teachers.index');
     Route::get('/teachers/{teacher}/edit', [TeacherController::class, 'edit'])->name('teachers.edit');
