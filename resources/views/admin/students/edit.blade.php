@@ -111,7 +111,7 @@
                                     <label for="gender"
                                         class="block text-gray-800 font-medium mb-2 text-lg text-left">Gender</label>
                                     <select id="gender" name="gender" required
-                                        class="custom-select w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400">
+                                        class="custom-select w-56 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400 block">
                                         <option value="" disabled>Select Gender</option>
                                         <option value="male"
                                             {{ old('gender', $student->gender) == 'male' ? 'selected' : '' }}>Male</option>
