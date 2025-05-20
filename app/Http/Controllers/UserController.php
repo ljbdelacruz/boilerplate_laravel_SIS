@@ -55,7 +55,7 @@ class UserController extends Controller
             'last_name' => 'required_if:role,student|string|max:255',
             'middle_name' => 'nullable|string|max:255',
             'student_id' => 'required_if:role,student|string|unique:students,student_id',
-            'lrn' => 'required_if:role,student|string|size:12|unique:students,lrn', // Add this line
+            'lrn' => 'required_if:role,student|string|size:12|unique:students,lrn',
             'section_id' => 'required_if:role,student|exists:sections,id',
             'grade_level' => 'required_if:role,student|string|exists:grade_levels,grade_level',
             'school_year_id' => 'required_if:role,student|exists:school_years,id',

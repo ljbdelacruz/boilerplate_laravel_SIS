@@ -88,7 +88,7 @@ class StudentsImport implements ToModel, WithHeadingRow, WithValidation, SkipsEm
                         'email' => $row['email'] ?? 
                                    (isset($row['lrn']) && !empty($row['lrn']) 
                                        ? $row['lrn'] . '@placeholder.school.edu' 
-                                       : uniqid('student_') . '@placeholder.school.edu'),
+                                       : uniqid('student_') . '@example.school.edu'),
                         'password' => Hash::make($row['lrn']), 
                         'role' => 'student'
                     ]);

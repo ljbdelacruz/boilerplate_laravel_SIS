@@ -42,7 +42,9 @@
                                     <label for="lrn"
                                         class="block text-gray-800 font-medium mb-2 text-lg text-left">LRN</label>
                                     <input type="text" id="lrn" name="lrn" value="{{ $student->lrn }}" readonly
-                                        class="w-full px-4 py-2 bg-gray-100 border border-gray-300 rounded-lg text-gray-700" />
+                                        class="w-full px-4 py-2 bg-gray-100 border border-gray-300 rounded-lg text-gray-700" 
+                                        pattern="[0-9]" title="Please enter only numbers."
+                                        maxlength="12" minlength="12"/>
                                 </div>
 
                                 <div class="px-2">
@@ -50,7 +52,9 @@
                                         class="block text-gray-800 font-medium mb-2 text-lg text-left">Student ID</label>
                                     <input type="text" id="student_id" name="student_id"
                                         value="{{ $student->student_id }}" readonly
-                                        class="w-full px-4 py-2 bg-gray-100 border border-gray-300 rounded-lg text-gray-700" />
+                                        class="w-full px-4 py-2 bg-gray-100 border border-gray-300 rounded-lg text-gray-700" 
+                                        pattern="[0-9]+" title="Please enter only numbers."
+                                        maxlength="10" minlength="10"/>
                                 </div>
 
                                 <div class="px-2">
@@ -59,7 +63,8 @@
                                     <input type="text" id="first_name" name="first_name"
                                         value="{{ old('first_name', $student->first_name) }}" required
                                         placeholder="Enter first name"
-                                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400" />
+                                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400" 
+                                        pattern="[A-Za-z]+" title="Please enter only letters."/>
                                 </div>
 
                                 <div class="px-2">
@@ -68,7 +73,8 @@
                                     <input type="text" id="last_name" name="last_name"
                                         value="{{ old('last_name', $student->last_name) }}" required
                                         placeholder="Enter last name"
-                                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400" />
+                                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400" 
+                                        pattern="[A-Za-z]+" title="Please enter only letters." />
                                 </div>
 
                                 <div class="px-2">
@@ -77,7 +83,8 @@
                                     <input type="text" id="middle_name" name="middle_name"
                                         value="{{ old('middle_name', $student->middle_name) }}"
                                         placeholder="Enter middle name (optional)"
-                                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400" />
+                                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400" 
+                                        pattern="[A-Za-z]+" title="Please enter only letters."/>
                                 </div>
 
                                 <div class="px-2">
@@ -86,7 +93,9 @@
                                     <input type="text" id="suffix" name="suffix"
                                         value="{{ old('suffix', $student->suffix) }}"
                                         placeholder="Enter suffix (optional)"
-                                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400" />
+                                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400" 
+                                        pattern="[A-Za-z]+" title="Please enter only letters."
+                                        maxlength="5"/>
                                 </div>
 
                                 <div class="px-2">
@@ -129,7 +138,9 @@
                                     <input type="text" id="contact_number" name="contact_number"
                                         value="{{ old('contact_number', $student->contact_number) }}"
                                         placeholder="Enter contact number"
-                                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400" />
+                                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400" 
+                                        pattern="[0-9]+" title="Please enter only numbers."
+                                        maxlength="11"/>
                                 </div>
 
                                 <div class="px-2">
@@ -148,7 +159,8 @@
                                     <input type="text" id="guardian_name" name="guardian_name"
                                         value="{{ old('guardian_name', $student->guardian_name) }}" required
                                         placeholder="Enter guardian's full name"
-                                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400" />
+                                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400" 
+                                        pattern="[A-Za-z]+" title="Please enter only letters."/>
                                 </div>
 
                                 <div class="px-2">
@@ -158,7 +170,9 @@
                                     <input type="text" id="guardian_contact" name="guardian_contact"
                                         value="{{ old('guardian_contact', $student->guardian_contact) }}" required
                                         placeholder="Enter guardian's contact number"
-                                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400" />
+                                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400" 
+                                        pattern="[0-9]+" title="Please enter only numbers."
+                                        maxlength="11"/>
                                 </div>
 
                                 {{-- School Details --}}

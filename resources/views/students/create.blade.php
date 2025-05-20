@@ -41,7 +41,9 @@
                                         class="block text-gray-800 font-medium mb-2 text-lg text-left">LRN</label>
                                     <input type="text" id="lrn" name="lrn" value="{{ old('lrn') }}" required
                                         placeholder="Enter learner reference number"
-                                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400" />
+                                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400" 
+                                        pattern="[0-9]+" title="Please enter only numbers. Max length is 12."
+                                        maxlength="12" minlength="12"/>
                                 </div>
 
                                 <div class="px-2">
@@ -49,7 +51,9 @@
                                         class="block text-gray-800 font-medium mb-2 text-lg text-left">Student ID</label>
                                     <input type="text" id="student_id" name="student_id" value="{{ old('student_id') }}"
                                         required placeholder="Enter student ID"
-                                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400" />
+                                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400" 
+                                        pattern="[0-9]+" title="Please enter only numbers."
+                                        maxlength="10" minlength="10"/>
                                 </div>
 
                                 <div class="px-2">
@@ -57,7 +61,8 @@
                                         Name</label>
                                     <input type="text" id="first_name" name="first_name" value="{{ old('first_name') }}"
                                         required placeholder="Enter first name"
-                                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400" />
+                                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400"
+                                        pattern="[A-Za-z]+" title="Please enter only letters." />
                                 </div>
 
                                 <div class="px-2">
@@ -65,7 +70,8 @@
                                         Name</label>
                                     <input type="text" id="last_name" name="last_name" value="{{ old('last_name') }}"
                                         required placeholder="Enter last name"
-                                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400" />
+                                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400" 
+                                        pattern="[A-Za-z]+" title="Please enter only letters."/>
                                 </div>
 
                                 <div class="px-2">
@@ -73,7 +79,8 @@
                                         class="block text-gray-800 font-medium mb-2 text-lg text-left">Middle Name</label>
                                     <input type="text" id="middle_name" name="middle_name" value="{{ old('middle_name') }}"
                                         placeholder="Enter middle name (optional)"
-                                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400" />
+                                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400" 
+                                        pattern="[A-Za-z]+" title="Please enter only letters."/>
                                 </div>
 
                                 <div class="px-2">
@@ -81,7 +88,9 @@
                                         Name</label>
                                     <input type="text" id="suffix" name="suffix" value="{{ old('suffix') }}"
                                         placeholder="Enter suffix name (optional)"
-                                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400" />
+                                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400" 
+                                        pattern="[A-Za-z]+" title="Please enter only letters."
+                                        maxlength="5"/>
                                 </div>
 
                                 <div class="px-2">
@@ -114,10 +123,12 @@
 
                                 <div class="px-2">
                                     <label for="contact_number"
-                                        class="block text-gray-800 font-medium mb-2 text-lg text-left">Contact Number</label>
+                                        class="block text-gray-800 font-medium mb-2 text-lg text-left">Contact Number (Max Length=11)</label>
                                     <input type="text" id="contact_number" name="contact_number"
                                         value="{{ old('contact_number') }}" placeholder="Enter contact number"
-                                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400" />
+                                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400" 
+                                        pattern="[0-9]+" title="Please enter only numbers."
+                                        maxlength="11" minlength="11"/>
                                 </div>
 
                                 <div class="px-2">
@@ -133,7 +144,8 @@
                                         class="block text-gray-800 font-medium mb-2 text-lg text-left">Guardian Name</label>
                                     <input type="text" id="guardian_name" name="guardian_name"
                                         value="{{ old('guardian_name') }}" required placeholder="Enter guardian's full name"
-                                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400" />
+                                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400" 
+                                        pattern="[A-Za-z]+" title="Please enter only letters."/>
                                 </div>
 
                                 <div class="px-2">
@@ -142,7 +154,9 @@
                                     <input type="text" id="guardian_contact" name="guardian_contact"
                                         value="{{ old('guardian_contact') }}" required
                                         placeholder="Enter guardian's contact number"
-                                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400" />
+                                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400" 
+                                        pattern="[0-9]+" title="Please enter only numbers."
+                                        maxlength="11" minlength="11"/>
                                 </div>
 
                                 {{-- School Details --}}

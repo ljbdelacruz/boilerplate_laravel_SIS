@@ -37,7 +37,7 @@
                             <label for="name" class="block text-gray-800 font-medium mb-2">Name</label>
                             <input type="text" name="name" id="name" value="{{ old('name') }}" placeholder="Enter full name"
                                 class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400"
-                                required>
+                                pattern="[A-Za-z\s]+" title="Please enter a valid name" required>
                         </div>
 
                         <div class="mb-6 text-left">
@@ -52,6 +52,7 @@
                             <label for="password" class="block text-gray-800 font-medium mb-2">Password</label>
                             <input type="password" name="password" id="password" placeholder="Create a secure password"
                                 class="w-full px-4 py-2 pr-12 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400"
+                                minlength="8"
                                 required>
                             <img src="{{ asset('icons/Eye.png') }}" alt="Show Password"
                                 class="toggle-password cursor-pointer w-5 h-5 absolute right-4 top-11"
@@ -64,6 +65,7 @@
                                 Password</label>
                             <input type="password" name="password_confirmation" id="password_confirmation"
                                 class="w-full px-4 py-2 pr-12 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400"
+                                minlength="8"
                                 required>
                             <img src="{{ asset('icons/Eye.png') }}" alt="Show Password"
                                 class="toggle-password cursor-pointer w-5 h-5 absolute right-4 top-11"
@@ -103,6 +105,7 @@
                                     Number</label>
                                 <input type="text" name="contact_number" id="contact_number"
                                     value="{{ old('contact_number') }}" placeholder="09XXXXXXXXX" pattern="[0-9]{11}"
+                                    maxlength="11" minlength="11"
                                     title="Please enter a valid 11-digit phone number"
                                     class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400">
                             </div>

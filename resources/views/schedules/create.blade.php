@@ -275,7 +275,7 @@
                     setTimeout(() => {
                         el.classList.remove('fade-in');
                         el.classList.add('fade-out');
-                    }, 5000);
+                    }, 10000);
                 }
             };
             fadeWithDelay('errorAlert');

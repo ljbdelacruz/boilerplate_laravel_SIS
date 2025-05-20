@@ -36,6 +36,7 @@
                         <label for="name" class="block text-gray-800 font-medium mb-2">Name</label>
                         <input type="text" id="name" name="name" value="{{ old('name', $user->name) }}"
                             class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-400"
+                            pattern="[A-Za-z\s]+" title="Only letters and spaces are allowed"
                             required>
                     </div>
 
@@ -51,7 +52,8 @@
                     <div class="mb-6 text-left relative">
                         <label for="password" class="block text-gray-800 font-medium mb-2">New Password</label>
                         <input type="password" id="password" name="password"
-                            class="w-full px-4 py-2 pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-400">
+                            class="w-full px-4 py-2 pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-400"
+                            minlength="8" title="Password must be at least 8 characters long">
                         <img src="{{ asset('icons/Hidden.png') }}" alt="Toggle visibility"
                             class="toggle-password cursor-pointer w-5 h-5 absolute right-4 top-11"
                             data-target="password">
@@ -63,7 +65,8 @@
                         <label for="password_confirmation" class="block text-gray-800 font-medium mb-2">Confirm
                             Password</label>
                         <input type="password" id="password_confirmation" name="password_confirmation"
-                            class="w-full px-4 py-2 pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-400">
+                            class="w-full px-4 py-2 pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-400"
+                            minlength="8" title="Password must be at least 8 characters long">
                         <img src="{{ asset('icons/Hidden.png') }}" alt="Toggle visibility"
                             class="toggle-password cursor-pointer w-5 h-5 absolute right-4 top-11"
                             data-target="password_confirmation">
