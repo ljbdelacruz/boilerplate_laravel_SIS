@@ -123,7 +123,7 @@
 
                                 <div class="px-2">
                                     <label for="contact_number"
-                                        class="block text-gray-800 font-medium mb-2 text-lg text-left">Contact Number (Max Length=11)</label>
+                                        class="block text-gray-800 font-medium mb-2 text-lg text-left">Contact Number</label>
                                     <input type="text" id="contact_number" name="contact_number"
                                         value="{{ old('contact_number') }}" placeholder="Enter contact number"
                                         class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400" 

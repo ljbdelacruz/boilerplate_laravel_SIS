@@ -100,10 +100,11 @@
                                             <td class="px-4 py-3 text-center">{{ $childSubject->name }}</td>
                                             @for ($q = 1; $q <= 4; $q++)
                                                 <td class="px-4 py-3">
-                                                    <input type="number" min="0" max="100" step="0.01"
+                                                    <input type="number" min="0" max="100"
                                                         class="w-20 rounded border border-yellow-300 bg-yellow-50 p-1 focus:ring-yellow-200 text-center"
                                                         data-subject="{{ $childSubject->id }}" data-quarter="{{ $q }}"
-                                                        value="{{ $student->grades->where('subject_id', $childSubject->id)->first()?->{$q == 1 ? 'prelim' : ($q == 2 ? 'midterm' : ($q == 3 ? 'prefinal' : 'final'))} ?? '' }}">
+                                                        value="{{ $student->grades->where('subject_id', $childSubject->id)->first()?->{$q == 1 ? 'prelim' : ($q == 2 ? 'midterm' : ($q == 3 ? 'prefinal' : 'final'))} ?? '' }}"
+                                                        {{  !$selectedSchoolYear->is_active ? 'disabled' : '' }}>
                                                 </td>
                                             @endfor
                                             <td class="px-4 py-3 final-grade font-semibold"></td>
@@ -116,10 +117,11 @@
                                         <td class="px-4 py-3 text-center">{{ $subject->name }}</td>
                                         @for ($q = 1; $q <= 4; $q++)
                                             <td class="px-4 py-3">
-                                                <input type="number" min="00" max="100" step="0.01"
+                                                <input type="number" min="00" max="100"
                                                     class="w-20 rounded border border-yellow-300 bg-yellow-50 p-1 focus:ring-yellow-200 text-center"
                                                     data-subject="{{ $subject->id }}" data-quarter="{{ $q }}"
-                                                    value="{{ $student->grades->where('subject_id', $subject->id)->first()?->{$q == 1 ? 'prelim' : ($q == 2 ? 'midterm' : ($q == 3 ? 'prefinal' : 'final'))} ?? '' }}">
+                                                    value="{{ $student->grades->where('subject_id', $subject->id)->first()?->{$q == 1 ? 'prelim' : ($q == 2 ? 'midterm' : ($q == 3 ? 'prefinal' : 'final'))} ?? '' }}"
+                                                    {{  !$selectedSchoolYear->is_active ? 'disabled' : '' }}>
                                             </td>
                                         @endfor
                                         <td class="px-4 py-3 final-grade font-semibold"></td>
@@ -141,7 +143,8 @@
                             Upload Excel
                         </button>
                         <button onclick="saveGrades()"
-                            class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg">
+                            class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg"
+                            {{ !$selectedSchoolYear->is_active ? 'disabled' : '' }}>
                             Save Changes
                         </button>
                         <button onclick="exportToExcel()"

@@ -69,14 +69,13 @@
                 {{ $schoolYears->links() }}
             </div>
         </div>
-
     </div>
 
     <!-- Confirmation Modal -->
     <div id="activationModal" class="fixed inset-0 z-50 flex items-center justify-center hidden pointer-events-none">
         <div class="bg-white rounded-xl shadow-lg p-6 w-full max-w-sm text-center pointer-events-auto">
             <h3 class="text-lg font-bold text-gray-800 mb-3">Confirm Activation</h3>
-            <p class="text-gray-700 mb-5">Do you want to activate this school year to be active?</p>
+            <p class="text-gray-700 mb-5">Changing school years will resolve all the data in the current school year and will be uneditable. Do you want to activate this school year to be active?</p>
             <div class="flex justify-center space-x-4">
                 <button onclick="closeModal()" class="bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded-lg">
                     Cancel

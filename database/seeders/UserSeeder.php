@@ -38,7 +38,7 @@ class UserSeeder extends Seeder
                 'password' => 'Password@1',
                 'role' => 'student',
                 'student_data' => [
-                    'lrn' => '202400001',
+                    'lrn' => '202400000001',
                     'student_id' => '123456789011',
                     'grade_level' => 'Grade 1',
                     'section' => 'Section A',
@@ -55,7 +55,7 @@ class UserSeeder extends Seeder
                 'password' => 'Password@1',
                 'role' => 'student',
                 'student_data' => [
-                    'lrn' => '202400002',
+                    'lrn' => '202400000002',
                     'student_id' => '123456789012',
                     'grade_level' => 'Grade 2',
                     'section' => 'Section B',
@@ -72,7 +72,7 @@ class UserSeeder extends Seeder
                 'password' => 'Password@1',
                 'role' => 'student',
                 'student_data' => [
-                    'lrn' => '202400003',
+                    'lrn' => '202400000003',
                     'student_id' => '123456789013',
                     'grade_level' => 'Grade 3',
                     'section' => 'Section C',

@@ -5,15 +5,44 @@ namespace App\Http\Controllers;
 use App\Models\SchoolYear;
 use App\Traits\ActivityLogger;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Collection;
+
 
 class SchoolYearController extends Controller
 {
     use ActivityLogger;
     public function index()
     {
-        $schoolYears = SchoolYear::where('is_archived', false)
-            ->orderBy('start_year', 'desc')
-            ->paginate(10);
+        // Find the current active, non-archived school year
+        $activeSchoolYear = SchoolYear::where('is_active', true)
+            ->where('is_archived', false)
+            ->first();
+
+        $displayableSchoolYears = collect();
+
+        if ($activeSchoolYear) {
+            // Add the active school year to our list
+            $displayableSchoolYears->push($activeSchoolYear);
+
+            // Find future, non-archived school years
+            $futureSchoolYears = SchoolYear::where('is_archived', false)
+                ->where('start_year', '>', $activeSchoolYear->start_year)
+                ->orderBy('start_year', 'asc') 
+                ->get();
+
+            
+            $displayableSchoolYears = $displayableSchoolYears->merge($futureSchoolYears);
+        }
+        $perPage = 10;
+        $currentPage = Paginator::resolveCurrentPage('page');
+        $currentItems = $displayableSchoolYears->slice(($currentPage - 1) * $perPage, $perPage)->all();
+        $schoolYears = new LengthAwarePaginator($currentItems, $displayableSchoolYears->count(), $perPage, $currentPage, [
+            'path' => Paginator::resolveCurrentPath(),
+            'pageName' => 'page',
+        ]);
+
         // Count the number of active school years
         $activeSchoolYearCount = SchoolYear::where('is_archived', false)
             ->where('is_active', true)->count();
